@@ -27,16 +27,12 @@ export default class TabView extends Component{
 
 
     static propTypes = {
-
-        ...View.propTypes, // 包含默认的View的属性
         name:PropTypes.string.isRequired,
         size:PropTypes.number.isRequired,
         color:PropTypes.string,
         selectedColor:PropTypes.string,
         title:PropTypes.string,
         selected:PropTypes.bool,
-
-
     }
 
     static defaultProps = {

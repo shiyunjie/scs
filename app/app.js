@@ -8,23 +8,23 @@ import {
     Navigator,
     Text,
     TouchableOpacity,
-
+    Platform,
 } from 'react-native';
 
 import Index from './root';
-import SplashScreen from 'react-native-smart-splash-screen'
-import constants from  './constants/constant';
+import constants from  './constants/constant'
 
-export default class Root extends Component {
+
+
+class Root extends Component {
 
     constructor (props, context) {
         super(props);
     }
 
     componentDidMount () {
-        SplashScreen.close(SplashScreen.animationType.scale, 850, 500)
-    }
 
+    }
 
     render () {
         return (
@@ -87,17 +87,14 @@ let NavigationBarRouteMapper = {
 
 };
 
+export default XhrEnhance(Root)
+
 const styles = StyleSheet.create({
     navigatorBg: {
         backgroundColor: '#F4F4F4',
     },
     navBar: {
-
         backgroundColor: constants.UIActiveColor,
-
-
-
-
     },
     navBarText: {
         flex:1,
@@ -110,8 +107,7 @@ const styles = StyleSheet.create({
     navBarTitleText: {
         color: 'white',
         fontWeight: '500',
-
-
+        marginVertical: 9,
     },
 
     navBarLeftButton: {

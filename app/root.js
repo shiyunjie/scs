@@ -10,7 +10,6 @@ import {
     Platform,
 } from 'react-native';
 
-
 import IndexPage from './pages/indexPage';
 import UserPage from './pages/userPage';
 import OrderPage from './pages/orderPage';
@@ -34,39 +33,34 @@ import constants from  './constants/constant';
 import TabView from './components/tabView'
 let backFirstClick = 0//判断一次点击回退键
 
-
 export default class Root extends Component {
     // 构造
-    constructor(props) {
+    constructor (props) {
         super(props);
         // 初始状态
         this.state = {
             selectedTab: '首页',
-            selectIndex: true,
-            selectOrder: false,
-            selectUser: false,
-            selectMore: false,
         };
     }
 
-
-    componentWillMount() {
+    componentWillMount () {
         if (Platform.OS === 'android') {
             BackAndroid.addEventListener('hardwareBackPress', this.onBackAndroid);
         }
     }
-    componentWillUnmount() {
+
+    componentWillUnmount () {
         if (Platform.OS === 'android') {
             BackAndroid.removeEventListener('hardwareBackPress', this.onBackAndroid);
         }
     }
+
     onBackAndroid = () => {
-      ;
-        const routers =  this.props.navigator.getCurrentRoutes();
+        const routers = this.props.navigator.getCurrentRoutes();
         if (routers.length > 1) {
             this.props.navigator.pop();
             return true;
-        }else {
+        } else {
             let timestamp = (new Date()).valueOf();
             if (timestamp - backFirstClick > 2000) {
                 backFirstClick = timestamp;
@@ -86,97 +80,55 @@ export default class Root extends Component {
      color={constants.UIInActiveColor}/><Text style={styles.tabText}>首页</Text>
      </View>*/
 
-    render() {
+    render () {
         return (
             <TabNavigator >
                 <TabNavigator.Item
-
-                    selected={this.state.selectedTab === '首页'}
-
-                    renderIcon={() =>  <TabView
-                    name='ios-home'
-                    size={constants.IconSize}
-                    title='首页'
-                    selected={this.state.selectIndex}/>
-
-                    }
-
-
-                    onPress={() => {this.setState({
-                    selectedTab: '首页',
-                    selectIndex:true,
-                    selectOrder:false,
-                    selectUser:false,
-                    selectMore:false, });
-
-                    }}>
+                    selected={ this.state.selectedTab === '首页' }
+                    renderIcon={ () =>  <TabView
+                                            name='ios-home'
+                                            size={constants.IconSize}
+                                            title='首页'
+                                            selected={ this.state.selectedTab === '首页' }/> }
+                    onPress={ () => this.setState({selectedTab: '首页',}) }>
                     <IndexPage navigator={this.props.navigator}/>
                 </TabNavigator.Item>
                 <TabNavigator.Item
                     selected={this.state.selectedTab === '订单'}
-
-                    renderIcon={() =>  <TabView
-                    name='ios-paper'
-                    size={constants.IconSize}
-                    title='订单'
-                    selected={this.state.selectOrder}/>
-
-                    }
-
-
-                    onPress={() => this.setState({
-                    selectedTab: '订单',
-                    selectIndex:false,
-                    selectOrder:true,
-                    selectUser:false,
-                    selectMore:false,})}>
+                    renderIcon={ () =>  <TabView
+                                            name='ios-paper'
+                                            size={constants.IconSize}
+                                            title='订单'
+                                            selected={this.state.selectedTab === '订单'}/> }
+                    onPress={ () => this.setState({selectedTab: '订单',}) }>
                     <OrderPage navigator={this.props.navigator}/>
                 </TabNavigator.Item>
                 <TabNavigator.Item
                     selected={this.state.selectedTab === '我的'}
-
-                    renderIcon={() =>  <TabView
-                    name='ios-person'
-                    size={constants.IconSize}
-                    title='我的'
-                    selected={this.state.selectUser}/>
-
-                    }
-
-                    renderBadge={() => <Badge style={styles.number} />}
-                    onPress={() =>{
-
-                     this.props.navigator.push({
-                        title: '胖马贸服',
-                        component: LoginPage,
-                    });
-                    this.setState({
-                    selectedTab: '我的',
-                    selectIndex:false,
-                    selectOrder:false,
-                    selectUser:true,
-                    selectMore:false, })}
-                    }
-                >
+                    renderIcon={ () =>  <TabView
+                                            name='ios-person'
+                                            size={constants.IconSize}
+                                            title='我的'
+                                            selected={this.state.selectedTab === '我的'}/> }
+                    renderBadge={ () => <Badge style={styles.number} /> }
+                    onPress={ () => {
+                            this.props.navigator.push({
+                                title: '胖马贸服',
+                                component: LoginPage,
+                            });
+                            this.setState({selectedTab: '我的',})
+                        }
+                    }>
                     <UserPage navigator={this.props.navigator}/>
                 </TabNavigator.Item>
                 <TabNavigator.Item
                     selected={this.state.selectedTab === '更多'}
-
-                    renderIcon={() =>  <TabView
-                    name='ios-more'
-                    size={constants.IconSize}
-                    title='更多'
-                    selected={this.state.selectMore}/>
-
-                    }
-
-                    onPress={() => this.setState({
-                    selectedTab: '更多',
-                    selectIndex:false,
-                    selectOrder:false,
-                    selectUser:false,
-                    selectMore:true, })}>
+                    renderIcon={ () =>  <TabView
+                                            name='ios-more'
+                                            size={constants.IconSize}
+                                            title='更多'
+                                            selected={this.state.selectedTab === '更多'}/> }
+                    onPress={ () => this.setState({ selectedTab: '更多',}) }>
                     <MorePage navigator={this.props.navigator}/>
                 </TabNavigator.Item>
             </TabNavigator>
@@ -224,7 +176,6 @@ const styles = StyleSheet.create({
         position: 'absolute',
         top: 0,
         right: 0,
-
 
     }
 
