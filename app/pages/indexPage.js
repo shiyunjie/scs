@@ -17,30 +17,63 @@ import {
     Dimensions,
 } from 'react-native';
 
-import Swiper from '../components/indexSwiper';
-import constants from  '../constants/constant';
-import PullToRefreshListView from 'react-native-smart-pull-to-refresh-listview';
-import ItemView from '../components/UserViewItem';
-import HeaderView from '../components/listViewheaderView';
-import addOrderPage from './addOrderPage';
+import SplashScreen from 'react-native-smart-splash-screen'
+import Swiper from '../components/indexSwiper'
+import constants from  '../constants/constant'
+import PullToRefreshListView from 'react-native-smart-pull-to-refresh-listview'
+import ItemView from '../components/UserViewItem'
+import HeaderView from '../components/listViewheaderView'
+import addOrderPage from './addOrderPage'
+import XhrEnhance from '../lib/XhrEnhance'
 
-import image_banner from '../images/banner.png';
-import image_button from '../images/button.png';
+import image_banner from '../images/banner.png'
+import image_button from '../images/button.png'
+
+
+import { index_showPicture, } from '../mock/xhr-mock'   //mock data
+
+
 
 const { width: deviceWidth } = Dimensions.get('window');
-let refreshedDataSource = [{path: 'http://www.doorto.cn/images/banner-03.jpg'}, {path: 'http://www.doorto.cn/images/banner-02.jpg'},
-    {path: 'http://www.doorto.cn/images/banner-01.jpg'},];
-let advertisementDataSource = [{path: ''}, {path: ''}, {path: ''},{path: ''},];
+let refreshedDataSource =[{
+        file_url: '',
+        big_url: 'http://www.doorto.cn/images/banner-01.jpg',
+        id: '1',
+    }, {
+        file_url: '',
+        big_url: 'http://www.doorto.cn/images/banner-02.jpg',
+        id: '1',
+    }, {
+        file_url: '',
+        big_url: 'http://www.doorto.cn/images/banner-03.jpg',
+        id: '1',
+    }, ]
+let advertisementDataSource = [
+    image_banner,
+    image_banner,
+    image_banner,
+    image_banner,
+]
 
-export default class Index extends Component {
+class Index extends Component {
     // 构造
     constructor(props) {
         super(props);
 
+        this._dataSource = new ListView.DataSource({
+            rowHasChanged: (r1, r2) => r1 !== r2,
+            //sectionHeaderHasChanged: (s1, s2) => s1 !== s2,
+        });
+
+        let dataList = [
+            refreshedDataSource,
+            { buttonImage: image_button, buttonText: "发起委托单" },
+            advertisementDataSource,
+        ]
+
         this.state = {
-            dataSource: [],
-            advDataSource: [],
-            autoplay: false,
+            dataList: dataList,
+            dataSource: this._dataSource.cloneWithRows(dataList),
         }
     }
 
@@ -55,40 +88,18 @@ export default class Index extends Component {
             <PullToRefreshListView
                 style={styles.container}
                 ref={ (component) => this._pullToRefreshListView = component }
+                viewType={PullToRefreshListView.constants.viewType.listView}
                 contentContainerStyle={{backgroundColor: 'transparent', }}
-                //removeClippedSubviews={false}
+                initialListSize={3}
+                pageSize={3}
+                dataSource={this.state.dataSource}
                 renderHeader={this._renderHeader}
                 renderFooter={this._renderFooter}
+                enabledPullUp={false}
+                renderRow={this._renderRow}
                 onRefresh={this._onRefresh}
-                onLoadMore={this._onLoadMore}
-                autoLoadMore={true}
-                onEndReachedThreshold={15}
             >
-                <Swiper
-                    autoplay={this.state.autoplay}
-                    width={deviceWidth}
-                    dataSource={this.state.dataSource}/>
 
-                <View style={styles.swiper}>
-                    <TouchableOpacity onPress={this._addOrder}>
-                    <Image source={image_button}
-                           style={{width:150,height:95,justifyContent:'center',alignItems:'center'}}>
-                        <Text style={{color:'white'}}>发起委托单</Text>
-                    </Image>
-                    </TouchableOpacity>
-                </View>
-
-                {
-                    this.state.advDataSource.map((item, index) => {
-                        return (
-                            <View key={`item-${index}`}
-                                  style={{overflow: 'hidden',borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: '#ccc',marginBottom:10,}}>
-                                <Image source={image_banner} style={{height:100}}/>
-                            </View>
-                        )
-                    })
-
-                }
             </PullToRefreshListView>
 
         );
@@ -103,11 +114,51 @@ export default class Index extends Component {
         });
     }
 
+    async _fetchData () {
+        let options = {
+            url: constants.api.indexShowPicture,
+            data: {
+                iType: constants.iType.indexShowPicture,
+            }
+        }
+        try {
+            let result = await this.fetch(options)
+            result = JSON.parse(result)
+            //console.log(`fetch result -> `, typeof result)
+            //console.log(`result`, result.result)
+            let dataList = [
+                result.result.list,
+                { buttonImage: image_button, buttonText: "发起委托单" },
+                advertisementDataSource,
+            ]
+
+            this.setState({
+                dataList: dataList,
+                dataSource: this._dataSource.cloneWithRows(dataList),
+            })
+            this._pullToRefreshListView.endRefresh()
+        }
+        catch(error) {
+            //console.log(error)
+            //..调用toast插件, show出错误信息...
+            this._pullToRefreshListView.endRefresh()
+        }
+        finally {
+            //console.log(`SplashScreen.close(SplashScreen.animationType.scale, 850, 500)`)
+            SplashScreen.close(SplashScreen.animationType.scale, 850, 500)
+        }
+
+    }
+    
     _renderHeader = (viewState) => {
         let {pullState, pullDistancePercent} = viewState
         let {refresh_none, refresh_idle, will_refresh, refreshing,} = PullToRefreshListView.constants.viewState
         //pullDistancePercent = Math.round(pullDistancePercent * 100)
-
+        if(pullDistancePercent > 1) {
+            pullDistancePercent = 1
+        }
+        let degree = 180 * pullDistancePercent
+        //console.log(`degree -> `, degree)
 
         let indeterminate = false;
         switch (pullState) {
@@ -116,21 +167,21 @@ export default class Index extends Component {
                     <HeaderView name='md-arrow-round-down'  // 图标
                                 size={constants.IconSize}
                                 title='下拉即可刷新...'
-                    />
+                                degree={degree}/>
                 )
             case refresh_idle:
                 return (
                     <HeaderView name='md-arrow-round-down'  // 图标
                                 size={constants.IconSize}
                                 title='下拉即可刷新...'
-                    />
+                                degree={degree}/>
                 )
             case will_refresh:
                 return (
-                    <HeaderView name='md-arrow-round-up'  // 图标
+                    <HeaderView name='md-arrow-round-down'  // 图标
                                 size={constants.IconSize}
                                 title='释放即可刷新...'
-                    />
+                                degree={degree}/>
                 )
             case refreshing:
                 /*{this._renderActivityIndicator()}*/
@@ -144,88 +195,69 @@ export default class Index extends Component {
     }
 
     _renderFooter = (viewState) => {
-        let {pullState, pullDistancePercent} = viewState
-        let {load_more_none, load_more_idle, will_load_more, loading_more, loaded_all, } = PullToRefreshListView.constants.viewState
-        pullDistancePercent = Math.round(pullDistancePercent * 100)
-/*        switch (pullState) {
-            case load_more_none:
-                return (
-                    <View
-                        style={{height: 35, justifyContent: 'center', alignItems: 'center', backgroundColor: 'transparent',}}>
-                        <Text>没有更多信息</Text>
-                    </View>
-                )
-            case loading_more:
-                return (
-                    <View
-                        style={{flexDirection: 'row', height: 35, justifyContent: 'center', alignItems: 'center', backgroundColor: 'transparent',}}>
-                        <Text>没有更多信息</Text>
-                    </View>
-                )
-            case loaded_all:
-                return (
-                    <View
-                        style={{height: 35, justifyContent: 'center', alignItems: 'center', backgroundColor: 'transparent',}}>
-                        <Text>没有更多信息</Text>
-                    </View>
-                )
-        }*/
+        return (
+            <View
+                style={{height: 35, justifyContent: 'center', alignItems: 'center', backgroundColor: 'transparent',}}>
+                <Text>[logo]胖马贸服</Text>
+            </View>
+        )
+    }
+
+    _renderRow = (rowData, sectionID, rowID) => {
+        //console.log(`rowData`, rowData)
+        //console.log(`rowID`, rowID)
+        if(rowID == 0) {
+            return (
+                <Swiper
+                    autoplay={true}
+                    width={deviceWidth}
+                    dataSource={rowData}/>
+            )
+        }
+        else if(rowID == 1) {
+            return (
+                <View style={styles.swiper}>
+                    <TouchableOpacity onPress={this._addOrder}>
+                        <Image source={rowData.buttonImage}
+                               style={{width:150,height:95,justifyContent:'center',alignItems:'center'}}>
+                            <Text style={{color:'white'}}>{rowData.buttonText}</Text>
+                        </Image>
+                    </TouchableOpacity>
+                </View>
+            )
+        }
+        else if(rowID == 2) {
+            return (
+                <View>
+                    {
+                        rowData.map((item, index) => {
+                            return (
+                                <View key={`item-${index}`}
+                                      style={{overflow: 'hidden',borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: '#ccc',marginBottom:10,}}>
+                                    <Image source={item} style={{height:100}}/>
+                                </View>
+                            )
+                        })
+                    }
+                </View>
+            )
+        }
+        else {
+            return null
+        }
     }
 
     _onRefresh = () => {
-        //console.log('outside _onRefresh start...')
-
-        //simulate request data
+        
         setTimeout(() => {
 
-            //console.log('outside _onRefresh end...')
-
-            this.setState({
-                dataSource: refreshedDataSource,
-                advDataSource: advertisementDataSource,
-            })
-            this._pullToRefreshListView.endRefresh()
-
-
-            this.setState({
-                autoplay: true,
-            })
-        }, 3000)
+            this._fetchData()
+            
+        }, 1000)
     }
-
-    _onLoadMore = () => {
-        console.log('outside _onLoadMore start...')
-
-      let loadedAll = true;
-        this._pullToRefreshListView.endLoadMore(loadedAll)
-
-        /* this.setTimeout(() => {
-
-         //console.log('outside _onLoadMore end...')
-
-         let length = this.state.dataSource.length
-
-         let addedDataSource = []
-
-         this.setState({
-         dataSource: this.state.dataSource.concat(addedDataSource),
-         })
-
-         let loadedAll
-         if (length >= 30) {
-         loadedAll = true
-         this._pullToRefreshListView.endLoadMore(loadedAll)
-         }
-         else {
-         loadedAll = false
-         this._pullToRefreshListView.endLoadMore(loadedAll)
-         }
-
-         }, 3000)*/
-    }
-
-
 }
+
+export default XhrEnhance(Index)
 
 const styles = StyleSheet.create({
     container: {

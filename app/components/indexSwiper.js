@@ -11,15 +11,13 @@ import {
     PixelRatio,
     TouchableOpacity,
     Platform,
-
+    Image,
 } from 'react-native';
 //import Icon from 'react-native-vector-icons/FontAwesome';
 import Icon from 'react-native-vector-icons/Ionicons';
 import constants from  '../constants/constant';
 import Swiper from 'react-native-swiper';
-import ImageLoader from 'react-native-smart-image-loader';
-
-import Carousel from 'react-native-looped-carousel';
+import image_default_banner from '../images/banner.png';    //需要换默认banner图
 
 export default class IndexSwiper extends Component{
     // 构造
@@ -47,35 +45,65 @@ export default class IndexSwiper extends Component{
         return (
             <Swiper style={styles.swiperStyle}
                     autoplay={this.props.autoplay}
-                    showsButtons={false}
-                    removeClippedSubviews={false}
                     height={150}
                     width={this.props.width}
                     autoplayTimeout={3}
-                    loop={true}
-
-            >{ this.props.dataSource.map((item, index) => {
-                return (<ImageLoader
-                    key={`item-${index}`}
-                    style={[{width: this.props.width, height: 150}]}
-                    options={{
-                         rowID: '0',
-                         src: `${item.path}`,
-                         placeholder: Platform.OS == 'ios' ? 'goods-placeholder' : 'goods_placeholder',
-                         }}/>);
-            })
-            }
+                    loop={true}>
+                { this.props.dataSource.map((item, index) => {
+                    return (
+                        <Image
+                            key={index}
+                            style={[{width: this.props.width, height: 150}]}
+                            defaultSource={image_default_banner}
+                            source={{uri: `${item.big_url}`}}/>
+                        )
+                    })
+                }
             </Swiper>
 
-        );
+        )
+        //return (
+        //    <Swiper style={styles.swiperStyle}
+        //        //autoplay={this.props.autoplay}
+        //            autoplay={true}
+        //            showsButtons={false}
+        //            removeClippedSubviews={false}
+        //            height={150}
+        //            width={this.props.width}
+        //            autoplayTimeout={3}
+        //            loop={true}>
+        //        <Image
+        //            key={1}
+        //            style={[{width: this.props.width, height: 150}]}
+        //            defaultSource={{image_default_banner}}
+        //            source={{uri: `http://www.doorto.cn/images/banner-01.jpg`}}/>
+        //        <Image
+        //            key={2}
+        //            style={[{width: this.props.width, height: 150}]}
+        //            defaultSource={{image_default_banner}}
+        //            source={{uri: `http://www.doorto.cn/images/banner-02.jpg`}}/>
+        //    </Swiper>
+        //
+        //)
+
+        //return (
+        //    <Swiper height={150} autoplay={true} autoplayTimeout={3.5}>
+        //        <View>
+        //            <Image style={[{width: this.props.width, height: 150}]} resizeMode={'stretch'} source={{uri: 'http://www.doorto.cn/images/banner-03.jpg'}}></Image>
+        //        </View>
+        //        <View>
+        //            <Image style={[{width: this.props.width, height: 150}]} resizeMode={'stretch'} source={{uri: 'http://www.doorto.cn/images/banner-02.jpg'}}></Image>
+        //        </View>
+        //    </Swiper>
+        //)
     }
 }
 
 var styles = StyleSheet.create({
     swiperStyle: {
-        overflow: 'hidden',
-        flex: 1,
-        backgroundColor: constants.UIActiveColor,
+        //overflow: 'hidden',
+        //flex: 1,
+        //backgroundColor: constants.UIActiveColor,
     },
 
 });

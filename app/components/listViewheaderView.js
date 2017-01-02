@@ -34,7 +34,11 @@ export default class ListItemView extends Component{
     constructor(props) {
         super(props);
         // 初始状态
-        this.state = {show:this.props.show,hasCheckBox:this.props.hasCheckBox};
+        this.state = {
+            show:this.props.show,
+            hasCheckBox:this.props.hasCheckBox,
+            degree: props.degree,
+        };
     }
 
 
@@ -46,26 +50,36 @@ export default class ListItemView extends Component{
         color:PropTypes.string,
         title:PropTypes.string.isRequired,
         isRefresh:PropTypes.bool,
-
+        degree: PropTypes.number.isRequired,
 
     }
 
     static defaultProps = {
         isRefresh:false,
         color:constants.UIInActiveColor,
-
+        degree: 0
     }
 
-
+    componentWillReceiveProps (nextProps) {
+        let degree = nextProps.degree
+        if(degree != this.state.degree) {
+            this.setState({
+                degree,
+            })
+        }
+    }
 
     render() {
         if(!this.props.isRefresh){
         return (
             <View
                 style={styles.HeaderView}>
-                <Icon name={this.props.name}  // 图标
-                      size={this.props.size}
-                      color={this.props.color}/><Text style={{marginLeft:5}}>{this.props.title}</Text>
+                <View style={{transform: [{rotate: `${this.state.degree}deg`}]}}>
+                    <Icon name={this.props.name}  // 图标
+                          size={this.props.size}
+                          color={this.props.color}/>
+                </View>
+                <Text style={{marginLeft:5}}>{this.props.title}</Text>
             </View>
 
         )
