@@ -18,6 +18,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import constants from  '../constants/constant';
 import Swiper from 'react-native-swiper';
 import image_default_banner from '../images/banner.png';    //需要换默认banner图
+import Carousel from 'react-native-looped-carousel';
 
 export default class IndexSwiper extends Component{
     // 构造
@@ -37,29 +38,40 @@ export default class IndexSwiper extends Component{
 
     }
 
-
-
+/*
+ <Swiper style={styles.swiperStyle}
+ autoplay={this.props.autoplay}
+ height={150}
+ width={this.props.width}
+ autoplayTimeout={3}
+ loop={true}>
+<Image
+key={index}
+style={[{width: this.props.width, height: 150}]}
+    //defaultSource={image_default_banner}
+source={{uri: `${item.big_url}`}}/>*/
 
 
     render() {
         return (
-            <Swiper style={styles.swiperStyle}
-                    autoplay={this.props.autoplay}
-                    height={150}
-                    width={this.props.width}
-                    autoplayTimeout={3}
-                    loop={true}>
+                <Carousel
+                    delay={5000}
+                    style={[{width: this.props.width, height: 150}]}
+                    autoplay
+                    pageInfo={false}
+                    currentPage={0}
+                    onAnimateNextPage={(p) => console.log(p)}>
                 { this.props.dataSource.map((item, index) => {
                     return (
                         <Image
                             key={index}
                             style={[{width: this.props.width, height: 150}]}
-                            defaultSource={image_default_banner}
+                            //defaultSource={image_default_banner}
                             source={{uri: `${item.big_url}`}}/>
-                        )
+                    )
                     })
                 }
-            </Swiper>
+            </Carousel>
 
         )
         //return (
