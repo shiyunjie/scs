@@ -1,0 +1,106 @@
+/**
+ * Created by shiyunjie on 16/12/29.
+ */
+/**
+ * Created by shiyunjie on 16/12/28.
+ */
+import React, {
+    PropTypes,
+    Component } from 'react';
+import {
+    StyleSheet,
+    Text,
+    View,
+    PixelRatio,
+
+
+
+} from 'react-native';
+
+import constants from  '../constants/constant';
+import Icon from 'react-native-vector-icons/Ionicons';
+
+/**
+ * types: ['CircleFlip', 'Bounce', 'Wave', 'WanderingCubes', 'Pulse',
+ * 'ChasingDots', 'ThreeBounce', 'Circle', '9CubeGrid', 'WordPress',
+ * 'FadingCircle', 'FadingCircleAlt', 'Arc', 'ArcAlt'],
+ */
+
+let Spinner = require('react-native-spinkit');
+
+
+export default class ListItemView extends Component{
+    // 构造
+    constructor(props) {
+        super(props);
+        // 初始状态
+        this.state = {show:this.props.show,hasCheckBox:this.props.hasCheckBox};
+    }
+
+
+    static propTypes = {
+
+        ...View.propTypes, // 包含默认的View的属性
+        name:PropTypes.string.isRequired,
+        size:PropTypes.number.isRequired,
+        color:PropTypes.string,
+        title:PropTypes.string.isRequired,
+        isRefresh:PropTypes.bool,
+
+
+    }
+
+    static defaultProps = {
+        isRefresh:false,
+        color:constants.UIInActiveColor,
+
+    }
+
+
+
+    render() {
+        if(!this.props.isRefresh){
+        return (
+            <View
+                style={styles.HeaderView}>
+                <Icon name={this.props.name}  // 图标
+                      size={this.props.size}
+                      color={this.props.color}/><Text style={{marginLeft:5}}>{this.props.title}</Text>
+            </View>
+
+        )
+        }else{
+            return (
+                <View
+                    style={styles.HeaderView}>
+                    <Spinner
+                        style={styles.spinner}
+                        isVisible={true}
+                        size={this.props.size}
+                        type={this.props.name}
+                        color={this.props.color}
+                    /><Text style={{marginLeft:5}}>{this.props.title}</Text>
+                </View>
+
+            )
+        }
+    }
+}
+
+
+
+var styles = StyleSheet.create({
+    spinner: {
+        marginBottom: 3,
+    },
+    HeaderView: {
+        flexDirection: 'row',
+        height: 40,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'transparent',
+
+
+    },
+
+});
