@@ -78,6 +78,10 @@ class Index extends Component {
     }
 
     componentDidMount() {
+        this.props.navigator.navigationContext.addListener('willfocus', () => {
+
+        })
+        console.log(`this._pullToRefreshListView.beginRefresh()`)
         this._pullToRefreshListView.beginRefresh()
     }
 
@@ -145,7 +149,7 @@ class Index extends Component {
         }
         finally {
             //console.log(`SplashScreen.close(SplashScreen.animationType.scale, 850, 500)`)
-            SplashScreen.close(SplashScreen.animationType.scale, 850, 500)
+            //SplashScreen.close(SplashScreen.animationType.scale, 850, 500)
         }
 
     }
@@ -207,12 +211,22 @@ class Index extends Component {
         //console.log(`rowData`, rowData)
         //console.log(`rowID`, rowID)
         if(rowID == 0) {
+            //return (
+            //    <Swiper
+            //        autoplay={false}
+            //        width={deviceWidth}
+            //        dataSource={rowData}/>
+            //)
             return (
-                <Swiper
-                    autoplay={true}
-                    width={deviceWidth}
-                    dataSource={rowData}/>
+                <View>
+                    <Swiper
+                            autoplay={true}
+                            width={deviceWidth}
+                            dataSource={rowData}/>
+                </View>
             )
+
+
         }
         else if(rowID == 1) {
             return (
@@ -252,8 +266,9 @@ class Index extends Component {
         setTimeout(() => {
 
             this._fetchData()
-            
-        }, 1000)
+
+        }, 3000)
+
     }
 }
 

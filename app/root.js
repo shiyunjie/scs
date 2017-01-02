@@ -8,6 +8,8 @@ import {
     View,
     BackAndroid,
     Platform,
+    NativeAppEventEmitter,
+    TouchableOpacity,
 } from 'react-native';
 
 import IndexPage from './pages/indexPage';
@@ -90,7 +92,11 @@ export default class Root extends Component {
                                             size={constants.IconSize}
                                             title='首页'
                                             selected={ this.state.selectedTab === '首页' }/> }
-                    onPress={ () => this.setState({selectedTab: '首页',}) }>
+                    onPress={ () => {
+
+                        this.setState({selectedTab: '首页',})
+                         //NativeAppEventEmitter.emit('setNavigationBar.index', NavigationBarRouteMapperList[0])
+                    } }>
                     <IndexPage navigator={this.props.navigator}/>
                 </TabNavigator.Item>
                 <TabNavigator.Item
@@ -100,7 +106,10 @@ export default class Root extends Component {
                                             size={constants.IconSize}
                                             title='订单'
                                             selected={this.state.selectedTab === '订单'}/> }
-                    onPress={ () => this.setState({selectedTab: '订单',}) }>
+                    onPress={ () => {
+                        this.setState({selectedTab: '订单',})
+                         //NativeAppEventEmitter.emit('setNavigationBar.index', NavigationBarRouteMapperList[1])
+                    } }>
                     <OrderPage navigator={this.props.navigator}/>
                 </TabNavigator.Item>
                 <TabNavigator.Item
@@ -117,6 +126,7 @@ export default class Root extends Component {
                                 component: LoginPage,
                             });
                             this.setState({selectedTab: '我的',})
+                             //NativeAppEventEmitter.emit('setNavigationBar.index', NavigationBarRouteMapperList[2])
                         }
                     }>
                     <UserPage navigator={this.props.navigator}/>
@@ -128,13 +138,167 @@ export default class Root extends Component {
                                             size={constants.IconSize}
                                             title='更多'
                                             selected={this.state.selectedTab === '更多'}/> }
-                    onPress={ () => this.setState({ selectedTab: '更多',}) }>
+                    onPress={ () => {
+                        this.setState({ selectedTab: '更多',})
+                         //NativeAppEventEmitter.emit('setNavigationBar.index', NavigationBarRouteMapperList[3])
+                    } }>
                     <MorePage navigator={this.props.navigator}/>
                 </TabNavigator.Item>
             </TabNavigator>
         );
     }
 }
+
+let NavigationBarRouteMapperList = [
+    {
+
+    LeftButton: function (route, navigator, index, navState) {
+        if (index === 0) {
+            return null;
+        }
+
+        var previousRoute = navState.routeStack[ index - 1 ];
+        return (
+            <TouchableOpacity
+                onPress={() => navigator.pop()}
+                style={styles.navBarLeftButton}>
+                <Text style={[styles.navBarText, styles.navBarButtonText]}>
+                    back
+                </Text>
+            </TouchableOpacity>
+        );
+    },
+
+    RightButton: function (route, navigator, index, navState) {
+
+    },
+
+    Title: function (route, navigator, index, navState) {
+        return (
+            Platform.OS == 'ios' ?
+                <Text style={[styles.navBarText, styles.navBarTitleText]}>
+                    首页
+                </Text> : <View style={{alignSelf: 'center', position: 'relative', left: -35,}}>
+                <Text style={[styles.navBarText, styles.navBarTitleText]}>
+                   首页
+                </Text>
+            </View>
+        )
+    },
+
+},
+    {
+
+        LeftButton: function (route, navigator, index, navState) {
+            if (index === 0) {
+                return null;
+            }
+
+            var previousRoute = navState.routeStack[ index - 1 ];
+            return (
+                <TouchableOpacity
+                    onPress={() => navigator.pop()}
+                    style={styles.navBarLeftButton}>
+                    <Text style={[styles.navBarText, styles.navBarButtonText]}>
+                        back
+                    </Text>
+                </TouchableOpacity>
+            );
+        },
+
+        RightButton: function (route, navigator, index, navState) {
+
+        },
+
+        Title: function (route, navigator, index, navState) {
+            return (
+                Platform.OS == 'ios' ?
+                    <Text style={[styles.navBarText, styles.navBarTitleText]}>
+                        订单
+                    </Text> : <View style={{alignSelf: 'center', position: 'relative', left: -35,}}>
+                    <Text style={[styles.navBarText, styles.navBarTitleText]}>
+                        订单
+                    </Text>
+                </View>
+            )
+        },
+
+    },
+    {
+
+        LeftButton: function (route, navigator, index, navState) {
+            if (index === 0) {
+                return null;
+            }
+
+            var previousRoute = navState.routeStack[ index - 1 ];
+            return (
+                <TouchableOpacity
+                    onPress={() => navigator.pop()}
+                    style={styles.navBarLeftButton}>
+                    <Text style={[styles.navBarText, styles.navBarButtonText]}>
+                        back
+                    </Text>
+                </TouchableOpacity>
+            );
+        },
+
+        RightButton: function (route, navigator, index, navState) {
+
+        },
+
+        Title: function (route, navigator, index, navState) {
+            return (
+                Platform.OS == 'ios' ?
+                    <Text style={[styles.navBarText, styles.navBarTitleText]}>
+                        我的
+                    </Text> : <View style={{alignSelf: 'center', position: 'relative', left: -35,}}>
+                    <Text style={[styles.navBarText, styles.navBarTitleText]}>
+                        我的
+                    </Text>
+                </View>
+            )
+        },
+
+    },
+    {
+
+        LeftButton: function (route, navigator, index, navState) {
+            if (index === 0) {
+                return null;
+            }
+
+            var previousRoute = navState.routeStack[ index - 1 ];
+            return (
+                <TouchableOpacity
+                    onPress={() => navigator.pop()}
+                    style={styles.navBarLeftButton}>
+                    <Text style={[styles.navBarText, styles.navBarButtonText]}>
+                        back
+                    </Text>
+                </TouchableOpacity>
+            );
+        },
+
+        RightButton: function (route, navigator, index, navState) {
+
+        },
+
+        Title: function (route, navigator, index, navState) {
+            return (
+                Platform.OS == 'ios' ?
+                    <Text style={[styles.navBarText, styles.navBarTitleText]}>
+                        更多
+                    </Text> : <View style={{alignSelf: 'center', position: 'relative', left: -35,}}>
+                    <Text style={[styles.navBarText, styles.navBarTitleText]}>
+                        更多
+                    </Text>
+                </View>
+            )
+        },
+
+    },
+];
 
 const styles = StyleSheet.create({
     container: {

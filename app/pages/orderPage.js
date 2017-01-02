@@ -8,6 +8,7 @@ import {
     View,
     Platform,
     TouchableOpacity,
+    NativeAppEventEmitter,
 } from 'react-native';
 
 
@@ -71,6 +72,23 @@ onPress={() => this.setState({
 </TabNavigator.Item>
 </TabNavigator>*/
 
+    componentWillMount() {
+        NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
+        let currentRoute = this.props.navigator.navigationContext.currentRoute
+        this.props.navigator.navigationContext.addListener('willfocus', (event) => {
+            console.log(`orderPage willfocus...`)
+            console.log(`currentRoute`, currentRoute)
+            console.log(`event.data.route`, event.data.route)
+            if (currentRoute === event.data.route) {
+                console.log("orderPage willAppear")
+                NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
+            } else {
+                console.log("orderPage willDisappear, other willAppear")
+            }
+            //
+        })
+    }
+
     render() {
         let tabNames = this.state.tabNames;
         let tabIconNames = this.state.tabIconNames;
@@ -96,3 +114,41 @@ const styles = StyleSheet.create({
         alignItems: 'stretch',
     },
 });
+
+const navigationBarRouteMapper = {
+
+    LeftButton: function (route, navigator, index, navState) {
+    if (index === 0) {
+        return null;
+    }
+
+    var previousRoute = navState.routeStack[ index - 1 ];
+    return (
+        <TouchableOpacity
+            onPress={() => navigator.pop()}
+            style={styles.navBarLeftButton}>
+            <Text style={[styles.navBarText, styles.navBarButtonText]}>
+                back
+            </Text>
+        </TouchableOpacity>
+    );
+},
+
+RightButton: function (route, navigator, index, navState) {
+
+},
+
+Title: function (route, navigator, index, navState) {
+    return (
+        Platform.OS == 'ios' ?
+            <Text style={[styles.navBarText, styles.navBarTitleText]}>
+                订单
+            </Text> : <View style={{alignSelf: 'center', position: 'relative', left: -35,}}>
+            <Text style={[styles.navBarText, styles.navBarTitleText]}>
+                订单
+            </Text>
+        </View>
+    )
+},
+
+}

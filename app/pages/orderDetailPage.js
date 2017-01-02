@@ -11,12 +11,32 @@ import {
     ScrollView,
     TextInput,
     Linking,
+    NativeAppEventEmitter,
 } from 'react-native';
 
 
 import constants from  '../constants/constant';
 
 export default class OrderDetail extends Component {
+
+
+    componentWillMount() {
+        NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
+        let currentRoute = this.props.navigator.navigationContext.currentRoute
+        this.props.navigator.navigationContext.addListener('willfocus', (event) => {
+            console.log(`OrderDetail willfocus...`)
+            console.log(`currentRoute`, currentRoute)
+            console.log(`event.data.route`, event.data.route)
+            if (currentRoute === event.data.route) {
+                console.log("OrderDetail willAppear")
+                NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
+            } else {
+                console.log("OrderDetail willDisappear, other willAppear")
+            }
+            //
+        })
+    }
+
     render() {
         return (
             <ScrollView style={styles.container}>
@@ -146,3 +166,41 @@ const styles = StyleSheet.create({
     }
 
 });
+
+const navigationBarRouteMapper = {
+
+    LeftButton: function (route, navigator, index, navState) {
+        if (index === 0) {
+            return null;
+        }
+
+        var previousRoute = navState.routeStack[ index - 1 ];
+        return (
+            <TouchableOpacity
+                onPress={() => navigator.pop()}
+                style={styles.navBarLeftButton}>
+                <Text style={[styles.navBarText, styles.navBarButtonText]}>
+                    back
+                </Text>
+            </TouchableOpacity>
+        );
+    },
+
+    RightButton: function (route, navigator, index, navState) {
+
+    },
+
+    Title: function (route, navigator, index, navState) {
+        return (
+            Platform.OS == 'ios' ?
+                <Text style={[styles.navBarText, styles.navBarTitleText]}>
+                    {route.title}
+                </Text> : <View style={{alignSelf: 'center', position: 'relative', left: -35,}}>
+                <Text style={[styles.navBarText, styles.navBarTitleText]}>
+                    {route.title}
+                </Text>
+            </View>
+        )
+    },
+
+}
