@@ -10,17 +10,51 @@ import {
     Text,
     View,
     TextInput,
+    TouchableOpacity,
     ActivityIndicator,
     ActivityIndicatorIOS,
     ProgressBarAndroid,
     Platform,
+    NativeAppEventEmitter,
 } from 'react-native';
 
 import Button from 'react-native-smart-button';
 import constants from  '../constants/constant';
 import Icon from 'react-native-vector-icons/Ionicons';
+import navigatorStyle from '../styles/navigatorStyle'       //navigationBar样式
 
-export default class SetPassword extends Component {
+import XhrEnhance from '../lib/XhrEnhance' //http
+//import { member_changePwd,errorXhrMock } from '../mock/xhr-mock'   //mock data
+
+class SetPassword extends Component {
+    // 构造
+      constructor(props) {
+        super(props);
+        // 初始状态
+        this.state = {
+            oldPass:'',
+            newPass:'',
+            confPass:'',
+        };
+      }
+
+    componentWillMount() {
+        NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
+        let currentRoute = this.props.navigator.navigationContext.currentRoute
+        this.props.navigator.navigationContext.addListener('willfocus', (event) => {
+            console.log(`orderPage willfocus...`)
+            console.log(`currentRoute`, currentRoute)
+            //console.log(`event.data.route`, event.data.route)
+            if (event&&currentRoute === event.data.route) {
+                console.log("orderPage willAppear")
+                NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
+            } else {
+                console.log("orderPage willDisappear, other willAppear")
+            }
+            //
+        })
+    }
+
     render() {
         return (
             <View style={styles.container}>
@@ -29,20 +63,30 @@ export default class SetPassword extends Component {
                            placeholder='原密码'
                            maxLength={20}
                            underlineColorAndroid='transparent'
-                />
+                           editable = {true}
+                           value={this.state.oldPass}
+                           onChangeText={(text) => this.setState({oldPass:text})}/>
+
+
                 <TextInput style={styles.textInput}
                            clearButtonMode="while-editing"
                            placeholder='新密码'
                            maxLength={20}
                            underlineColorAndroid='transparent'
-                />
+                           editable = {true}
+                           value={this.state.newPass}
+                           onChangeText={(text) => this.setState({newPass:text})}/>
+
 
                 <TextInput style={styles.textInput}
                            clearButtonMode="while-editing"
                            placeholder='确认密码'
                            maxLength={20}
                            underlineColorAndroid='transparent'
-                />
+                           editable = {true}
+                           value={this.state.confPass}
+                           onChangeText={(text) => this.setState({confPass:text})}/>
+
 
 
 
@@ -65,13 +109,14 @@ export default class SetPassword extends Component {
                             loading: true,
                             //disabled: true,
                         })
-                        setTimeout( () => {
+                       /* setTimeout( () => {
                             this._button_2.setState({
                                 loading: false,
                                 //disabled: false
                             })
 
-                        }, 3000)
+                        }, 3000)*/
+                        this._fetch_changePassword
                     }}>
                     保存
                 </Button>
@@ -103,6 +148,41 @@ export default class SetPassword extends Component {
 
 
     }
+    async _fetch_changePassword(){
+        let options = {
+            method:'post',
+            url: constants.api.member_changePwd,
+            data: {
+                iType: constants.iType.member_changePwd,
+                //memberId:this.props.memberId,
+                old_pwd:this.state.oldPass,
+                new_pwd:this.state.newPass,
+                sure_pwd:this.state.confPass,
+
+            }
+        }
+        try {
+            let result = await this.fetch(options)
+            result = JSON.parse(result)
+            //console.log(`fetch result -> `, typeof result)
+            //console.log(`result`, result.result)
+            alert(result.code)
+
+        }
+        catch (error) {
+            //console.log(error)
+            //..调用toast插件, show出错误信息...
+
+        }
+        finally {
+            this._button_2.setState({
+                loading: false,
+                //disabled: false
+            })
+            //console.log(`SplashScreen.close(SplashScreen.animationType.scale, 850, 500)`)
+            //SplashScreen.close(SplashScreen.animationType.scale, 850, 500)
+        }
+    }
 }
 
 const styles = StyleSheet.create({
@@ -129,3 +209,50 @@ const styles = StyleSheet.create({
 
     },
 });
+
+
+const navigationBarRouteMapper = {
+
+    LeftButton: function (route, navigator, index, navState) {
+        if (index === 0) {
+            return null;
+        }
+
+        var previousRoute = navState.routeStack[ index - 1 ];
+        return (
+            <TouchableOpacity
+                onPress={() => navigator.pop()}
+                style={navigatorStyle.navBarLeftButton}>
+                <View style={navigatorStyle.navBarLeftButtonAndroid}>
+                    <Icon
+                        style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText,{fontSize: 20,}]}
+                        name={'ios-arrow-back'}
+                        size={constants.IconSize}
+                        color={'white'}/>
+                </View>
+            </TouchableOpacity>
+
+        );
+    },
+
+    RightButton: function (route, navigator, index, navState) {
+
+    },
+
+    Title: function (route, navigator, index, navState) {
+        return (
+            Platform.OS == 'ios' ?
+                <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText]}>
+                    {route.title}
+                </Text> : <View style={navigatorStyle.navBarTitleAndroid}>
+                <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText]}>
+                    {route.title}
+                </Text>
+            </View>
+        )
+    },
+
+}
+
+
+export default XhrEnhance(SetPassword)

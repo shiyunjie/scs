@@ -17,13 +17,18 @@ import {
 import constants from  '../constants/constant';
 import Icon from 'react-native-vector-icons/Ionicons';
 
-
+let height= StyleSheet.hairlineWidth;
 export default class ListItemView extends Component{
     // 构造
     constructor(props) {
         super(props);
         // 初始状态
-        this.state = {show:this.props.show,hasCheckBox:this.props.hasCheckBox};
+        this.state = {
+            show:this.props.show,
+            hasCheckBox:this.props.hasCheckBox,
+            hasLine:this.props.hasLine,
+        };
+
     }
 
 
@@ -36,6 +41,7 @@ export default class ListItemView extends Component{
         title:PropTypes.string.isRequired,
         show:PropTypes.bool,
         hasCheckBox:PropTypes.bool,
+        hasLine:PropTypes.bool,
 
 
     }
@@ -44,17 +50,24 @@ export default class ListItemView extends Component{
         show:false,
         hasCheckBox:false,
         color:constants.UIInActiveColor,
+        hasLine:true,
 
     }
 
+    componentWillReceiveProps (nextProps) {
+       /* let hasLine = nextProps.hasLine
+        if(hasLine != this.state.hasLine) {
+            height=0;
+        }*/
+    }
 
 
     render() {
 
         return (
+            this.state.hasLine?
             <View style={styles.itemView}>
                         <View style={styles.itemIcon}>
-
                             <Icon
                                 name={this.props.name}  // 图标
                                 size={this.props.size}
@@ -64,6 +77,23 @@ export default class ListItemView extends Component{
                     <Text style={styles.TabText}>{this.props.title}</Text>
                 </View>
                 <View style={styles.itemButton}>
+                    <Icon
+                        name={this.state.show?'ios-arrow-round-down':'ios-arrow-forward'}  // 图标
+                        size={this.props.size}
+                        color={this.props.color}/>
+                </View>
+
+            </View>:<View style={styles.itemView}>
+                <View style={styles.itemIcon}>
+                    <Icon
+                        name={this.props.name}  // 图标
+                        size={this.props.size}
+                        color={this.props.color}/>
+                </View>
+                <View  style={[styles.itemText, {borderBottomWidth: 0,}]}>
+                    <Text style={styles.TabText}>{this.props.title}</Text>
+                </View>
+                <View style={[styles.itemButton, {borderBottomWidth: 0,}]}>
                     <Icon
                         name={this.state.show?'ios-arrow-round-down':'ios-arrow-forward'}  // 图标
                         size={this.props.size}
@@ -98,7 +128,7 @@ var styles = StyleSheet.create({
        flex:8,
         flexDirection: 'row',
         alignItems:'center',
-        borderBottomWidth: StyleSheet.hairlineWidth,
+        borderBottomWidth: height,
         borderColor: constants.UIInActiveColor,
     },
     itemButton:{
@@ -106,7 +136,7 @@ var styles = StyleSheet.create({
 
         justifyContent:'center',
         alignItems:'center',
-        borderBottomWidth: StyleSheet.hairlineWidth,
+        borderBottomWidth: height,
         borderColor: constants.UIInActiveColor,
     },
     TabText: {

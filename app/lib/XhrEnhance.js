@@ -3,25 +3,28 @@
  * @since 17/1/2 10:40
  * @author chenyiqin
  */
+import {NativeModules,} from 'react-native'
 
+const HttpRSAModule = NativeModules.HttpRSAModule;
 import constants from '../constants/constant'
 
 let _key = 'XhrEnhance_xhrs'
 
+
 export default XhrEnhance = (ComposedComponent) => {
     return class extends ComposedComponent {
 
-        componentWillUnmount () {
+        componentWillUnmount() {
             super.componentWillUnmount && super.componentWillUnmount()
             let {
                 [ _key ]: xhrList,
                 } = this
             xhrList && xhrList.forEach((xhr) => {
-                if(xhr.status != 200 || xhr.readyState != 4) {
+                if (xhr.status != 200 || xhr.readyState != 4) {
                     xhr.abort()
                 }
             })
-            this[ _key ] = null
+            this[_key] = null
         }
 
         /**
@@ -36,11 +39,13 @@ export default XhrEnhance = (ComposedComponent) => {
          * @returns {Promise}
          */
         fetch = (options) => {
+
+
             let xhr = new XMLHttpRequest()
 
             let { [ _key ]: xhrList } = this
             if (!xhrList) {
-                this[ _key ] = [ xhr, ]
+                this[_key] = [xhr,]
             } else {
                 xhrList.push(xhr)
             }
@@ -67,10 +72,12 @@ export default XhrEnhance = (ComposedComponent) => {
                 if (!method) {
                     method = constants.requestMethod
                 }
+
+
                 xhr.open(method, url);
                 if (requestHeaders) {
                     Object.keys(requestHeaders).forEach(headerName => {
-                        xhr.setRequestHeader(headerName, requestHeaders[ headerName ])
+                        xhr.setRequestHeader(headerName, requestHeaders[headerName])
                     })
                 }
                 xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
@@ -80,9 +87,59 @@ export default XhrEnhance = (ComposedComponent) => {
                     sendData = formData
                 }
                 else if (data) {
-                    sendData = Object.keys(data).map(key => `${key}=${encodeURIComponent(data[ key ])}`).join('&')
+                    sendData = Object.keys(data).map(key => `${key}=${encodeURIComponent(data[key])}`).join('&')
                 }
                 xhr.send(sendData);
+            })
+        }
+
+
+        /**
+         * 压缩数据
+         * @param options
+         * @returns {Promise}
+         */
+        gZip = (options) => {
+            return new Promise((resolve, reject) => {
+
+                let { data,} = options
+                try {
+                   /* let sendData = {
+                        itype: data.iType,
+                        deviceId: data.deviceId,
+                        data:data,
+                        token: data.token,
+                        }
+
+                    delete(sendData.data['iType'])
+                    delete(sendData.data['deviceId'])
+                    delete(sendData.data['token'])
+
+                    console.log('data_data:',sendData.data);
+
+                    let result = HttpRSAModule.gzipRSA(JSON.stringify(sendData))
+
+                    resolve(result)*/
+                    resolve(JSON.stringify(options))
+                    } catch (error) {
+                    reject(error)
+                    }
+            })
+        }
+        /**
+         * 解压返回数据
+         * @param data
+         * @returns {Promise}
+         */
+        gunZip = (data) => {
+            return new Promise((resolve, reject) => {
+                try {
+                  /*  let responseData = HttpRSAModule.gunzipRSA(data)
+                    resolve(responseData)*/
+                    resolve(data)
+                    } catch (error) {
+                    reject(error)
+                    }
             })
         }
     }

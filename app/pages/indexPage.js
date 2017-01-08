@@ -15,6 +15,7 @@ import {
     Platform,
     TouchableOpacity,
     Dimensions,
+    NativeAppEventEmitter,
 } from 'react-native';
 
 import SplashScreen from 'react-native-smart-splash-screen'
@@ -24,30 +25,22 @@ import PullToRefreshListView from 'react-native-smart-pull-to-refresh-listview'
 import ItemView from '../components/UserViewItem'
 import HeaderView from '../components/listViewheaderView'
 import addOrderPage from './addOrderPage'
+import navigatorStyle from '../styles/navigatorStyle'       //navigationBar样式
 import XhrEnhance from '../lib/XhrEnhance'
+import Icon from 'react-native-vector-icons/Ionicons';
+
 
 import image_banner from '../images/banner.png'
 import image_button from '../images/button.png'
+import image_logo from '../images/icon.png'
 
 
-import { index_showPicture, } from '../mock/xhr-mock'   //mock data
+//import { index_showPicture, } from '../mock/xhr-mock'   //mock data
 
 
 
 const { width: deviceWidth } = Dimensions.get('window');
-let refreshedDataSource =[{
-        file_url: '',
-        big_url: 'http://www.doorto.cn/images/banner-01.jpg',
-        id: '1',
-    }, {
-        file_url: '',
-        big_url: 'http://www.doorto.cn/images/banner-02.jpg',
-        id: '1',
-    }, {
-        file_url: '',
-        big_url: 'http://www.doorto.cn/images/banner-03.jpg',
-        id: '1',
-    }, ]
+let refreshedDataSource =[]
 let advertisementDataSource = [
     image_banner,
     image_banner,
@@ -77,7 +70,26 @@ class Index extends Component {
         }
     }
 
+    componentWillMount() {
+        NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
+        let currentRoute = this.props.navigator.navigationContext.currentRoute
+        this.props.navigator.navigationContext.addListener('willfocus', (event) => {
+            console.log(`orderPage willfocus...`)
+            console.log(`currentRoute`, currentRoute)
+            console.log(`event.data.route`, event.data.route)
+            if (currentRoute === event.data.route) {
+                console.log("orderPage willAppear")
+                NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
+            } else {
+                console.log("orderPage willDisappear, other willAppear")
+            }
+            //
+        })
+
+    }
+
     componentDidMount() {
+        console.log(`this._pullToRefreshListView.beginRefresh()`)
         this._pullToRefreshListView.beginRefresh()
     }
 
@@ -98,6 +110,10 @@ class Index extends Component {
                 enabledPullUp={false}
                 renderRow={this._renderRow}
                 onRefresh={this._onRefresh}
+                //pullUpDistance={70}
+                //pullUpStayDistance={100}
+                pullDownDistance={100}
+                pullDownStayDistance={constants.pullDownStayDistance}
             >
 
             </PullToRefreshListView>
@@ -116,39 +132,56 @@ class Index extends Component {
 
     async _fetchData () {
         let options = {
-            url: constants.api.indexShowPicture,
+            method: 'post',
+            url: constants.api.service,
             data: {
                 iType: constants.iType.indexShowPicture,
+                deviceId:'',
+                token:'',
             }
         }
-        try {
-            let result = await this.fetch(options)
-            result = JSON.parse(result)
-            //console.log(`fetch result -> `, typeof result)
-            //console.log(`result`, result.result)
-            let dataList = [
-                result.result.list,
-                { buttonImage: image_button, buttonText: "发起委托单" },
-                advertisementDataSource,
-            ]
 
-            this.setState({
-                dataList: dataList,
-                dataSource: this._dataSource.cloneWithRows(dataList),
-            })
-            this._pullToRefreshListView.endRefresh()
+        options.data=await this.gZip(options)
+
+        try {
+            console.log(`options:`, options)
+
+            let resultData = await this.fetch(options)
+
+            let result=await this.gunZip(resultData)
+
+            let d=JSON.parse(result.result)
+            console.log('gunZip:',d)
+
+            if(d.code&& d.code==10) {
+                let dataList = [
+                    d.result == null ? refreshedDataSource : d.result,
+                    {buttonImage: image_button, buttonText: "发起委托单"},
+                    advertisementDataSource,
+                ]
+                this.setState({
+                    dataList: dataList,
+                    dataSource: this._dataSource.cloneWithRows(dataList),
+                })
+            }else{
+                alert(d.msg)
+                //..调用toast插件, show出错误信息...
+            }
         }
         catch(error) {
-            //console.log(error)
+            console.log(error)
             //..调用toast插件, show出错误信息...
-            this._pullToRefreshListView.endRefresh()
+
         }
         finally {
+            this._pullToRefreshListView.endRefresh()
             //console.log(`SplashScreen.close(SplashScreen.animationType.scale, 850, 500)`)
-            SplashScreen.close(SplashScreen.animationType.scale, 850, 500)
+            //SplashScreen.close(SplashScreen.animationType.scale, 850, 500)
         }
 
     }
+
+
     
     _renderHeader = (viewState) => {
         let {pullState, pullDistancePercent} = viewState
@@ -164,7 +197,7 @@ class Index extends Component {
         switch (pullState) {
             case refresh_none:
                 return (
-                    <HeaderView name='md-arrow-round-down'  // 图标
+                    <HeaderView name='md-arrow-round-up'  // 图标
                                 size={constants.IconSize}
                                 title='下拉即可刷新...'
                                 degree={degree}/>
@@ -186,19 +219,21 @@ class Index extends Component {
             case refreshing:
                 /*{this._renderActivityIndicator()}*/
                 indeterminate = true;
-                return (<HeaderView name='Circle' // spinkit
+                return (
+                    <HeaderView name='Circle' // spinkit
                                     size={constants.IconSize}
                                     title='刷新中...'
-                                    isRefresh={true}
-                />)
+                                    isRefresh={true}/>
+                )
         }
     }
 
     _renderFooter = (viewState) => {
         return (
             <View
-                style={{height: 35, justifyContent: 'center', alignItems: 'center', backgroundColor: 'transparent',}}>
-                <Text>[logo]胖马贸服</Text>
+                style={{flexDirection: 'row',height: 35, justifyContent: 'center', alignItems: 'center', backgroundColor: 'transparent',}}>
+                <Image source={image_logo} style={{width:40,height:40}}/>
+                <Text>胖马贸服</Text>
             </View>
         )
     }
@@ -207,12 +242,22 @@ class Index extends Component {
         //console.log(`rowData`, rowData)
         //console.log(`rowID`, rowID)
         if(rowID == 0) {
+            //return (
+            //    <Swiper
+            //        autoplay={false}
+            //        width={deviceWidth}
+            //        dataSource={rowData}/>
+            //)
             return (
-                <Swiper
-                    autoplay={true}
-                    width={deviceWidth}
-                    dataSource={rowData}/>
+                <View>
+                    <Swiper
+                            autoplay={true}
+                            width={deviceWidth}
+                            dataSource={rowData}/>
+                </View>
             )
+
+
         }
         else if(rowID == 1) {
             return (
@@ -248,12 +293,13 @@ class Index extends Component {
     }
 
     _onRefresh = () => {
-        
+
         setTimeout(() => {
 
             this._fetchData()
-            
+
         }, 1000)
+
     }
 }
 
@@ -296,3 +342,46 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     }
 });
+
+const navigationBarRouteMapper = {
+
+    LeftButton: function (route, navigator, index, navState) {
+        if (index === 0) {
+            return null;
+        }
+
+        var previousRoute = navState.routeStack[ index - 1 ];
+        return (
+            <TouchableOpacity
+                onPress={() => navigator.pop()}
+                style={navigatorStyle.navBarLeftButton}>
+                <View style={navigatorStyle.navBarLeftButtonAndroid}>
+                    <Icon
+                        style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText,{fontSize: 20,}]}
+                        name={'ios-arrow-back'}
+                        size={constants.IconSize}
+                        color={'white'}/>
+                </View>
+            </TouchableOpacity>
+
+        );
+    },
+
+    RightButton: function (route, navigator, index, navState) {
+
+    },
+
+    Title: function (route, navigator, index, navState) {
+        return (
+            Platform.OS == 'ios' ?
+                <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText]}>
+                    首页
+                </Text> : <View style={navigatorStyle.navBarTitleAndroid}>
+                <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText]}>
+                    首页
+                </Text>
+            </View>
+        )
+    },
+
+}

@@ -13,6 +13,7 @@
     "react-native-looped-carousel": "^0.1.4",
     "react-native-picker": "^4.0.14",
     "react-native-scrollable-tab-view": "^0.7.0",
+    "react-native-smart-app-event-listener-enhance": "^1.1.1",
     "react-native-smart-badge": "^1.1.1",
     "react-native-smart-button": "^1.5.0",
     "react-native-smart-image-loader": "^1.0.1",

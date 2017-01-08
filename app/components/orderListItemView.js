@@ -52,23 +52,26 @@ export default class ListItemView extends Component {
                     <View style={styles.itemIcon}/>
                     <View style={styles.itemText}>
                         <View style={styles.itemDetail}>
-                            <Text style={{flex:1}}>单号:</Text>
-                            <Text style={{flex:2,color:constants.UIInActiveColor}}>{this.props.orderNum}</Text>
+                            <Text style={{fontSize:17,}}>单号:</Text>
+                            <Text style={{flex:2,fontSize:17,}}>{this.props.orderNum}</Text>
                         </View>
                         <View style={styles.itemDetail}>
-                            <Text style={{flex:1}}>发起时间:</Text>
+                            <Text style={{color:constants.UIInActiveColor}}>发起时间:</Text>
                             <Text style={{flex:2,color:constants.UIInActiveColor}}>{this.props.time}</Text>
                         </View>
-                        <View style={styles.itemDetail}>
-                            <Text style={{flex:1}}>物流状态:</Text>
+                        {
+                            this.props.logistics?<View style={styles.itemDetail}>
+                            <Text  style={{color:constants.UIInActiveColor}}>物流状态:</Text>
                             <Text style={{flex:2,color:constants.UIInActiveColor}}>{this.props.logistics}</Text>
-                        </View>
-                        <View style={styles.itemDetail}>
-                            <Text style={{flex:1}}>服务费总计:</Text>
+                            </View>:<View/>}
+                        {
+                            this.props.cost?<View style={styles.itemDetail}>
+                            <Text style={{color:constants.UIInActiveColor}}>服务费总计:</Text>
                             <Text style={{flex:2,color:constants.UIInActiveColor}}>{this.props.cost}</Text>
-                        </View>
+                            </View>:<View/>
+                        }
                         <View style={styles.itemDetail}>
-                            <Text style={{flex:1,}}>{this.props.route}</Text>
+                            <Text style={{flex:1,fontSize:19,}}>{this.props.route}</Text>
                         </View>
                     </View>
                     <View style={styles.itemButton}>
@@ -95,6 +98,10 @@ var styles = StyleSheet.create({
         alignItems: 'stretch',
         padding: 0,
         backgroundColor: 'white',
+        paddingTop:10,
+        paddingBottom:10,
+        borderBottomWidth: StyleSheet.hairlineWidth,
+        borderColor: constants.UIInActiveColor,
 
     },
     itemIcon: {
@@ -105,8 +112,7 @@ var styles = StyleSheet.create({
         flexDirection: 'column',
         justifyContent: 'flex-start',
         alignItems: 'stretch',
-        borderBottomWidth: StyleSheet.hairlineWidth,
-        borderColor: constants.UIInActiveColor,
+
     },
     itemDetail: {
         flex: 1,
@@ -120,8 +126,6 @@ var styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'flex-end',
         alignItems: 'center',
-        borderBottomWidth: StyleSheet.hairlineWidth,
-        borderColor: constants.UIInActiveColor,
         paddingRight: 10,
     },
     TabText: {

@@ -9,22 +9,34 @@ import {
     Text,
     TouchableOpacity,
     Platform,
+    View,
+    NativeAppEventEmitter,
 } from 'react-native';
 
 import Index from './root';
 import constants from  './constants/constant'
+import AppEventListenerEnhance from 'react-native-smart-app-event-listener-enhance'
 
 
 
 class Root extends Component {
-
     constructor (props, context) {
         super(props);
+        this.state={
+            navigationBar:NavigationBarRouteMapper,
+        }
     }
 
     componentDidMount () {
+        NativeAppEventEmitter.addListener('setNavigationBar.index', (navigationBar) => {
+            this.setState({
+                navigationBar: navigationBar,
+            })
+        })
+
 
     }
+
 
     render () {
         return (
@@ -47,7 +59,7 @@ class Root extends Component {
                     ref={(navigationBar) => {
                       this.navigationBar = navigationBar
                     }}
-                    routeMapper={NavigationBarRouteMapper}
+                    routeMapper={this.state.navigationBar}
                     style={styles.navBar} /> }
             />
         )
@@ -74,14 +86,19 @@ let NavigationBarRouteMapper = {
     },
 
     RightButton: function (route, navigator, index, navState) {
-        return null
+
     },
 
     Title: function (route, navigator, index, navState) {
         return (
-            <Text style={[styles.navBarText, styles.navBarTitleText]}>
-                {route.title}
-            </Text>
+            Platform.OS == 'ios' ?
+                <Text style={[styles.navBarText, styles.navBarTitleText]}>
+                    {route.title}
+                </Text> : <View style={{alignSelf: 'center', position: 'relative', left: -35,}}>
+                            <Text style={[styles.navBarText, styles.navBarTitleText]}>
+                                {route.title}
+                            </Text>
+                        </View>
         )
     },
 

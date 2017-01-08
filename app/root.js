@@ -8,6 +8,9 @@ import {
     View,
     BackAndroid,
     Platform,
+    NativeAppEventEmitter,
+    TouchableOpacity,
+    Modal,
 } from 'react-native';
 
 import IndexPage from './pages/indexPage';
@@ -40,6 +43,8 @@ export default class Root extends Component {
         // 初始状态
         this.state = {
             selectedTab: '首页',
+            hasBadge:false,
+            modalVisible:false,
         };
     }
 
@@ -82,7 +87,10 @@ export default class Root extends Component {
 
     render () {
         return (
-            <TabNavigator >
+            //<View >
+
+            <TabNavigator style={{flex:1,}}>
+
                 <TabNavigator.Item
                     selected={ this.state.selectedTab === '首页' }
                     renderIcon={ () =>  <TabView
@@ -90,7 +98,11 @@ export default class Root extends Component {
                                             size={constants.IconSize}
                                             title='首页'
                                             selected={ this.state.selectedTab === '首页' }/> }
-                    onPress={ () => this.setState({selectedTab: '首页',}) }>
+                    onPress={ () => {
+
+                        this.setState({selectedTab: '首页',})
+                         //NativeAppEventEmitter.emit('setNavigationBar.index', NavigationBarRouteMapperList[0])
+                    } }>
                     <IndexPage navigator={this.props.navigator}/>
                 </TabNavigator.Item>
                 <TabNavigator.Item
@@ -100,7 +112,10 @@ export default class Root extends Component {
                                             size={constants.IconSize}
                                             title='订单'
                                             selected={this.state.selectedTab === '订单'}/> }
-                    onPress={ () => this.setState({selectedTab: '订单',}) }>
+                    onPress={ () => {
+                        this.setState({selectedTab: '订单',})
+                         //NativeAppEventEmitter.emit('setNavigationBar.index', NavigationBarRouteMapperList[1])
+                    } }>
                     <OrderPage navigator={this.props.navigator}/>
                 </TabNavigator.Item>
                 <TabNavigator.Item
@@ -110,13 +125,16 @@ export default class Root extends Component {
                                             size={constants.IconSize}
                                             title='我的'
                                             selected={this.state.selectedTab === '我的'}/> }
-                    renderBadge={ () => <Badge style={styles.number} /> }
+                    renderBadge={ () => this.state.hasBadge?<Badge style={styles.number} />:<View/> }
                     onPress={ () => {
+                    this._checkLogin
+                      this.setState({selectedTab: '我的',})
                             this.props.navigator.push({
                                 title: '胖马贸服',
                                 component: LoginPage,
                             });
-                            this.setState({selectedTab: '我的',})
+
+                             //NativeAppEventEmitter.emit('setNavigationBar.index', NavigationBarRouteMapperList[2])
                         }
                     }>
                     <UserPage navigator={this.props.navigator}/>
@@ -128,13 +146,35 @@ export default class Root extends Component {
                                             size={constants.IconSize}
                                             title='更多'
                                             selected={this.state.selectedTab === '更多'}/> }
-                    onPress={ () => this.setState({ selectedTab: '更多',}) }>
+                    onPress={ () => {
+                        this.setState({ selectedTab: '更多',})
+                         //NativeAppEventEmitter.emit('setNavigationBar.index', NavigationBarRouteMapperList[3])
+                    } }>
                     <MorePage navigator={this.props.navigator}/>
                 </TabNavigator.Item>
             </TabNavigator>
+               /* <Modal
+                    style={{flex:1,}}
+                    animationType={'fade'}
+                    visible={this.state.modalVisible}
+                    onRequestClose={() => {this._setModalVisible(false)}}>
+                    <LoginPage navigator={this.props.navigator}/>
+                </Modal>
+                </View>*/
         );
     }
+
+    _setModalVisible(visible) {
+        this.setState({modalVisible: visible});
+    }
+
+    _checkLogin(){
+
+    }
+
 }
+
+
 
 const styles = StyleSheet.create({
     container: {
@@ -163,7 +203,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     tabItem: {
-
         flex: 1,
         flexDirection: 'column',
         justifyContent: 'center',

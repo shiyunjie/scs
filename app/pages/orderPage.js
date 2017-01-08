@@ -8,6 +8,7 @@ import {
     View,
     Platform,
     TouchableOpacity,
+    NativeAppEventEmitter,
 } from 'react-native';
 
 
@@ -15,6 +16,7 @@ import constants from  '../constants/constant';
 import PullToRefreshListView from 'react-native-smart-pull-to-refresh-listview';
 import OrderListPage from './orderListPage';
 import ServiceListPage from './serviceListPage';
+import navigatorStyle from '../styles/navigatorStyle'       //navigationBar样式
 
 import ScrollableTabView  from 'react-native-scrollable-tab-view';
 import MyDefaultTabBar from '../components/defaultTabBar';
@@ -71,6 +73,23 @@ onPress={() => this.setState({
 </TabNavigator.Item>
 </TabNavigator>*/
 
+    componentWillMount() {
+        NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
+        let currentRoute = this.props.navigator.navigationContext.currentRoute
+        this.props.navigator.navigationContext.addListener('willfocus', (event) => {
+            console.log(`orderPage willfocus...`)
+            console.log(`currentRoute`, currentRoute)
+            console.log(`event.data.route`, event.data.route)
+            if (currentRoute === event.data.route) {
+                console.log("orderPage willAppear")
+                NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
+            } else {
+                console.log("orderPage willDisappear, other willAppear")
+            }
+            //
+        })
+    }
+
     render() {
         let tabNames = this.state.tabNames;
         let tabIconNames = this.state.tabIconNames;
@@ -96,3 +115,41 @@ const styles = StyleSheet.create({
         alignItems: 'stretch',
     },
 });
+
+const navigationBarRouteMapper = {
+
+    LeftButton: function (route, navigator, index, navState) {
+    if (index === 0) {
+        return null;
+    }
+
+    var previousRoute = navState.routeStack[ index - 1 ];
+    return (
+        <TouchableOpacity
+            onPress={() => navigator.pop()}
+            style={navigatorStyle.navBarLeftButton}>
+            <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarButtonText]}>
+                back
+            </Text>
+        </TouchableOpacity>
+    );
+},
+
+RightButton: function (route, navigator, index, navState) {
+
+},
+
+Title: function (route, navigator, index, navState) {
+    return (
+        Platform.OS == 'ios' ?
+            <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText]}>
+                订单
+            </Text> : <View style={navigatorStyle.navBarTitleAndroid}>
+            <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText]}>
+                订单
+            </Text>
+        </View>
+    )
+},
+
+}

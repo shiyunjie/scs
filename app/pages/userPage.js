@@ -10,57 +10,118 @@ import {
     Platform,
     TouchableOpacity,
     Dimensions,
+    NativeAppEventEmitter,
 } from 'react-native';
 
 
 import Icon from 'react-native-vector-icons/Ionicons';
 import constants from  '../constants/constant';
 import ItemView from '../components/UserViewItem';
-
+import navigatorStyle from '../styles/navigatorStyle'       //navigationBar样式
 import image_background from '../images/background.png';
 import image_head from '../images/head.png';
 import EditInfoPage from './changeInfoPage';
 import ChangePwdPage from './changepwdPage';
 import MessagePage from './messagePage';
 
+//import XhrEnhance from '../lib/XhrEnhance' //http
+//import { errorXhrMock } from '../mock/xhr-mock'   //mock data
+
 
 const { width: deviceWidth } = Dimensions.get('window');
 
-export default class user extends Component {
+export default class UserPage extends Component {
+    // 构造
+      constructor(props) {
+        super(props);
+        // 初始状态
+        this.state = {
+            userName:'用户名',
+            userID:'用户ID',
+        };
+      }
+
+    componentWillMount() {
+        NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
+        let currentRoute = this.props.navigator.navigationContext.currentRoute
+        this.props.navigator.navigationContext.addListener('willfocus', (event) => {
+            console.log(`orderPage willfocus...`)
+            console.log(`currentRoute`, currentRoute)
+            //console.log(`event.data.route`, event.data.route)
+            if (event&&currentRoute === event.data.route) {
+                console.log("orderPage willAppear")
+                NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
+            } else {
+                console.log("orderPage willDisappear, other willAppear")
+            }
+            //
+        })
+
+    }
+
     render() {
         return (
             <View style={styles.container}>
-               <Image source={image_background} style={styles.head}>
-                   <Image source={image_head} style={{width:80,height:80,}}/>
-                   <Text style={{color:'white'}}>用户名</Text>
+               <Image
+                   source={image_background}
+                   style={styles.head}>
+                   <Image
+                       source={image_head}
+                       style={{width:80,height:80,}}/>
+                   <Text style={{color:'white',backgroundColor:'transparent',marginTop:10}}>
+                       {this.state.userName}
+                   </Text>
                </Image>
-                <TouchableOpacity style={{height:50,}}
-                                  onPress={this._onProfile}
-                >
-                    <ItemView name='ios-person' size={constants.IconSize} title='我的头像' show={false} hasCheckBox={false}/>
+                <TouchableOpacity
+                    style={{height:50,}}
+                    onPress={this._onProfile}>
+                    <ItemView
+                        name='ios-person'
+                        size={constants.IconSize}
+                        title='我的头像'
+                        show={false}
+                        hasCheckBox={false}/>
                 </TouchableOpacity>
-                <TouchableOpacity style={{height:50,}}
-                                  onPress={this._onMessage}
-                >
-                    <ItemView name='ios-mail' size={constants.IconSize} title='我的消息' show={false} hasCheckBox={false}/>
+                <TouchableOpacity
+                    style={{height:50,}}
+                    onPress={this._onMessage}>
+                    <ItemView
+                        name='ios-mail'
+                        size={constants.IconSize}
+                        title='我的消息'
+                        show={false}
+                        hasCheckBox={false}/>
                 </TouchableOpacity>
-                <TouchableOpacity style={{height:50,}}
-                                  onPress={this._onEdit}
-                >
-                    <ItemView name='ios-paper' size={constants.IconSize} title='修改信息' show={false} hasCheckBox={false}/>
+                <TouchableOpacity
+                    style={{height:50,}}
+                    onPress={this._onEdit}>
+                    <ItemView
+                        name='ios-paper'
+                        size={constants.IconSize}
+                        title='修改信息'
+                        show={false}
+                        hasCheckBox={false}/>
                 </TouchableOpacity>
-                <TouchableOpacity style={{height:50,}}
-                                  onPress={this._onChangePwd}
-                >
-                    <ItemView name='ios-lock' size={constants.IconSize} title='修改密码' show={false} hasCheckBox={false}/>
+                <TouchableOpacity
+                    style={{height:50,}}
+                    onPress={this._onChangePwd}>
+                    <ItemView
+                        name='ios-lock'
+                        size={constants.IconSize}
+                        title='修改密码'
+                        show={false}
+                        hasCheckBox={false}
+                        hasLine={false}/>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={{height:50,marginTop:10,backgroundColor:'white',justifyContent:'center',alignItems:'center',}}
-                                  onPress={this._onSingOut}
-                >
-                    <Text style={{color:constants.UIActiveColor}}>退出</Text>
+                <TouchableOpacity
+                    style={{height:50,marginTop:10,backgroundColor:'white',justifyContent:'center',alignItems:'center',}}
+                    onPress={this._onSingOut}>
+                    <Text
+                        style={{color:constants.UIActiveColor}}>
+                        退出
+                    </Text>
                 </TouchableOpacity>
-
             </View>
         );
     }
@@ -74,23 +135,32 @@ export default class user extends Component {
     };
     _onMessage=()=>{
         this.props.navigator.push({
-            title: '我的消息',
+            title: '消息',
             component: MessagePage,
+            passProps:{
+                userID:this.state.userID,
+            }
 
         });
     };
 
     _onChangePwd=()=>{
         this.props.navigator.push({
-            title: '更改密码',
+            title: '修改密码',
             component: ChangePwdPage,
+            passProps:{
+                userID:this.state.userID,
+            }
 
         });
     };
     _onEdit=()=>{
         this.props.navigator.push({
-            title: '更改信息',
+            title: '修改信息',
             component: EditInfoPage,
+            passProps:{
+                userID:this.state.userID,
+            }
 
         });
     };
@@ -113,3 +183,47 @@ const styles = StyleSheet.create({
     }
 
 });
+const navigationBarRouteMapper = {
+
+    LeftButton: function (route, navigator, index, navState) {
+        if (index === 0) {
+            return null;
+        }
+
+        var previousRoute = navState.routeStack[ index - 1 ];
+        return (
+            <TouchableOpacity
+                onPress={() => navigator.pop()}
+                style={navigatorStyle.navBarLeftButton}>
+                <View style={navigatorStyle.navBarLeftButtonAndroid}>
+                    <Icon
+                        style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText,{fontSize: 20,}]}
+                        name={'ios-arrow-back'}
+                        size={constants.IconSize}
+                        color={'white'}/>
+                </View>
+            </TouchableOpacity>
+
+        );
+    },
+
+    RightButton: function (route, navigator, index, navState) {
+
+    },
+
+    Title: function (route, navigator, index, navState) {
+        return (
+            Platform.OS == 'ios' ?
+                <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText]}>
+                    个人中心
+                </Text> : <View style={navigatorStyle.navBarTitleAndroid}>
+                <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText]}>
+                    个人中心
+                </Text>
+            </View>
+        )
+    },
+
+}
+
+//export default XhrEnhance(UserPage)

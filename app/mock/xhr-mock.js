@@ -112,6 +112,7 @@ export const index_showPicture = Mock.mock( /\/index\/showPicture/, function(opt
     //console.log(options);
     //var searchObj = formatUrlParams(options.body);
     //console.log(searchObj);
+    //http://www.doorto.cn/images/banner-02.jpg
     let response = {
         errorCode: null,
         errorMsg: null,
@@ -120,14 +121,579 @@ export const index_showPicture = Mock.mock( /\/index\/showPicture/, function(opt
         result: {
             list: [{
                 file_url: '',
-                big_url: 'http://www.doorto.cn/images/banner-01.jpg',
+                big_url: '',
                 id: '1',
             }, {
                 file_url: '',
-                big_url: 'http://www.doorto.cn/images/banner-02.jpg',
+                big_url: '',
                 id: '1',
             } ],
         },
+    }
+    return response
+});
+
+
+
+//用户信息跳转
+export const member_changeInfoShow = Mock.mock( /\/member\/changeInfoShow/, function(options) {
+    console.log('member_changeInfoShow');
+    var searchObj = formatUrlParams(options.body);
+    console.log(searchObj);
+    //http://www.doorto.cn/images/banner-02.jpg
+    let response = {
+        errorCode: null,
+        errorMsg: null,
+        code: 10,
+        msg: '操作成功',
+        result: {
+            member: {
+                account:'User1',
+                email: '222@163.com',
+                qq: '56665223',
+                phone: '13211122776',
+                real_name:'客户姓名',
+                contact_time:'全天',
+                company_name:'润码科技',
+                company_address:'长寿路652号',
+                company_introduction:'供应链,仓储,软件开发',
+
+            }
+        },
+    }
+    return response
+});
+
+//修改信息提交
+export const member_changeInfo = Mock.mock( /\/member\/changeInfo/, function(options) {
+    var searchObj = formatUrlParams(options.body);
+    console.log(searchObj);
+    //http://www.doorto.cn/images/banner-02.jpg
+    let response = {
+        errorCode: null,
+        errorMsg: null,
+        code: 1,
+        msg: '操作成功',
+        result:null,
+    }
+    return response
+});
+//密码修改提交
+export const member_changePwd = Mock.mock( /\/member\/changePwd/, function(options) {
+    var searchObj = formatUrlParams(options.body);
+    console.log(searchObj);
+    //http://www.doorto.cn/images/banner-02.jpg
+    let response = {
+        errorCode: null,
+        errorMsg: null,
+        code: 1,
+        msg: '操作成功',
+        result: null,
+    }
+    return response
+});
+//建议提交
+export const sysInfo_feedBack = Mock.mock( /\/sysInfo\/feedBack/, function(options) {
+    var searchObj = formatUrlParams(options.body);
+    console.log(searchObj);
+    //http://www.doorto.cn/images/banner-02.jpg
+    let response = {
+        errorCode: null,
+        errorMsg: null,
+        code: 1,
+        msg: '操作成功',
+        result: null,
+    }
+    return response
+});
+//发送验证码
+export const register_firstStep = Mock.mock( /\/register\/firstStep/, function(options) {
+    console.log('register_firstStep');
+    var searchObj = formatUrlParams(options.body);
+    console.log(searchObj);
+    //http://www.doorto.cn/images/banner-02.jpg
+    let response = {
+        errorCode: null,
+        errorMsg: null,
+        code: 1,
+        msg: '操作成功',
+        result: null,
+    }
+    return response
+});
+//注册
+export const register_secondStep = Mock.mock( /\/register\/secondStep/, function(options) {
+    var searchObj = formatUrlParams(options.body);
+    console.log(searchObj);
+    //http://www.doorto.cn/images/banner-02.jpg
+    let response = {
+        errorCode: null,
+        errorMsg: null,
+        code: 1,
+        msg: '操作成功',
+        result: null,
+    }
+    return response
+});
+
+//帮助列表
+export const sysInfo_helpCenter = Mock.mock( /\/sysInfo\/helpCenter/, function(options) {
+    var searchObj = formatUrlParams(options.body);
+    console.log(searchObj);
+    //http://www.doorto.cn/images/banner-02.jpg
+    let response = {
+        errorCode: null,
+        errorMsg: null,
+        code: 1,
+        msg: '操作成功',
+        result:
+        [{
+            id:'1',
+            sender:'发件人',
+            title:'标题',
+            child:{
+
+                id:'11',
+                sender:'发件人',
+                title:'标题',
+                child:'text',
+            },
+        },
+            {
+                id:'2',
+                sender:'发件人',
+                title:'标题',
+                child:{
+
+                    id:'21',
+                    sender:'发件人',
+                    title:'标题',
+                    child:'text',
+                },
+            },
+            {
+                id:'3',
+                sender:'发件人',
+                title:'标题',
+                child:{
+
+                    id:'31',
+                    sender:'发件人',
+                    title:'标题',
+                    child:'text',
+                },
+            }
+
+        ],
+    }
+    return response
+});
+
+
+//委托单列表
+export const commissionOrder_commissionOrderList = Mock.mock( /\/commissionOrder\/commissionOrderList/, function(options) {
+    console.log('commissionOrder_commissionOrderList:'+options);
+    var searchObj = formatUrlParams(options.body);
+    //console.log(searchObj);
+    let response={};
+
+    if(searchObj.current_page==1) {
+
+        response = {
+            errorCode: null,
+            errorMsg: null,
+            code: 10,
+            msg: '操作成功',
+            result: {
+                list: [{
+                    id: '1',
+                    commission_order_no: '888777655',
+                    departure_name: '日本',
+                    destination_name: '中国',
+                    create_time_str: '2017-01-01 12:00',
+                    order_status_name: '已下单', // 订单状态 中文名称
+                    order_status: 10 // 订单状态 值
+
+                }, {
+                    id: '2',
+                    commission_order_no: '888777622',
+                    departure_name: '日本',
+                    destination_name: '中国',
+                    create_time_str: '2017-01-01 12:00',
+                    order_status_name: '已下单', // 订单状态 中文名称
+                    order_status: 10 // 订单状态 值
+
+                }, {
+                    id: '3',
+                    commission_order_no: '888777633',
+                    departure_name: '日本',
+                    destination_name: '中国',
+                    create_time_str: '2017-01-01 12:00',
+                    order_status_name: '已下单', // 订单状态 中文名称
+                    order_status: 10 // 订单状态 值
+
+                }, {
+                    id: '4',
+                    commission_order_no: '888777644',
+                    departure_name: '日本',
+                    destination_name: '中国',
+                    create_time_str: '2017-01-01 12:00',
+                    order_status_name: '已下单', // 订单状态 中文名称
+                    order_status: 10 // 订单状态 值
+
+                }, {
+                    id: '5',
+                    commission_order_no: '888777655',
+                    departure_name: '日本',
+                    destination_name: '中国',
+                    create_time_str: '2017-01-01 12:00',
+                    order_status_name: '已下单', // 订单状态 中文名称
+                    order_status: 10 // 订单状态 值
+
+                },],
+            },
+        }
+    }else if(searchObj.current_page>3){
+        response = {
+            errorCode: null,
+            errorMsg: null,
+            code: 10,
+            msg: '操作成功',
+            result: {
+                list: [],
+            },
+        }
+    }else{
+        response = {
+            errorCode: null,
+            errorMsg: null,
+            code: 10,
+            msg: '操作成功',
+            result: {
+                list: [{
+                    id: ('1'+searchObj.current_page),
+                    commission_order_no: '888777655',
+                    departure_name: '日本',
+                    destination_name: '中国',
+                    create_time_str: '2017-01-01 12:00',
+                    order_status_name: '已下单', // 订单状态 中文名称
+                    order_status: 10 // 订单状态 值
+
+                }, {
+                    id: ('2'+searchObj.current_page),
+                    commission_order_no: '8887776221',
+                    departure_name: '日本',
+                    destination_name: '中国',
+                    create_time_str: '2017-01-01 12:00',
+                    order_status_name: '已下单', // 订单状态 中文名称
+                    order_status: 10 // 订单状态 值
+
+                }, {
+                    id: ('3'+searchObj.current_page),
+                    commission_order_no: '8887776331',
+                    departure_name: '日本',
+                    destination_name: '中国',
+                    create_time_str: '2017-01-01 12:00',
+                    order_status_name: '已下单', // 订单状态 中文名称
+                    order_status: 10 // 订单状态 值
+
+                }, {
+                    id: ('4'+searchObj.current_page),
+                    commission_order_no: '888777644',
+                    departure_name: '日本',
+                    destination_name: '中国',
+                    create_time_str: '2017-01-01 12:00',
+                    order_status_name: '已下单', // 订单状态 中文名称
+                    order_status: 10 // 订单状态 值
+
+                }, {
+                    id: ('5'+searchObj.current_page),
+                    commission_order_no: '888777655',
+                    departure_name: '日本',
+                    destination_name: '中国',
+                    create_time_str: '2017-01-01 12:00',
+                    order_status_name: '已下单', // 订单状态 中文名称
+                    order_status: 10 // 订单状态 值
+
+                },],
+            },
+        }
+    }
+    return response
+});
+
+
+
+//服务单列表
+export const serviceOrder_serviceOrderList = Mock.mock( /\/serviceOrder\/serviceOrderList/, function(options) {
+    console.log('serviceOrder_serviceOrderList:'+options);
+    var searchObj = formatUrlParams(options.body);
+    //console.log(searchObj);
+    let response={};
+
+    if(searchObj.current_page==1) {
+
+        response = {
+            errorCode: null,
+            errorMsg: null,
+            code: 10,
+            msg: '操作成功',
+            result: {
+                list: [{
+                    id: '1',
+                    commission_order_no: '888777655',
+                    departure_name: '日本',
+                    destination_name: '中国',
+                    create_time_str: '2017-01-01 12:00',
+                    order_status_name: '已下单', // 订单状态 中文名称
+                    order_status: 10,// 订单状态 值
+                    logistics_status:20,
+                    total_cost:3000,
+                }, {
+                    id: '2',
+                    commission_order_no: '888777622',
+                    departure_name: '日本',
+                    destination_name: '中国',
+                    create_time_str: '2017-01-01 12:00',
+                    order_status_name: '已下单', // 订单状态 中文名称
+                    order_status: 10,// 订单状态 值
+                    logistics_status:20,
+                    total_cost:3000,
+                }, {
+                    id: '3',
+                    commission_order_no: '888777633',
+                    departure_name: '日本',
+                    destination_name: '中国',
+                    create_time_str: '2017-01-01 12:00',
+                    order_status_name: '已下单', // 订单状态 中文名称
+                    order_status: 10,// 订单状态 值
+                    logistics_status:20,
+                    total_cost:3000,
+                }, {
+                    id: '4',
+                    commission_order_no: '888777644',
+                    departure_name: '日本',
+                    destination_name: '中国',
+                    create_time_str: '2017-01-01 12:00',
+                    order_status_name: '已下单', // 订单状态 中文名称
+                    order_status: 10,// 订单状态 值
+                    logistics_status:20,
+                    total_cost:3000,
+                }, {
+                    id: '5',
+                    commission_order_no: '888777655',
+                    departure_name: '日本',
+                    destination_name: '中国',
+                    create_time_str: '2017-01-01 12:00',
+                    order_status_name: '已下单', // 订单状态 中文名称
+                    order_status: 10,// 订单状态 值
+                    logistics_status:20,
+                    total_cost:3000,
+                },],
+            },
+        }
+    }else if(searchObj.current_page>3){
+        response = {
+            errorCode: null,
+            errorMsg: null,
+            code: 10,
+            msg: '操作成功',
+            result: {
+                list: [],
+            },
+        }
+    }else{
+        response = {
+            errorCode: null,
+            errorMsg: null,
+            code: 10,
+            msg: '操作成功',
+            result: {
+                list: [{
+                    id: ('1'+searchObj.current_page),
+                    commission_order_no: '888777655',
+                    departure_name: '日本',
+                    destination_name: '中国',
+                    create_time_str: '2017-01-01 12:00',
+                    order_status_name: '已下单', // 订单状态 中文名称
+                    order_status: 10,// 订单状态 值
+                    logistics_status:20,
+                    total_cost:3000,
+                }, {
+                    id: ('2'+searchObj.current_page),
+                    commission_order_no: '8887776221',
+                    departure_name: '日本',
+                    destination_name: '中国',
+                    create_time_str: '2017-01-01 12:00',
+                    order_status_name: '已下单', // 订单状态 中文名称
+                    order_status: 10,// 订单状态 值
+                    logistics_status:20,
+                    total_cost:3000,
+                }, {
+                    id: ('3'+searchObj.current_page),
+                    commission_order_no: '8887776331',
+                    departure_name: '日本',
+                    destination_name: '中国',
+                    create_time_str: '2017-01-01 12:00',
+                    order_status_name: '已下单', // 订单状态 中文名称
+                    order_status: 10,// 订单状态 值
+                    logistics_status:20,
+                    total_cost:3000,
+                }, {
+                    id: ('4'+searchObj.current_page),
+                    commission_order_no: '888777644',
+                    departure_name: '日本',
+                    destination_name: '中国',
+                    create_time_str: '2017-01-01 12:00',
+                    order_status_name: '已下单', // 订单状态 中文名称
+                    order_status: 10,// 订单状态 值
+                    logistics_status:20,
+                    total_cost:3000,
+                }, {
+                    id: ('5'+searchObj.current_page),
+                    commission_order_no: '888777655',
+                    departure_name: '日本',
+                    destination_name: '中国',
+                    create_time_str: '2017-01-01 12:00',
+                    order_status_name: '已下单', // 订单状态 中文名称
+                    order_status: 10,// 订单状态 值
+                    logistics_status:20,
+                    total_cost:3000,
+                },],
+            },
+        }
+    }
+    return response
+});
+//消息列表
+export const message_findSysInfoShow = Mock.mock( /\/message\/findSysInfoShow/, function(options) {
+    console.log('message_findSysInfoShow:'+options);
+    var searchObj = formatUrlParams(options.body);
+    //console.log(searchObj);
+    let response={};
+    if(!searchObj.memberId) return '{"errorCode":"-202","errorMsg":"未登录或登录超时","code":null,"msg":null,"result":null,"recordsTotal":0,"recordsFiltered":0,"data":null,"permissions":null,"tokenName":null,"tokenVal":null}'
+
+    if(searchObj.current_page==1) {
+
+        response = {
+            errorCode: null,
+            errorMsg: null,
+            code: 10,
+            msg: '操作成功',
+            result: {
+                list: [{
+                    id: '1',
+                    sender: '管理员',
+                    title: '标题',
+                    brief: '简介',
+                    send_time: '2017-01-01 12:00',
+                }, {
+                    id: '2',
+                    sender: '管理员',
+                    title: '标题',
+                    brief: '简介',
+                    send_time: '2017-01-01 12:00',
+                }, {
+                    id: '3',
+                    sender: '管理员',
+                    title: '标题',
+                    brief: '简介',
+                    send_time: '2017-01-01 12:00',
+                }, {
+                    id: '4',
+                    sender: '管理员',
+                    title: '标题',
+                    brief: '简介',
+                    send_time: '2017-01-01 12:00',
+                }, {
+                    id: '5',
+                    sender: '管理员',
+                    title: '标题',
+                    brief: '简介',
+                    send_time: '2017-01-01 12:00',
+                },{
+                    id: '6',
+                    sender: '管理员',
+                    title: '标题',
+                    brief: '简介',
+                    send_time: '2017-01-01 12:00',
+                },{
+                    id: '7',
+                    sender: '管理员',
+                    title: '标题',
+                    brief: '简介',
+                    send_time: '2017-01-01 12:00',
+                },{
+                    id: '8',
+                    sender: '管理员',
+                    title: '标题',
+                    brief: '简介',
+                    send_time: '2017-01-01 12:00',
+                },{
+                    id: '9',
+                    sender: '管理员',
+                    title: '标题',
+                    brief: '简介',
+                    send_time: '2017-01-01 12:00',
+                },{
+                    id: '10',
+                    sender: '管理员',
+                    title: '标题',
+                    brief: '简介',
+                    send_time: '2017-01-01 12:00',
+                },],
+            },
+        }
+    }else if(searchObj.current_page>3){
+        response = {
+            errorCode: null,
+            errorMsg: null,
+            code: 10,
+            msg: '操作成功',
+            result: {
+                list: [],
+            },
+        }
+    }else{
+        response = {
+            errorCode: null,
+            errorMsg: null,
+            code: 10,
+            msg: '操作成功',
+            result: {
+                list: [{
+                    id: ('1'+searchObj.current_page),
+                    sender: '管理员',
+                    title: '标题',
+                    brief: '简介',
+                    send_time: '2017-01-01 12:00',
+                }, {
+                    id: ('2'+searchObj.current_page),
+                    sender: '管理员',
+                    title: '标题',
+                    brief: '简介',
+                    send_time: '2017-01-01 12:00',
+                }, {
+                    id: ('3'+searchObj.current_page),
+                    sender: '管理员',
+                    title: '标题',
+                    brief: '简介',
+                    send_time: '2017-01-01 12:00',
+                }, {
+                    id: ('4'+searchObj.current_page),
+                    sender: '管理员',
+                    title: '标题',
+                    brief: '简介',
+                    send_time: '2017-01-01 12:00',
+                }, {
+                    id: ('5'+searchObj.current_page),
+                    sender: '管理员',
+                    title: '标题',
+                    brief: '简介',
+                    send_time: '2017-01-01 12:00',
+                },],
+            },
+        }
     }
     return response
 });
