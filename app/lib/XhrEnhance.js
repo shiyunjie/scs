@@ -122,23 +122,25 @@ export default XhrEnhance = (ComposedComponent) => {
 
                 let { data,} = options
                 try {
-                   /* let sendData = {
+                   let sendData = {
                         itype: data.iType,
                         deviceId: data.deviceId,
                         data:data,
                         token: data.token,
                         }
 
-                    delete(sendData.data['iType'])
-                    delete(sendData.data['deviceId'])
-                    delete(sendData.data['token'])
+                        /*
+                        delete(sendData.data['iType'])
+                        delete(sendData.data['deviceId'])
+                        delete(sendData.data['token'])
+                        */
 
-                    console.log('data_data:',sendData.data);
+                        //console.log('data_data:',sendData.data);
 
-                    let result = HttpRSAModule.gzipRSA(JSON.stringify(sendData))
-
-                    resolve(result)*/
-                    resolve(JSON.stringify(options))
+                        //let result = HttpRSAModule.gzipRSA(JSON.stringify(sendData))
+                        let result = JSON.stringify(sendData)
+                        resolve(result)
+                        //resolve(JSON.stringify(options))
                     } catch (error) {
                     reject(error)
                     }

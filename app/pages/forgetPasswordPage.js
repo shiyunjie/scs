@@ -23,7 +23,7 @@ import constants from  '../constants/constant';
 import Icon from 'react-native-vector-icons/Ionicons';
 import navigatorStyle from '../styles/navigatorStyle'       //navigationBar样式
 import XhrEnhance from '../lib/XhrEnhance' //http
-import { register_firstStep, check_msg_code, errorXhrMock } from '../mock/xhr-mock'   //mock data
+//import { register_firstStep, check_msg_code, errorXhrMock } from '../mock/xhr-mock'   //mock data
 
 import RegisterPage from './registerPage';
 import SetPassword from './setPasswordPage';
