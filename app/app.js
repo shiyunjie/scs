@@ -28,13 +28,13 @@ class Root extends Component {
     }
 
     componentDidMount () {
-        NativeAppEventEmitter.addListener('setNavigationBar.index', (navigationBar) => {
-            this.setState({
-                navigationBar: navigationBar,
+        this.addAppEventListener(
+            NativeAppEventEmitter.addListener('setNavigationBar.index', (navigationBar) => {
+                this.setState({
+                    navigationBar: navigationBar,
+                })
             })
-        })
-
-
+        )
     }
 
 
@@ -104,7 +104,7 @@ let NavigationBarRouteMapper = {
 
 };
 
-export default XhrEnhance(Root)
+export default AppEventListenerEnhance(Root)
 
 const styles = StyleSheet.create({
     navigatorBg: {

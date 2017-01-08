@@ -35,12 +35,20 @@ import image_button from '../images/button.png'
 import image_logo from '../images/icon.png'
 
 
-//import { index_showPicture, } from '../mock/xhr-mock'   //mock data
+import { index_showPicture, } from '../mock/xhr-mock'   //mock data
 
 
 
 const { width: deviceWidth } = Dimensions.get('window');
-let refreshedDataSource =[]
+let refreshedDataSource =[{
+    file_url: 'http://www.doorto.cn/images/banner-02.jpg',
+    big_url: 'http://www.doorto.cn/images/banner-02.jpg',
+    id: '2',
+}, {
+    file_url: 'http://www.doorto.cn/images/banner-01.jpg',
+    big_url: 'http://www.doorto.cn/images/banner-01.jpg',
+    id: '1',
+}]
 let advertisementDataSource = [
     image_banner,
     image_banner,
@@ -65,6 +73,7 @@ class Index extends Component {
         ]
 
         this.state = {
+            count: 0,
             dataList: dataList,
             dataSource: this._dataSource.cloneWithRows(dataList),
         }
@@ -74,14 +83,22 @@ class Index extends Component {
         NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
         let currentRoute = this.props.navigator.navigationContext.currentRoute
         this.props.navigator.navigationContext.addListener('willfocus', (event) => {
-            console.log(`orderPage willfocus...`)
+            console.log(`indexPage willfocus...`)
             console.log(`currentRoute`, currentRoute)
             console.log(`event.data.route`, event.data.route)
             if (currentRoute === event.data.route) {
-                console.log("orderPage willAppear")
+                console.log("indexPage willAppear")
+                //this._pullToRefreshListView.beginRefresh()
+                let { refreshBackAnimating, loadMoreBackAnimating, _scrollView, _scrollY, } = this._pullToRefreshListView
+                if(!refreshBackAnimating && !loadMoreBackAnimating) {
+                    _scrollView.scrollTo({ y: _scrollY - 5, animated: true, })
+                    _scrollView.scrollTo({ y: _scrollY + 5, animated: true, })
+                    console.log(`_scrollY + StyleSheet.hairlineWidth`, _scrollY + StyleSheet.hairlineWidth)
+                }
                 NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
+
             } else {
-                console.log("orderPage willDisappear, other willAppear")
+                console.log("indexPage willDisappear, other willAppear")
             }
             //
         })
@@ -133,7 +150,8 @@ class Index extends Component {
     async _fetchData () {
         let options = {
             method: 'post',
-            url: constants.api.service,
+            //url: constants.api.service,
+            url: constants.api.indexShowPicture,
             data: {
                 iType: constants.iType.indexShowPicture,
                 deviceId:'',
@@ -148,14 +166,14 @@ class Index extends Component {
 
             let resultData = await this.fetch(options)
 
-            let result=await this.gunZip(resultData)
+            let result = await this.gunZip(resultData)
 
-            let d=JSON.parse(result.result)
-            console.log('gunZip:',d)
+            result = JSON.parse(result)
+            console.log('gunZip:', result)
 
-            if(d.code&& d.code==10) {
+            if(result.code && result.code==10) {
                 let dataList = [
-                    d.result == null ? refreshedDataSource : d.result,
+                    result.result == null ? refreshedDataSource : result.result,
                     {buttonImage: image_button, buttonText: "发起委托单"},
                     advertisementDataSource,
                 ]
@@ -239,7 +257,7 @@ class Index extends Component {
     }
 
     _renderRow = (rowData, sectionID, rowID) => {
-        //console.log(`rowData`, rowData)
+        console.log(`rowData`, rowData)
         //console.log(`rowID`, rowID)
         if(rowID == 0) {
             //return (
