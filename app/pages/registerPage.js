@@ -29,7 +29,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import navigatorStyle from '../styles/navigatorStyle'       //navigationBar样式
 
 import XhrEnhance from '../lib/XhrEnhance' //http
-import { register_secondStep, errorXhrMock } from '../mock/xhr-mock'   //mock data
+//import { register_secondStep, errorXhrMock } from '../mock/xhr-mock'   //mock data
 
 class Register extends Component {
 

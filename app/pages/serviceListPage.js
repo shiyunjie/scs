@@ -20,7 +20,17 @@ import ItemView from '../components/orderListItemView';
 import ServiceDetailPage from './serviceDetailPage';
 
 import HeaderView from '../components/listViewheaderView';
-let firstDataList = [];
+let firstDataList = [{
+    id: '1',
+    commission_order_no: '888777655',
+    departure_name: '日本',
+    destination_name: '中国',
+    create_time_str: '2017-01-01 12:00',
+    order_status_name: '已下单', // 订单状态 中文名称
+    order_status: 10,// 订单状态 值
+    logistics_status:20,
+    total_cost:3000,
+}];
 
 import XhrEnhance from '../lib/XhrEnhance' //http
 //import { serviceOrder_serviceOrderList,errorXhrMock } from '../mock/xhr-mock'   //mock data
@@ -266,6 +276,7 @@ class ServiceList extends Component {
         let options = {
             method:'post',
             url: constants.api.service,
+            //url: constants.api.serviceOrder_serviceOrderList,
             data: {
                 iType: constants.iType.serviceOrder_serviceOrderList,
                 current_page: pageIndex,
@@ -345,9 +356,7 @@ class ServiceList extends Component {
             }
         }
         finally {
-            this._pullToRefreshServiceListView.endLoadMore(false)
-            //console.log(`SplashScreen.close(SplashScreen.animationType.scale, 850, 500)`)
-            //SplashScreen.close(SplashScreen.animationType.scale, 850, 500)
+            this._pullToRefreshServiceListView.endLoadMore()
         }
 
     }

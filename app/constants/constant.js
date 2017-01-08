@@ -25,7 +25,8 @@ export const constant = {
 
 
     api: {
-        service:'http://192.168.1.200:8080/app/gateway',
+        //service:'http://192.168.1.200:8080/app/gateway',
+        service:'http://posttestserver.com/post.php',
         indexShowPicture: '/index/showPicture',
         commissionOrder_commissionOrderList:'/commissionOrder/commissionOrderList',
         serviceOrder_serviceOrderList:'/serviceOrder/serviceOrderList',

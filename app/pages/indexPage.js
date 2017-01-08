@@ -35,7 +35,7 @@ import image_button from '../images/button.png'
 import image_logo from '../images/icon.png'
 
 
-import { index_showPicture, } from '../mock/xhr-mock'   //mock data
+//import { index_showPicture, } from '../mock/xhr-mock'   //mock data
 
 
 
@@ -150,8 +150,8 @@ class Index extends Component {
     async _fetchData () {
         let options = {
             method: 'post',
-            //url: constants.api.service,
-            url: constants.api.indexShowPicture,
+            url: constants.api.service,
+            //url: constants.api.indexShowPicture,
             data: {
                 iType: constants.iType.indexShowPicture,
                 deviceId:'',
@@ -159,7 +159,7 @@ class Index extends Component {
             }
         }
 
-        options.data=await this.gZip(options)
+        options.data = await this.gZip(options)
 
         try {
             console.log(`options:`, options)

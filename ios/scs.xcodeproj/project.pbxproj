@@ -32,6 +32,7 @@
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
 		83D2531B825D45BC8426892B /* Ionicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A56CBE8EB69E4BB1B5114DEF /* Ionicons.ttf */; };
 		9342A3AC32384637ADD01A12 /* Octicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0063527B63AD42C1A20B260E /* Octicons.ttf */; };
+		9FD4E0441E222EDD0015B6FD /* libRCTCameraRoll.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FD4E0431E222E940015B6FD /* libRCTCameraRoll.a */; };
 		A594C66395D04BB994FB93DF /* libRNSpinkit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4EDC8207CCDF4E7FBDEBABA1 /* libRNSpinkit.a */; };
 		BEE5B3F8FA61436D8A47E379 /* Entypo.ttf in Resources */ = {isa = PBXBuildFile; fileRef = BD7BC91F97A542F49C140076 /* Entypo.ttf */; };
 		CC4DF1E173F74D18A449A760 /* libRCTBEEPickerManager.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 18FC87A5CA5A451D8DCEB41D /* libRCTBEEPickerManager.a */; };
@@ -208,6 +209,13 @@
 			remoteGlobalIDString = 5DBEB1501B18CEA900B34395;
 			remoteInfo = RNVectorIcons;
 		};
+		9FD4E0421E222E940015B6FD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9FD4E03E1E222E940015B6FD /* RCTCameraRoll.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 58B5115D1A9E6B3D00147676;
+			remoteInfo = RCTCameraRoll;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -244,6 +252,7 @@
 		88F10F25BA764F37B974101E /* SimpleLineIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = SimpleLineIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/SimpleLineIcons.ttf"; sourceTree = "<group>"; };
 		8E39FE77E2E34B2990E77475 /* EvilIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = EvilIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/EvilIcons.ttf"; sourceTree = "<group>"; };
 		95418E460C6A4DBBA709D43C /* MaterialIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = MaterialIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/MaterialIcons.ttf"; sourceTree = "<group>"; };
+		9FD4E03E1E222E940015B6FD /* RCTCameraRoll.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTCameraRoll.xcodeproj; path = "../node_modules/react-native/Libraries/CameraRoll/RCTCameraRoll.xcodeproj"; sourceTree = "<group>"; };
 		A4603C38D6FA47C58BB93AB6 /* RNVectorIcons.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNVectorIcons.xcodeproj; path = "../node_modules/react-native-vector-icons/RNVectorIcons.xcodeproj"; sourceTree = "<group>"; };
 		A56CBE8EB69E4BB1B5114DEF /* Ionicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Ionicons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Ionicons.ttf"; sourceTree = "<group>"; };
 		A879A828EB1D478090C58689 /* libRNVectorIcons.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNVectorIcons.a; sourceTree = "<group>"; };
@@ -265,6 +274,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9FD4E0441E222EDD0015B6FD /* libRCTCameraRoll.a in Frameworks */,
 				5E9157361DD0AC6A00FF2AA8 /* libRCTAnimation.a in Frameworks */,
 				146834051AC3E58100842450 /* libReact.a in Frameworks */,
 				00C302E51ABCBA2D00DB3ED1 /* libRCTActionSheet.a in Frameworks */,
@@ -407,6 +417,7 @@
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				9FD4E03E1E222E940015B6FD /* RCTCameraRoll.xcodeproj */,
 				5E91572D1DD0AC6500FF2AA8 /* RCTAnimation.xcodeproj */,
 				146833FF1AC3E56700842450 /* React.xcodeproj */,
 				00C302A71ABCB8CE00DB3ED1 /* RCTActionSheet.xcodeproj */,
@@ -489,6 +500,14 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		9FD4E03F1E222E940015B6FD /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				9FD4E0431E222E940015B6FD /* libRCTCameraRoll.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		D662EEE6346541079D78A2E5 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
@@ -555,11 +574,11 @@
 				TargetAttributes = {
 					00E356ED1AD99517003FC87E = {
 						CreatedOnToolsVersion = 6.2;
-						DevelopmentTeam = 687DYWZRKU;
+						DevelopmentTeam = L75P3RZGQ2;
 						TestTargetID = 13B07F861A680F5B00A75B9A;
 					};
 					13B07F861A680F5B00A75B9A = {
-						DevelopmentTeam = 687DYWZRKU;
+						DevelopmentTeam = L75P3RZGQ2;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -587,6 +606,10 @@
 				{
 					ProductGroup = 8398968B1E19498100CB0E19 /* Products */;
 					ProjectRef = 7B33988A716D4AF5BE41E270 /* RCTBEEPickerManager.xcodeproj */;
+				},
+				{
+					ProductGroup = 9FD4E03F1E222E940015B6FD /* Products */;
+					ProjectRef = 9FD4E03E1E222E940015B6FD /* RCTCameraRoll.xcodeproj */;
 				},
 				{
 					ProductGroup = 00C302B61ABCB90400DB3ED1 /* Products */;
@@ -807,6 +830,13 @@
 			remoteRef = 839896B81E19498100CB0E19 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		9FD4E0431E222E940015B6FD /* libRCTCameraRoll.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRCTCameraRoll.a;
+			remoteRef = 9FD4E0421E222E940015B6FD /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 /* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
@@ -899,7 +929,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				DEVELOPMENT_TEAM = 687DYWZRKU;
+				DEVELOPMENT_TEAM = L75P3RZGQ2;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -924,7 +954,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
-				DEVELOPMENT_TEAM = 687DYWZRKU;
+				DEVELOPMENT_TEAM = L75P3RZGQ2;
 				INFOPLIST_FILE = scsTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
@@ -948,7 +978,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = NO;
-				DEVELOPMENT_TEAM = 687DYWZRKU;
+				DEVELOPMENT_TEAM = L75P3RZGQ2;
 				INFOPLIST_FILE = scs/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -972,7 +1002,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer: yiqin.chen@sh-defan.net (W25WQNYGHN)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 687DYWZRKU;
+				DEVELOPMENT_TEAM = L75P3RZGQ2;
 				INFOPLIST_FILE = scs/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
