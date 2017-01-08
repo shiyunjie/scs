@@ -118,17 +118,15 @@ export const index_showPicture = Mock.mock( /\/index\/showPicture/, function(opt
         errorMsg: null,
         code: 10,
         msg: '操作成功',
-        result: {
-            list: [{
-                file_url: '',
-                big_url: '',
-                id: '1',
-            }, {
-                file_url: '',
-                big_url: '',
-                id: '1',
-            } ],
-        },
+        result: [{
+            file_url: 'http://www.doorto.cn/images/banner-02.jpg',
+            big_url: 'http://www.doorto.cn/images/banner-02.jpg',
+            id: '2',
+        }, {
+            file_url: 'http://www.doorto.cn/images/banner-01.jpg',
+            big_url: 'http://www.doorto.cn/images/banner-01.jpg',
+            id: '1',
+        } ],
     }
     return response
 });
@@ -221,6 +219,22 @@ export const register_firstStep = Mock.mock( /\/register\/firstStep/, function(o
     }
     return response
 });
+
+//发送验证码成功
+export const check_msg_code = Mock.mock( /\/checkMsgCode/, function(options) {
+    console.log('check_msg_code');
+    var searchObj = formatUrlParams(options.body);
+    console.log(searchObj);
+    //http://www.doorto.cn/images/banner-02.jpg
+    let response = {
+        errorCode: null,
+        errorMsg: null,
+        code: 10,
+        msg: '操作成功',
+        result: null,
+    }
+    return response
+});
 //注册
 export const register_secondStep = Mock.mock( /\/register\/secondStep/, function(options) {
     var searchObj = formatUrlParams(options.body);
@@ -229,7 +243,7 @@ export const register_secondStep = Mock.mock( /\/register\/secondStep/, function
     let response = {
         errorCode: null,
         errorMsg: null,
-        code: 1,
+        code: 10,
         msg: '操作成功',
         result: null,
     }

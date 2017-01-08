@@ -18,8 +18,10 @@ import {
     TouchableHighlight,
     Modal,
     NativeAppEventEmitter,
+    Alert,
 } from 'react-native';
 
+import AppEventListenerEnhance from 'react-native-smart-app-event-listener-enhance'
 import Button from 'react-native-smart-button';
 import constants from  '../constants/constant';
 
@@ -27,7 +29,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import navigatorStyle from '../styles/navigatorStyle'       //navigationBar样式
 
 import XhrEnhance from '../lib/XhrEnhance' //http
-//import { register_secondStep,errorXhrMock } from '../mock/xhr-mock'   //mock data
+import { register_secondStep, errorXhrMock } from '../mock/xhr-mock'   //mock data
 
 class Register extends Component {
 
@@ -52,18 +54,20 @@ class Register extends Component {
     componentWillMount() {
         NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
         let currentRoute = this.props.navigator.navigationContext.currentRoute
-        this.props.navigator.navigationContext.addListener('willfocus', (event) => {
-            console.log(`orderPage willfocus...`)
-            console.log(`currentRoute`, currentRoute)
-            //console.log(`event.data.route`, event.data.route)
-            if (event&&currentRoute === event.data.route) {
-                console.log("orderPage willAppear")
-                NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
-            } else {
-                console.log("orderPage willDisappear, other willAppear")
-            }
-            //
-        })
+        this.addAppEventListener(
+            this.props.navigator.navigationContext.addListener('willfocus', (event) => {
+                console.log(`orderPage willfocus...`)
+                console.log(`currentRoute`, currentRoute)
+                //console.log(`event.data.route`, event.data.route)
+                if (event&&currentRoute === event.data.route) {
+                    console.log("orderPage willAppear")
+                    NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
+                } else {
+                    console.log("orderPage willDisappear, other willAppear")
+                }
+                //
+            })
+        )
     }
 
     render() {
@@ -210,7 +214,8 @@ class Register extends Component {
     async _fetch_register(){
         let options = {
             method:'post',
-            url: constants.api.service,
+            //url: constants.api.service,
+            url: constants.api.register_secondStep,
             data: {
                 iType: constants.iType.register_secondStep,
                 pwd:this.state.newPass,
@@ -232,12 +237,14 @@ class Register extends Component {
 
             let result=await this.gunZip(resultData)
             console.log('result:',result)
-            let d=JSON.parse(result.result)
+            let d=JSON.parse(result)
             console.log('gunZip:',d)
             if(d.code&&d.code==10){
-                alert('注册成功')
+                Alert.alert('提示', '注册成功', () => {
+                    this.props.navigator.popToTop()
+                })
             }else{
-                alert(d.msg)
+                Alert.alert(d.msg)
             }
 
 
@@ -333,4 +340,4 @@ const navigationBarRouteMapper = {
 }
 
 
-export default XhrEnhance(Register)
+export default AppEventListenerEnhance(XhrEnhance(Register))

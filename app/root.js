@@ -11,6 +11,7 @@ import {
     NativeAppEventEmitter,
     TouchableOpacity,
     Modal,
+    AsyncStorage,
 } from 'react-native';
 
 import IndexPage from './pages/indexPage';
@@ -21,22 +22,17 @@ import LoginPage from './pages/loginPage';
 
 import TabNavigator from 'react-native-tab-navigator';
 import Badge from 'react-native-smart-badge'
-/**
- * FontAwesome 4.2 Contains 479 icons
 
- Ionicons 2.0.0 Contains 733 icons, lots of iOS 7 style outlined icons.
-
- Foundation icons Contains 283 icons.
-
- Zocial Contains 99 social icons.
- */
 import Icon from 'react-native-vector-icons/Ionicons';
+import AppEventListenerEnhance from 'react-native-smart-app-event-listener-enhance'
+import { checkLogin, } from './lib/User'
+
 
 import constants from  './constants/constant';
 import TabView from './components/tabView'
 let backFirstClick = 0//判断一次点击回退键
 
-export default class Root extends Component {
+class Root extends Component {
     // 构造
     constructor (props) {
         super(props);
@@ -44,7 +40,7 @@ export default class Root extends Component {
         this.state = {
             selectedTab: '首页',
             hasBadge:false,
-            modalVisible:false,
+            //modalVisible:false,
         };
     }
 
@@ -58,6 +54,11 @@ export default class Root extends Component {
         if (Platform.OS === 'android') {
             BackAndroid.removeEventListener('hardwareBackPress', this.onBackAndroid);
         }
+    }
+
+    componentDidMount () {
+        //AsyncStorage.setItem('useID', 'chenyiqin') //test code, need remove
+        //AsyncStorage.removeItem('useID') //test code, need remove
     }
 
     onBackAndroid = () => {
@@ -87,10 +88,7 @@ export default class Root extends Component {
 
     render () {
         return (
-            //<View >
-
             <TabNavigator style={{flex:1,}}>
-
                 <TabNavigator.Item
                     selected={ this.state.selectedTab === '首页' }
                     renderIcon={ () =>  <TabView
@@ -127,16 +125,8 @@ export default class Root extends Component {
                                             selected={this.state.selectedTab === '我的'}/> }
                     renderBadge={ () => this.state.hasBadge?<Badge style={styles.number} />:<View/> }
                     onPress={ () => {
-                    this._checkLogin
-                      this.setState({selectedTab: '我的',})
-                            this.props.navigator.push({
-                                title: '胖马贸服',
-                                component: LoginPage,
-                            });
-
-                             //NativeAppEventEmitter.emit('setNavigationBar.index', NavigationBarRouteMapperList[2])
-                        }
-                    }>
+                       this._handlePressPerson()
+                    }}>
                     <UserPage navigator={this.props.navigator}/>
                 </TabNavigator.Item>
                 <TabNavigator.Item
@@ -153,27 +143,26 @@ export default class Root extends Component {
                     <MorePage navigator={this.props.navigator}/>
                 </TabNavigator.Item>
             </TabNavigator>
-               /* <Modal
-                    style={{flex:1,}}
-                    animationType={'fade'}
-                    visible={this.state.modalVisible}
-                    onRequestClose={() => {this._setModalVisible(false)}}>
-                    <LoginPage navigator={this.props.navigator}/>
-                </Modal>
-                </View>*/
         );
     }
 
-    _setModalVisible(visible) {
-        this.setState({modalVisible: visible});
-    }
-
-    _checkLogin(){
-
+    _handlePressPerson = async () => {
+        let userID = await checkLogin()
+        console.log('userID', userID)
+        if(userID) {
+            this.setState({selectedTab: '我的',})
+        }
+        else {
+            this.props.navigator.push({
+                title: '用户登录',
+                component: LoginPage,
+            });
+        }
     }
 
 }
 
+export default AppEventListenerEnhance(Root)
 
 
 const styles = StyleSheet.create({

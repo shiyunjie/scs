@@ -73,6 +73,9 @@ export default XhrEnhance = (ComposedComponent) => {
                     method = constants.requestMethod
                 }
 
+                if(method.toLowerCase() == 'get') {
+                    url += this._formatUrlParams(data)
+                }
 
                 xhr.open(method, url);
                 if (requestHeaders) {
@@ -82,15 +85,30 @@ export default XhrEnhance = (ComposedComponent) => {
                 }
                 xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
                 xhr.timeout = timeout || constants.requestTimeout
-                let sendData
-                if (formData) {
-                    sendData = formData
-                }
-                else if (data) {
-                    sendData = Object.keys(data).map(key => `${key}=${encodeURIComponent(data[key])}`).join('&')
+                let sendData = null
+                if(method.toLowerCase() != 'get') {
+                    if (formData) {
+                        sendData = formData
+                    }
+                    else if (data) {
+                        sendData = Object.keys(data).map(key => `${key}=${encodeURIComponent(data[key])}`).join('&')
+                    }
                 }
                 xhr.send(sendData);
             })
+        }
+
+        _formatUrlParams (data) {
+            let urlParams = ''
+            Object.keys(data).forEach( (key, index) => {
+                if(index) {
+                    urlParams += `&${key}=${data[key]}`
+                }
+                else {
+                    urlParams += `?${key}=${data[key]}`
+                }
+            })
+            return urlParams
         }
 
 

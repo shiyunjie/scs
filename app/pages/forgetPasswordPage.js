@@ -23,7 +23,7 @@ import constants from  '../constants/constant';
 import Icon from 'react-native-vector-icons/Ionicons';
 import navigatorStyle from '../styles/navigatorStyle'       //navigationBar样式
 import XhrEnhance from '../lib/XhrEnhance' //http
-//import { register_firstStep,errorXhrMock } from '../mock/xhr-mock'   //mock data
+import { register_firstStep, check_msg_code, errorXhrMock } from '../mock/xhr-mock'   //mock data
 
 import RegisterPage from './registerPage';
 import SetPassword from './setPasswordPage';
@@ -205,7 +205,8 @@ class ForgetPassword extends Component {
 
         let options = {
             method: 'post',
-            url: constants.api.service,
+            //url: constants.api.service,
+            url: constants.api.register_firstStep,
             data: {
                 iType: constants.iType.register_firstStep,
                 //memberId:this.props.memberId,
@@ -215,7 +216,7 @@ class ForgetPassword extends Component {
             }
         }
 
-            options.data=await this.gZip(options)
+            options.data = await this.gZip(options)
 
             console.log(`_fetch_sendCode options:` ,options)
 
@@ -253,7 +254,8 @@ class ForgetPassword extends Component {
 
         let options = {
             method: 'post',
-            url: constants.api.service,
+            //url: constants.api.service,
+            url: constants.api.checkMsgCode,
             data: {
                 iType: constants.iType.checkMsgCode,
                 //memberId:this.props.memberId,
@@ -270,9 +272,9 @@ class ForgetPassword extends Component {
 
             let resultData = await this.fetch(options)
 
-            let result=await this.gunZip(resultData)
+            let result = await this.gunZip(resultData)
             console.log('result:',result)
-            let d=JSON.parse(result.result)
+            let d = JSON.parse(result)
 
             console.log('gunZip:',d)
             if(d.code&&d.code==10){
