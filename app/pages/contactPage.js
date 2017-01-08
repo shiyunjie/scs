@@ -9,12 +9,34 @@ import {
     Platform,
     TouchableOpacity,
     Linking,
+    NativeAppEventEmitter,
 } from 'react-native';
 
 
 import constants from  '../constants/constant';
 
+import Icon from 'react-native-vector-icons/Ionicons';
+import navigatorStyle from '../styles/navigatorStyle'       //navigationBar样式
+
 class ItemView extends Component {
+
+    componentWillMount() {
+        NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
+        let currentRoute = this.props.navigator.navigationContext.currentRoute
+        this.props.navigator.navigationContext.addListener('willfocus', (event) => {
+            console.log(`orderPage willfocus...`)
+            console.log(`currentRoute`, currentRoute)
+            //console.log(`event.data.route`, event.data.route)
+            if (event&&currentRoute === event.data.route) {
+                console.log("orderPage willAppear")
+                NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
+            } else {
+                console.log("orderPage willDisappear, other willAppear")
+            }
+            //
+        })
+    }
+
     render() {
         return (
             <View style={styles.itemView}><View style={styles.itemTitle}>
@@ -100,3 +122,46 @@ export default class Contact extends Component {
     },
 
     });
+
+const navigationBarRouteMapper = {
+
+    LeftButton: function (route, navigator, index, navState) {
+        if (index === 0) {
+            return null;
+        }
+
+        var previousRoute = navState.routeStack[ index - 1 ];
+        return (
+            <TouchableOpacity
+                onPress={() => navigator.pop()}
+                style={navigatorStyle.navBarLeftButton}>
+                <View style={navigatorStyle.navBarLeftButtonAndroid}>
+                    <Icon
+                        style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText,{fontSize: 20,}]}
+                        name={'ios-arrow-back'}
+                        size={constants.IconSize}
+                        color={'white'}/>
+                </View>
+            </TouchableOpacity>
+
+        );
+    },
+
+    RightButton: function (route, navigator, index, navState) {
+
+    },
+
+    Title: function (route, navigator, index, navState) {
+        return (
+            Platform.OS == 'ios' ?
+                <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText]}>
+                    {route.title}
+                </Text> : <View style={navigatorStyle.navBarTitleAndroid}>
+                <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText]}>
+                    {route.title}
+                </Text>
+            </View>
+        )
+    },
+
+}

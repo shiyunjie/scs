@@ -16,6 +16,7 @@ import constants from  '../constants/constant';
 import PullToRefreshListView from 'react-native-smart-pull-to-refresh-listview';
 import OrderListPage from './orderListPage';
 import ServiceListPage from './serviceListPage';
+import navigatorStyle from '../styles/navigatorStyle'       //navigationBar样式
 
 import ScrollableTabView  from 'react-native-scrollable-tab-view';
 import MyDefaultTabBar from '../components/defaultTabBar';
@@ -126,8 +127,8 @@ const navigationBarRouteMapper = {
     return (
         <TouchableOpacity
             onPress={() => navigator.pop()}
-            style={styles.navBarLeftButton}>
-            <Text style={[styles.navBarText, styles.navBarButtonText]}>
+            style={navigatorStyle.navBarLeftButton}>
+            <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarButtonText]}>
                 back
             </Text>
         </TouchableOpacity>
@@ -141,10 +142,10 @@ RightButton: function (route, navigator, index, navState) {
 Title: function (route, navigator, index, navState) {
     return (
         Platform.OS == 'ios' ?
-            <Text style={[styles.navBarText, styles.navBarTitleText]}>
+            <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText]}>
                 订单
-            </Text> : <View style={{alignSelf: 'center', position: 'relative', left: -35,}}>
-            <Text style={[styles.navBarText, styles.navBarTitleText]}>
+            </Text> : <View style={navigatorStyle.navBarTitleAndroid}>
+            <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText]}>
                 订单
             </Text>
         </View>

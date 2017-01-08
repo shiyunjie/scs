@@ -20,7 +20,6 @@ import AppEventListenerEnhance from 'react-native-smart-app-event-listener-enhan
 
 
 class Root extends Component {
-
     constructor (props, context) {
         super(props);
         this.state={

@@ -14,15 +14,35 @@ import {
     ProgressBarAndroid,
     TouchableOpacity,
     Platform,
+    NativeAppEventEmitter,
 } from 'react-native';
 
 import constants from  '../constants/constant';
 import InputView from '../components/loginInputView';
 import ForgetPasswordPage from './forgetPasswordPage';
 import Button from 'react-native-smart-button';
-import TimerEnhance from 'react-native-smart-timer-enhance';
+
+import Icon from 'react-native-vector-icons/Ionicons';
+import navigatorStyle from '../styles/navigatorStyle'       //navigationBar样式
 
 export default class Login extends Component {
+    componentWillMount() {
+        NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
+        let currentRoute = this.props.navigator.navigationContext.currentRoute
+        this.props.navigator.navigationContext.addListener('willfocus', (event) => {
+            console.log(`orderPage willfocus...`)
+            console.log(`currentRoute`, currentRoute)
+            //console.log(`event.data.route`, event.data.route)
+            if (event&&currentRoute === event.data.route) {
+                console.log("orderPage willAppear")
+                NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
+            } else {
+                console.log("orderPage willDisappear, other willAppear")
+            }
+            //
+        })
+    }
+
     render() {
         return (
             <View style={styles.container}>
@@ -33,7 +53,7 @@ export default class Login extends Component {
                                placeholder='输入手机号/会员名/邮箱'
                                maxLength={20}
 
-                               onChangeText={this._onChangeText.bind(this)}
+
                     />
                     <InputView style={{backgroundColor:'white',height:30,marginTop:10}}
                                iconName='ios-lock'
@@ -41,7 +61,7 @@ export default class Login extends Component {
                                placeholder='输入密码'
                                maxLength={20}
                                secureTextEntry={true}
-                               onChangeText={this._onChangeText.bind(this)}
+
                     />
                     <View style={{flex:1,
                     flexDirection: 'column',
@@ -147,9 +167,7 @@ export default class Login extends Component {
 
     }
 
-    _onChangeText = (e)=> {
-        alert(e);
-    }
+
 
 }
 
@@ -181,3 +199,46 @@ const styles = StyleSheet.create({
 
 
 });
+
+const navigationBarRouteMapper = {
+
+    LeftButton: function (route, navigator, index, navState) {
+        if (index === 0) {
+            return null;
+        }
+
+        var previousRoute = navState.routeStack[ index - 1 ];
+        return (
+            <TouchableOpacity
+                onPress={() => navigator.pop()}
+                style={navigatorStyle.navBarLeftButton}>
+                <View style={navigatorStyle.navBarLeftButtonAndroid}>
+                    <Icon
+                        style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText,{fontSize: 20,}]}
+                        name={'ios-arrow-back'}
+                        size={constants.IconSize}
+                        color={'white'}/>
+                </View>
+            </TouchableOpacity>
+
+        );
+    },
+
+    RightButton: function (route, navigator, index, navState) {
+
+    },
+
+    Title: function (route, navigator, index, navState) {
+        return (
+            Platform.OS == 'ios' ?
+                <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText]}>
+                    {route.title}
+                </Text> : <View style={navigatorStyle.navBarTitleAndroid}>
+                <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText]}>
+                    {route.title}
+                </Text>
+            </View>
+        )
+    },
+
+}

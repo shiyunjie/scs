@@ -60,8 +60,11 @@ source={{uri: `${item.big_url}`}}/>*/
                     autoplay
                     pageInfo={false}
                     currentPage={0}
-                    onAnimateNextPage={(p) => console.log(p)}>
-                { this.props.dataSource.map((item, index) => {
+                   >
+
+            <View>
+                {
+                    this.props.dataSource.map((item, index) => {
                     return (
                         <Image
                             key={index}
@@ -71,6 +74,8 @@ source={{uri: `${item.big_url}`}}/>*/
                     )
                     })
                 }
+                </View>
+
             </Carousel>
 
         )

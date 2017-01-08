@@ -16,6 +16,8 @@ import {
 
 
 import constants from  '../constants/constant';
+import navigatorStyle from '../styles/navigatorStyle'       //navigationBar样式
+import Icon from 'react-native-vector-icons/Ionicons';
 
 export default class OrderDetail extends Component {
 
@@ -176,13 +178,18 @@ const navigationBarRouteMapper = {
 
         var previousRoute = navState.routeStack[ index - 1 ];
         return (
-            <TouchableOpacity
-                onPress={() => navigator.pop()}
-                style={styles.navBarLeftButton}>
-                <Text style={[styles.navBarText, styles.navBarButtonText]}>
-                    back
-                </Text>
-            </TouchableOpacity>
+                <TouchableOpacity
+                    onPress={() => navigator.pop()}
+                    style={navigatorStyle.navBarLeftButton}>
+                    <View style={navigatorStyle.navBarLeftButtonAndroid}>
+                        <Icon
+                                style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText,{fontSize: 20,}]}
+                                name={'ios-arrow-back'}
+                                size={constants.IconSize}
+                                color={'white'}/>
+                    </View>
+                </TouchableOpacity>
+
         );
     },
 
@@ -193,10 +200,10 @@ const navigationBarRouteMapper = {
     Title: function (route, navigator, index, navState) {
         return (
             Platform.OS == 'ios' ?
-                <Text style={[styles.navBarText, styles.navBarTitleText]}>
+                <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText]}>
                     {route.title}
-                </Text> : <View style={{alignSelf: 'center', position: 'relative', left: -35,}}>
-                <Text style={[styles.navBarText, styles.navBarTitleText]}>
+                </Text> : <View style={navigatorStyle.navBarTitleAndroid}>
+                <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText]}>
                     {route.title}
                 </Text>
             </View>

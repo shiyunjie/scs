@@ -97,7 +97,7 @@ const styles = StyleSheet.create({
         height: 50,
         flexDirection: 'row',
         justifyContent: 'space-around',
-        borderWidth: 1,
+        borderWidth: 0,
         borderTopWidth: 0,
         borderLeftWidth: 0,
         borderRightWidth: 0,

@@ -88,7 +88,7 @@ android {
 
     defaultConfig {
         applicationId "com.scs"
-        minSdkVersion 16
+        minSdkVersion 19
         targetSdkVersion 22
         versionCode 1
         versionName "1.0"
@@ -147,6 +147,7 @@ dependencies {
     compile project(':react-native-smart-splash-screen')// From node_modules
     compile project(':react-native-smart-swipe-refresh-layout')// From node_modules
     compile project(':react-native-smart-image-loader')// From node_modules
+    compile project(':http-rsa-gzip')// From node_modules
 
 }
 

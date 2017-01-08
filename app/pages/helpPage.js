@@ -15,32 +15,60 @@ import {
     ActivityIndicatorIOS,
     Platform,
     TouchableOpacity,
+    NativeAppEventEmitter,
 } from 'react-native';
 
-import TimerEnhance from 'react-native-smart-timer-enhance';
 import constants from  '../constants/constant';
 
 import PullToRefreshListView from 'react-native-smart-pull-to-refresh-listview';
 import ItemView from '../components/orderItemView';
 import HeaderView from '../components/listViewheaderView';
 import MessageDetail from './messageDetail';
+import navigatorStyle from '../styles/navigatorStyle'       //navigationBar样式
+import Icon from 'react-native-vector-icons/Ionicons';
 
 
-let refreshedDataSource = [{id: 1, title: '常见问题标题'}, {id: 2, title: '常见问题标题'}, {id: 3, title: '常见问题标题'}, {
-    id: 4,
-    title: '常见问题标题'
-}, {id: 5, title: '常见问题标题'}, {id: 6, title: '常见问题标题'}, {id: 7, title: '常见问题标题'}, {id: 8, title: '常见问题标题'}, {id: 9, title: '常见问题标题'}, {id: 10, title: '常见问题标题'}, {id: 11, title: '常见问题标题'}, {id: 12, title: '常见问题标题'}, {id: 13, title: '常见问题标题'}, {id: 14, title: '常见问题标题'}]
+import XhrEnhance from '../lib/XhrEnhance' //http
+//import { sysInfo_helpCenter,errorXhrMock } from '../mock/xhr-mock'   //mock data
+
+
+let pageIndex = 1;//当前页码
+let firstDataList = [];
+
 
 
 class Help extends Component {
-    // 构造
+// 构造
     constructor(props) {
         super(props);
+        this._dataSource = new ListView.DataSource({
+            rowHasChanged: (r1, r2) => r1 !== r2,
+            //sectionHeaderHasChanged: (s1, s2) => s1 !== s2,
+        });
 
         this.state = {
-            dataSource: []
+            dataList: firstDataList,
+            dataSource: this._dataSource.cloneWithRows(firstDataList),
         }
     }
+
+    componentWillMount() {
+        NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
+        let currentRoute = this.props.navigator.navigationContext.currentRoute
+        this.props.navigator.navigationContext.addListener('willfocus', (event) => {
+            console.log(`OrderDetail willfocus...`)
+            console.log(`currentRoute`, currentRoute)
+            console.log(`event.data.route`, event.data.route)
+            if (currentRoute === event.data.route) {
+                console.log("OrderDetail willAppear")
+                NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
+            } else {
+                console.log("OrderDetail willDisappear, other willAppear")
+            }
+            //
+        })
+    }
+
 
     componentDidMount() {
         this._pullToRefreshListView.beginRefresh()
@@ -50,98 +78,95 @@ class Help extends Component {
         return (
 
             <PullToRefreshListView
+                onLoadMore={this._onLoadMore}
                 style={styles.container}
-                ref={ (component) => this._pullToRefreshListView = component }
+                ref={ (component) => this._PullToRefreshListView = component }
+                viewType={PullToRefreshListView.constants.viewType.listView}
                 contentContainerStyle={{backgroundColor: 'transparent', }}
+                initialListSize={10}
+                pageSize={10}
+                dataSource={this.state.dataSource}
                 renderHeader={this._renderHeader}
                 renderFooter={this._renderFooter}
+                renderRow={this._renderRow}
                 onRefresh={this._onRefresh}
-                onLoadMore={this._onLoadMore}
-                autoLoadMore={true}
-                onEndReachedThreshold={15}
-            >
-                {
-                    this.state.dataSource.map((item, index) => {
-                        return (
-                            <TouchableOpacity key={`item-${index}`} style={{height:50,}}
-                                              onPress={()=>{
-                                                    this.props.navigator.push({
-                                                title: '帮助中心',
-                                                component: MessageDetail,
-                                                passProps: {
-                                                    title:item.title,
-                                                    content:item.id,
-                                                }
-                                            });
-                                                   }}
-                            >
-                                <ItemView
+                pullUpDistance={100}
+                pullUpStayDistance={constants.pullDownStayDistance}
+                pullDownDistance={100}
+                pullDownStayDistance={constants.pullDownStayDistance}>
 
-                                    style={[{overflow: 'hidden',borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: '#ccc',}]}
-                                    name='ios-arrow-forward'
-
-                                    size={constants.IconSize} title={item.title}
-                                />
-                            </TouchableOpacity>
-
-                        )
-                    })
-                }
             </PullToRefreshListView>
 
         );
     }
 
+    _renderRow = (rowData, sectionID, rowID) => {
+
+        return (
+            <TouchableOpacity
+                key={`item-${rowID}`}
+                style={{height:50,}}
+                onPress={()=>{
+                    this.props.navigator.push({
+                    title: '帮助中心',
+                    component: MessageDetail,
+                    passProps: {
+                        title:rowData.title,
+                        brief:rowData.id,
+                        child:rowData.child,
+                        }
+                        });
+                        }}>
+                <ItemView
+                    style={[{overflow: 'hidden',borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: '#ccc',}]}
+                    name='ios-arrow-forward'
+                    size={constants.IconSize}
+                    title={rowData.title}/>
+            </TouchableOpacity>
+
+        )
+    }
 
     _renderHeader = (viewState) => {
         let {pullState, pullDistancePercent} = viewState
         let {refresh_none, refresh_idle, will_refresh, refreshing,} = PullToRefreshListView.constants.viewState
         //pullDistancePercent = Math.round(pullDistancePercent * 100)
+        if (pullDistancePercent > 1) {
+            pullDistancePercent = 1
+        }
+        let degree = 180 * pullDistancePercent
 
         let indeterminate = false;
         switch (pullState) {
             case refresh_none:
                 return (
-                    <HeaderView name='md-arrow-round-down'  // 图标
+                    <HeaderView name='md-arrow-round-up'  // 图标
                                 size={constants.IconSize}
                                 title='下拉即可刷新...'
-                    />
+                                degree={degree}/>
                 )
             case refresh_idle:
                 return (
                     <HeaderView name='md-arrow-round-down'  // 图标
                                 size={constants.IconSize}
                                 title='下拉即可刷新...'
-                    />
+                                degree={degree}/>
                 )
             case will_refresh:
                 return (
-                    <HeaderView name='md-arrow-round-up'  // 图标
+                    <HeaderView name='md-arrow-round-down'  // 图标
                                 size={constants.IconSize}
                                 title='释放即可刷新...'
-                    />
+                                degree={degree}/>
                 )
             case refreshing:
                 /*{this._renderActivityIndicator()}*/
-                indeterminate=true;
+                indeterminate = true;
                 return (
-
                     <HeaderView name='Circle' // spinkit
                                 size={constants.IconSize}
                                 title='刷新中...'
-                                isRefresh={true}
-                    />
-                  /*  <View style={styles.HeaderView}>
-                        <Progress.CircleSnail
-                            size={32}
-                            style={styles.progress}
-                            color={[
-                          '#F44336',
-                          '#2196F3',
-                          '#009688',
-                        ]}
-                        />
-                    </View>*/
+                                isRefresh={true}/>
                 )
         }
     }
@@ -149,21 +174,41 @@ class Help extends Component {
     _renderFooter = (viewState) => {
         let {pullState, pullDistancePercent} = viewState
         let {load_more_none, load_more_idle, will_load_more, loading_more, loaded_all, } = PullToRefreshListView.constants.viewState
-        pullDistancePercent = Math.round(pullDistancePercent * 100)
+        //pullDistancePercent = Math.round(pullDistancePercent * 100)
+
+        if (pullDistancePercent > 1) {
+            pullDistancePercent = 1
+        }
+        let degree = 180 * pullDistancePercent
+
         switch (pullState) {
             case load_more_none:
                 return (
-                    <View
-                        style={{height: 35, justifyContent: 'center', alignItems: 'center', backgroundColor: 'transparent',}}>
-                        <Text>加载更多</Text>
-                    </View>
+                    <HeaderView name='md-arrow-round-down'  // 图标
+                                size={constants.IconSize}
+                                title='上拉加载更多...'
+                                degree={degree}/>
+                )
+            case load_more_idle:
+                return (
+                    <HeaderView name='md-arrow-round-up'  // 图标
+                                size={constants.IconSize}
+                                title='上拉加载更多...'
+                                degree={degree}/>
+                )
+            case will_load_more:
+                return (
+                    <HeaderView name='md-arrow-round-up'  // 图标
+                                size={constants.IconSize}
+                                title='释放加载更多...'
+                                degree={degree}/>
                 )
             case loading_more:
                 return (
-                    <View
-                        style={{flexDirection: 'row', height: 35, justifyContent: 'center', alignItems: 'center', backgroundColor: 'transparent',}}>
-                        <Text>加载更多</Text>
-                    </View>
+                    <HeaderView name='Circle' // spinkit
+                                size={constants.IconSize}
+                                title='加载中...'
+                                isRefresh={true}/>
                 )
             case loaded_all:
                 return (
@@ -179,72 +224,109 @@ class Help extends Component {
         //console.log('outside _onRefresh start...')
 
         //simulate request data
-        this.setTimeout(() => {
+        pageIndex = 1;
+        this._fetchData_refresh()
 
-            //console.log('outside _onRefresh end...')
-
-
-
-            this.setState({
-                dataSource: refreshedDataSource,
-            })
-            this._pullToRefreshListView.endRefresh()
-
-        }, 3000)
     }
 
     _onLoadMore = () => {
         //console.log('outside _onLoadMore start...')
+        pageIndex++;
+        this._fetchData_loadMore()
 
-        this.setTimeout(() => {
+    }
+    async _fetchData_refresh() {
 
-            //console.log('outside _onLoadMore end...')
+        let options = {
+            //method:{'post'},
+            url: constants.api.sysInfo_helpCenter,
+            data: {
+                iType: constants.iType.sysInfo_helpCenter,
+                current_page: pageIndex,
+                memberId:this.props.memberId,
+            }
+        }
+        try {
+            let result = await this.fetch(options)
+            result = JSON.parse(result)
 
-            let length = this.state.dataSource.length
+            console.log(`result list`, JSON.stringify(result.result.list));
+            let dataList = result.result.list
 
-            let addedDataSource = [ {id: length+1, title: '常见问题标题'}, {id: length+2, title: '常见问题标题'}, {id: length+3, title: '常见问题标题'}
-                , {id: length+4, title: '常见问题标题'}, {id: length+5, title: '常见问题标题'}, {id: length+6, title: '常见问题标题'}]
-
-
+            console.log(`dataList`, JSON.stringify(dataList));
             this.setState({
-                dataSource: this.state.dataSource.concat(addedDataSource),
+                dataList: dataList,
+                dataSource: this._dataSource.cloneWithRows(dataList),
             })
 
-            let loadedAll
-            if (length >= 30) {
-                loadedAll = true
-                this._pullToRefreshListView.endLoadMore(loadedAll)
-            }
-            else {
-                loadedAll = false
-                this._pullToRefreshListView.endLoadMore(loadedAll)
-            }
+        }
+        catch (error) {
 
-        }, 3000)
+            //..调用toast插件, show出错误信息...
+
+        }
+        finally {
+            this._PullToRefreshListView.endRefresh()
+            //console.log(`SplashScreen.close(SplashScreen.animationType.scale, 850, 500)`)
+            //SplashScreen.close(SplashScreen.animationType.scale, 850, 500)
+        }
+
     }
 
-/*    _renderActivityIndicator() {
-        return ActivityIndicator ? (
-            <ActivityIndicator
-                style={{marginRight: 10,}}
-                animating={true}
-                color={'#ff0000'}
-                size={'small'}/>
-        ) : Platform.OS == 'android' ?
-            (
-                <ProgressBarAndroid
-                    style={{marginRight: 10,}}
-                    color={'#ff0000'}
-                    styleAttr={'Small'}/>
+    async _fetchData_loadMore() {
+        let options = {
+            //method:{'post'},
+            url: constants.api.service,
+            data: {
+                iType: constants.iType.sysInfo_helpCenter,
+                current_page: pageIndex,
+                memberId:this.props.memberId,
+            }
+        }
+        try {
+            let result = await this.fetch(options)
+            result = JSON.parse(result)
+            //console.log(`fetch result -> `, typeof result)
+            //console.log(`result`, result.result)
+            let loadedAll
+            if (result.result.list && result.result.list.length > 0) {
+                loadedAll = false
+                let dataList = this.state.dataList.concat(result.result.list)
 
-            ) : (
-            <ActivityIndicatorIOS
-                style={{marginRight: 10,}}
-                animating={true}
-                color={'#ff0000'}
-                size={'small'}/>
-        )
-    }*/
+
+                this.setState({
+                    dataList: dataList,
+                    dataSource: this._dataSource.cloneWithRows(dataList),
+                })
+
+            } else {
+
+                loadedAll = true
+
+                pageIndex--;
+                if (pageIndex < 1) {
+                    pageIndex = 1;
+                }
+
+            }
+
+        }
+        catch (error) {
+            //console.log(error)
+            //..调用toast插件, show出错误信息...
+
+            pageIndex--;
+            if (pageIndex < 1) {
+                pageIndex = 1;
+            }
+        }
+        finally {
+            this._PullToRefreshListView.endLoadMore(false)
+            //console.log(`SplashScreen.close(SplashScreen.animationType.scale, 850, 500)`)
+            //SplashScreen.close(SplashScreen.animationType.scale, 850, 500)
+        }
+
+    }
 }
 
 const styles = StyleSheet.create({
@@ -267,4 +349,47 @@ const styles = StyleSheet.create({
 
 });
 
-export default TimerEnhance(Help);
+const navigationBarRouteMapper = {
+
+    LeftButton: function (route, navigator, index, navState) {
+        if (index === 0) {
+            return null;
+        }
+
+        var previousRoute = navState.routeStack[ index - 1 ];
+        return (
+            <TouchableOpacity
+                onPress={() => navigator.pop()}
+                style={navigatorStyle.navBarLeftButton}>
+                <View style={navigatorStyle.navBarLeftButtonAndroid}>
+                    <Icon
+                        style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText,{fontSize: 20,}]}
+                        name={'ios-arrow-back'}
+                        size={constants.IconSize}
+                        color={'white'}/>
+                </View>
+            </TouchableOpacity>
+
+        );
+    },
+
+    RightButton: function (route, navigator, index, navState) {
+
+    },
+
+    Title: function (route, navigator, index, navState) {
+        return (
+            Platform.OS == 'ios' ?
+                <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText]}>
+                    {route.title}
+                </Text> : <View style={navigatorStyle.navBarTitleAndroid}>
+                <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText]}>
+                    {route.title}
+                </Text>
+            </View>
+        )
+    },
+
+}
+
+export default XhrEnhance(Help)

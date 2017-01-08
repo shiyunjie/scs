@@ -109,7 +109,7 @@ var styles = StyleSheet.create({
     },
     HeaderView: {
         flexDirection: 'row',
-        height: 40,
+        height: constants.pullDownStayDistance,
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: 'transparent',
