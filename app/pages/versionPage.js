@@ -16,13 +16,26 @@ import image_logo from '../images/icon.png'
 
 import constants from  '../constants/constant'
 
+import AppEventListenerEnhance from 'react-native-smart-app-event-listener-enhance'
 import navigatorStyle from '../styles/navigatorStyle'       //navigationBar样式
 import Icon from 'react-native-vector-icons/Ionicons';
+import {getDeviceID,getToken,getVersion} from '../lib/User'
 
-export default class Version extends Component {
+
+class Version extends Component {
+    // 构造
+      constructor(props) {
+        super(props);
+        // 初始状态
+        this.state = {
+            version:'',
+        };
+      }
+
     componentWillMount() {
         NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
         let currentRoute = this.props.navigator.navigationContext.currentRoute
+        this.addAppEventListener(
         this.props.navigator.navigationContext.addListener('willfocus', (event) => {
             console.log(`orderPage willfocus...`)
             console.log(`currentRoute`, currentRoute)
@@ -35,7 +48,14 @@ export default class Version extends Component {
             }
             //
         })
+        )
+       this._getVersion()
+    }
 
+    async _getVersion(){
+
+        let version=await getVersion()
+        this.setState({version:version})
     }
 
     render() {
@@ -58,7 +78,7 @@ export default class Version extends Component {
                     <Text
                         style={{color:constants.UIActiveColor,marginTop:10,}}
                         //backgroundColor:'transparent'
-                    >版本</Text>
+                    >{this.state.version}</Text>
 
                 </View>
                 <View style={{flex:1}}/>
@@ -120,3 +140,5 @@ const navigationBarRouteMapper = {
     },
 
 }
+
+export default AppEventListenerEnhance(Version)

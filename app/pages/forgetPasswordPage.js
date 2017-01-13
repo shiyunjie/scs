@@ -16,6 +16,7 @@ import {
     Platform,
     NativeAppEventEmitter,
     TouchableOpacity,
+    AsyncStorage,
 } from 'react-native';
 
 import Button from 'react-native-smart-button';
@@ -25,8 +26,11 @@ import navigatorStyle from '../styles/navigatorStyle'       //navigationBar样�
 import XhrEnhance from '../lib/XhrEnhance' //http
 //import { register_firstStep, check_msg_code, errorXhrMock } from '../mock/xhr-mock'   //mock data
 
+import {getDeviceID,getToken,getRegMsgSerial,getForMsgSerial} from '../lib/User'
 import RegisterPage from './registerPage';
 import SetPassword from './setPasswordPage';
+import Toast from 'react-native-smart-toast'
+import AppEventListenerEnhance from 'react-native-smart-app-event-listener-enhance'
 
 let nextPage;
 
@@ -39,25 +43,27 @@ class ForgetPassword extends Component {
         this.state = {
             phone: '',
             code: '',
-            deviceId:'9999',
+
         };
     }
 
     componentWillMount() {
         NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
         let currentRoute = this.props.navigator.navigationContext.currentRoute
-        this.props.navigator.navigationContext.addListener('willfocus', (event) => {
-            console.log(`orderPage willfocus...`)
-            console.log(`currentRoute`, currentRoute)
-            //console.log(`event.data.route`, event.data.route)
-            if (event && currentRoute === event.data.route) {
-                console.log("orderPage willAppear")
-                NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
-            } else {
-                console.log("orderPage willDisappear, other willAppear")
-            }
-            //
-        })
+        this.addAppEventListener(
+            this.props.navigator.navigationContext.addListener('willfocus', (event) => {
+                console.log(`orderPage willfocus...`)
+                console.log(`currentRoute`, currentRoute)
+                //console.log(`event.data.route`, event.data.route)
+                if (event && currentRoute === event.data.route) {
+                    console.log("orderPage willAppear")
+                    NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
+                } else {
+                    console.log("orderPage willDisappear, other willAppear")
+                }
+                //
+            })
+        )
     }
 
     componentDidMount() {
@@ -68,47 +74,56 @@ class ForgetPassword extends Component {
     render() {
 
         return (
-            <View style={styles.container}>
-                <TextInput style={styles.textInput}
-                           clearButtonMode="while-editing"
-                           placeholder='请输入您的手机号'
-                           maxLength={20}
-                           underlineColorAndroid='transparent'
-                           editable={true}
-                           value={this.state.phone}
-                           onChangeText={(text) => this.setState({phone:text})}/>
-                <View style={[styles.textInput,{
-                flexDirection: 'row',
-                justifyContent: 'flex-start',
-                alignItems: 'stretch',}]}>
-                    <TextInput style={[{flex:2}]}
+            <View style={{flex:1}}>
+                <View style={styles.container}>
+                    <TextInput style={[styles.textInput,{ paddingLeft:10,paddingRight:10,}]}
                                clearButtonMode="while-editing"
-                               placeholder='请输入验证码'
+                               placeholder='请输入您的手机号'
                                maxLength={20}
+                               keyboardType='numeric'
                                underlineColorAndroid='transparent'
                                editable={true}
-                               value={this.state.code}
-                               onChangeText={(text) => this.setState({code:text})}/>
-                    <Button
-                        ref={ component => this._button_3 = component }
-                        touchableType={Button.constants.touchableTypes.fadeContent}
-                        style={[styles.button,{flex:1,marginRight:10,height:30,alignSelf:'center'}]}
-                        textStyle={{fontSize: 15, color: 'white'}}
-                        loadingComponent={
+                               value={this.state.phone}
+                               onChangeText={(text) => this.setState({phone:text})}/>
+                    <View style={[styles.textInput,{
+                        flexDirection: 'row',
+                        justifyContent: 'flex-start',
+                        alignItems: 'stretch',
+                       }]}>
+                        <TextInput style={[{flex:2, paddingLeft:10,paddingRight:10,}]}
+                                   clearButtonMode="while-editing"
+                                   placeholder='请输入验证码'
+                                   keyboardType='numeric'
+                                   maxLength={20}
+                                   underlineColorAndroid='transparent'
+                                   editable={true}
+                                   value={this.state.code}
+                                   onChangeText={(text) => this.setState({code:text})}/>
+                        <Button
+                            ref={ component => this._button_3 = component }
+                            touchableType={Button.constants.touchableTypes.fadeContent}
+                            style={[styles.button,{flex:1,marginRight:10,height:30,alignSelf:'center'}]}
+                            textStyle={{fontSize: 15, color: 'white'}}
+                            loadingComponent={
                             <View style={{flexDirection: 'row', alignItems: 'center'}}>
                                 {this._renderActivityIndicator()}
                                 <Text style={{fontSize: 15, color: 'white', fontWeight: 'bold', fontFamily: '.HelveticaNeueInterface-MediumP4',}}>发送中</Text>
                             </View>
-                    }
-                        onPress={ () => {
+                            }
+                            onPress={ () => {
                         if(this.state.phone==''){
-                        alert('请填写电话号码')
+                         this._toast.show({
+                            position: Toast.constants.gravity.center,
+                            duration: 255,
+                            children: '请填写电话号码'
+                        })
+
                         }else{
                          this._button_3.setState({
                             loading: true,
                             //disabled: true,
                         })
-                         this._fetchData()
+                         this._fetchData_code()
                         /*setTimeout( () => {
                            /!* this._button_3.setState({
                                 loading: false,
@@ -119,28 +134,32 @@ class ForgetPassword extends Component {
                         }, 1000)*/
                         }
                         }}>
-                        发送验证码
-                    </Button>
-                </View>
+                            发送验证码
+                        </Button>
+                    </View>
 
 
-                <Button
-                    ref={ component => this._button_2 = component }
-                    touchableType={Button.constants.touchableTypes.fadeContent}
-                    style={[styles.button,{ marginLeft: constants.MarginLeftRight,
+                    <Button
+                        ref={ component => this._button_2 = component }
+                        touchableType={Button.constants.touchableTypes.fadeContent}
+                        style={[styles.button,{ marginLeft: constants.MarginLeftRight,
                     marginRight: constants.MarginLeftRight,
                     marginTop: 20,}]}
-                    textStyle={{fontSize: 17, color: 'white'}}
-                    loadingComponent={
+                        textStyle={{fontSize: 17, color: 'white'}}
+                        loadingComponent={
                             <View style={{flexDirection: 'row', alignItems: 'center'}}>
                                 {this._renderActivityIndicator()}
                                 <Text style={{fontSize: 17, color: 'white', fontWeight: 'bold', fontFamily: '.HelveticaNeueInterface-MediumP4',}}>
                                 加载中...</Text>
                             </View>
                     }
-                    onPress={ () => {
+                        onPress={ () => {
                     if(this.state.phone==''||this.state.code==''){
-                    alert('请输入手机号与验证码')
+                     this._toast.show({
+                            position: Toast.constants.gravity.center,
+                            duration: 255,
+                            children: '请填写验证码'
+                        })
                     }else{
                         this._button_2.setState({
                             loading: true,
@@ -151,25 +170,22 @@ class ForgetPassword extends Component {
                                 loading: false,
                                 //disabled: false
                             })
-                    if(nextPage=='forget'){
-                    this.props.navigator.push({
-                    title: '忘记密码',
-                    component: SetPassword,
-                    passProps:{
-                        phone:this.state.phone,
-                        code:this.state.code,
-                    }
-                        });
-                    }else if(nextPage=='register'){
 
-                        this._fetchData_code()
-                    }
+
+                        this._fetchData_submit()
+
 
                     }
                     }}>
-                    下一步
-                </Button>
+                        下一步
+                    </Button>
 
+                </View>
+                <Toast
+                    ref={ component => this._toast = component }
+                    marginTop={64}>
+
+                </Toast>
             </View>
         );
     }
@@ -199,104 +215,61 @@ class ForgetPassword extends Component {
 
     }
 
-    async _fetchData () {
-        console.log(`_fetch_sendCode`)
+    async _fetchData_code() {
         try {
-
-        let options = {
-            method: 'post',
-            //url: constants.api.service,
-            url: constants.api.register_firstStep,
-            data: {
-                iType: constants.iType.register_firstStep,
-                //memberId:this.props.memberId,
-                phone: this.state.phone,
-                deviceId:this.state.deviceId,
-                token:'',
+            let token= await getToken()
+            let deviceID= await getDeviceID()
+            let options = {
+                method: 'post',
+                url: constants.api.service,
+                data: {
+                    iType:nextPage=='forget'?constants.iType.forgetPwdCode: constants.iType.register_firstStep,
+                    //memberId:this.props.memberId,
+                    phone: this.state.phone,
+                    deviceId: deviceID,
+                    token: token,
+                }
             }
-        }
 
             options.data = await this.gZip(options)
 
-            console.log(`_fetch_sendCode options:` ,options)
-
-            let resultData = await this.fetch(options)
-
-            let result=await this.gunZip(resultData)
-            console.log('result:',result)
-            let d=JSON.parse(result.result)
-
-            console.log('gunZip:',d)
-            if(d.code&&d.code==10){
-                alert('验证码已发送')
-            }else{
-                alert(d.msg)
-            }
-
-
-        }catch (error) {
-            console.log(error)
-            //..调用toast插件, show出错误信息...
-
-        }finally {
-            this._button_3.setState({
-                loading: false,
-                //disabled: false
-            })
-            //console.log(`SplashScreen.close(SplashScreen.animationType.scale, 850, 500)`)
-            //SplashScreen.close(SplashScreen.animationType.scale, 850, 500)
-        }
-    }
-
-    async _fetchData_code () {
-        console.log(`_fetch_sendCode`)
-        try {
-
-        let options = {
-            method: 'post',
-            //url: constants.api.service,
-            url: constants.api.checkMsgCode,
-            data: {
-                iType: constants.iType.checkMsgCode,
-                //memberId:this.props.memberId,
-                phone: this.state.phone,
-                code:this.state.code,
-                deviceId:this.state.deviceId,
-                token:'',
-            }
-        }
-
-            options.data=await this.gZip(options)
-
-            console.log(`_fetch_sendCode options:` ,options)
 
             let resultData = await this.fetch(options)
 
             let result = await this.gunZip(resultData)
-            console.log('result:',result)
-            let d = JSON.parse(result)
+            console.log('result:', result)
+            result = JSON.parse(result)
 
-            console.log('gunZip:',d)
-            if(d.code&&d.code==10){
-                //跳转注册
-                this.props.navigator.push({
-                    title: '注册',
-                    component: RegisterPage,
-                    passProps:{
-                        phone:this.state.phone,
-                        code:this.state.code,
-                    }
-                });
-            }else{
-                alert(d.msg)
+            console.log('gunZip:', result)
+            if (result.code && result.code == 10) {
+                if(nextPage=='forget'){
+                    console.log('forget')
+                    AsyncStorage.setItem('ForMsgSerial',result.result)
+                }else{
+                    console.log('regist:',result.result)
+                    AsyncStorage.setItem('RegMsgSerial',result.result)
+                    console.log('AsyncStorage_segMsgSerial')
+                }
+
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: '验证码已发送'
+                })
+            } else {
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: result.msg
+                })
             }
 
 
-        }catch (error) {
+        } catch (error) {
             console.log(error)
-            //..调用toast插件, show出错误信息...
 
-        }finally {
+
+        } finally {
             this._button_3.setState({
                 loading: false,
                 //disabled: false
@@ -306,6 +279,86 @@ class ForgetPassword extends Component {
         }
     }
 
+    async _fetchData_submit() {
+        try {
+            let token= await getToken()
+            let deviceID= await getDeviceID()
+            let send_no
+            if(nextPage=='forget'){
+                send_no=await getForMsgSerial()
+
+            }else{
+                send_no=await getRegMsgSerial()
+
+            }
+
+            console.log(`send_no`,send_no)
+            let options = {
+                method: 'post',
+                url: constants.api.service,
+                data: {
+                    iType:nextPage=='forget'?constants.iType.checkForgetCode:constants.iType.checkMsgCode,
+                    //memberId:this.props.memberId,
+                    phone: this.state.phone,
+                    code: this.state.code,
+                    send_no:send_no,
+                    deviceId: deviceID,
+                    token: token,
+                }
+            }
+
+            options.data = await this.gZip(options)
+
+            console.log(`_fetch_sendCode options:`, options)
+
+            let resultData = await this.fetch(options)
+
+            let result = await this.gunZip(resultData)
+            console.log('result:', result)
+            result = JSON.parse(result)
+
+            console.log('gunZip:', result)
+            if (result.code && result.code == 10) {
+                console.log('nextPage:',nextPage)
+                if(nextPage=='forget'){
+                    this.props.navigator.push({
+                        title: '忘记密码',
+                        component: SetPassword,
+                        passProps:{
+                            phone:this.state.phone,
+                        }
+                    });
+                }else {
+                    //跳转注册
+                    this.props.navigator.push({
+                        title: '注册',
+                        component: RegisterPage,
+                        passProps: {
+                            phone: this.state.phone,
+                        }
+                    });
+                }
+            } else {
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: result.msg
+                })
+            }
+
+
+        } catch (error) {
+            console.log(error)
+
+
+        } finally {
+            this._button_3.setState({
+                loading: false,
+                //disabled: false
+            })
+
+        }
+    }
 
 
 }
@@ -317,12 +370,15 @@ const styles = StyleSheet.create(
             flexDirection: 'column',
             alignItems: 'stretch',
             backgroundColor: constants.UIBackgroundColor,
-        }, textInput: {
+        },
+        textInput: {
         backgroundColor: 'white',
         height: 40,
         borderWidth: StyleSheet.hairlineWidth,
-        borderColor: constants.UIBackgroundColor
-    }, button: {
+        borderColor: constants.UIBackgroundColor,
+
+    },
+        button: {
         height: 40,
         backgroundColor: constants.UIActiveColor,
         borderRadius: 3, borderWidth: StyleSheet.hairlineWidth,
@@ -374,4 +430,4 @@ const navigationBarRouteMapper = {
 }
 
 
-export default XhrEnhance(ForgetPassword)
+export default AppEventListenerEnhance(XhrEnhance(ForgetPassword))

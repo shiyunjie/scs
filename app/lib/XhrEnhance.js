@@ -129,16 +129,15 @@ export default XhrEnhance = (ComposedComponent) => {
                         token: data.token,
                         }
 
-                        /*
                         delete(sendData.data['iType'])
                         delete(sendData.data['deviceId'])
                         delete(sendData.data['token'])
-                        */
+                    console.log('data_deviceId:',sendData.deviceId);
 
-                        //console.log('data_data:',sendData.data);
+                        console.log('data_sendData:',sendData);
 
-                        //let result = HttpRSAModule.gzipRSA(JSON.stringify(sendData))
-                        let result = JSON.stringify(sendData)
+                        let result = HttpRSAModule.gzipRSA(JSON.stringify(sendData))
+                        //let result = JSON.stringify(sendData)
                         resolve(result)
                         //resolve(JSON.stringify(options))
                     } catch (error) {
@@ -154,9 +153,9 @@ export default XhrEnhance = (ComposedComponent) => {
         gunZip = (data) => {
             return new Promise((resolve, reject) => {
                 try {
-                  /*  let responseData = HttpRSAModule.gunzipRSA(data)
-                    resolve(responseData)*/
-                    resolve(data)
+                    let responseData = HttpRSAModule.gunzipRSA(data)
+                    resolve(responseData)
+                    //resolve(data)
                     } catch (error) {
                     reject(error)
                     }

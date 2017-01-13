@@ -27,8 +27,10 @@ import constants from  '../constants/constant';
 
 import Icon from 'react-native-vector-icons/Ionicons';
 import navigatorStyle from '../styles/navigatorStyle'       //navigationBar样式
-
+import Toast from 'react-native-smart-toast'
 import XhrEnhance from '../lib/XhrEnhance' //http
+
+import {getDeviceID,getToken} from '../lib/User'
 //import { register_secondStep, errorXhrMock } from '../mock/xhr-mock'   //mock data
 
 class Register extends Component {
@@ -39,14 +41,14 @@ class Register extends Component {
         // 初始状态
         this.state = {
             phone:this.props.phone,
-            code:this.props.code,
             modalVisible: false,
             userName:'',
             realName:'',
             email:'',
             newPass:'',
             confPass:'',
-            deviceId:'',
+            editable:true,
+
 
         };
       }
@@ -72,6 +74,7 @@ class Register extends Component {
 
     render() {
         return (
+            <View style={{flex:1}}>
             <View style={[styles.container,{ marginTop: Platform.OS == 'ios' ? 64+10 : 56+10,}]}>
                 <Modal
                     animationType={"fade"}
@@ -91,49 +94,50 @@ class Register extends Component {
                 </Modal>
 
                 <TextInput style={styles.textInput}
-                           clearButtonMode="while-editing"
+                           autoCorrect={false}
                            placeholder='请输入会员名'
                            maxLength={20}
                            underlineColorAndroid='transparent'
-                           editable = {true}
+                           editable = {this.state.editable}
                            value={this.state.userName}
                            onChangeText={(text) => this.setState({userName:text})}/>
 
                 <TextInput style={styles.textInput}
-                           clearButtonMode="while-editing"
+                           autoCorrect={false}
                            placeholder='请输入联系人姓名'
                            maxLength={20}
                            underlineColorAndroid='transparent'
-                           editable = {true}
+                           editable = {this.state.editable}
                            value={this.state.realName}
                            onChangeText={(text) => this.setState({realName:text})}/>
 
 
-                <TextInput style={styles.textInput}
-                           clearButtonMode="while-editing"
+                <TextInput
+                           style={styles.textInput}
+                           autoCorrect={false}
                            placeholder='请输入邮箱'
                            maxLength={20}
                            underlineColorAndroid='transparent'
-                           editable = {true}
+                           editable = {this.state.editable}
                            value={this.state.email}
                            onChangeText={(text) => this.setState({email:text})}/>
 
                 <TextInput style={[styles.textInput,{marginTop:10}]}
-                           clearButtonMode="while-editing"
+                           autoCorrect={false}
                            placeholder='请输入密码'
                            maxLength={20}
                            underlineColorAndroid='transparent'
-                           editable = {true}
+                           editable = {this.state.editable}
                            secureTextEntry={true}
                            value={this.state.newPass}
                            onChangeText={(text) => this.setState({newPass:text})}/>
 
                 <TextInput style={styles.textInput}
-                           clearButtonMode="while-editing"
+                           autoCorrect={false}
                            placeholder='确认密码'
                            maxLength={20}
                            underlineColorAndroid='transparent'
-                           editable = {true}
+                           editable = {this.state.editable}
                            secureTextEntry={true}
                            value={this.state.confPass}
                            onChangeText={(text) => this.setState({confPass:text})}/>
@@ -178,7 +182,12 @@ class Register extends Component {
                         <Text style={{color:'blue'}}>用户协议</Text>
                     </TouchableOpacity>
                 </View>
+                <Toast
+                    ref={ component => this._toast = component }
+                    marginTop={64}>
 
+                </Toast>
+            </View>
             </View>
         );
     }
@@ -212,10 +221,13 @@ class Register extends Component {
     }
 
     async _fetch_register(){
+        try {
+        let token= await getToken()
+        let deviceID= await getDeviceID()
+            this.setState({editable:false})
         let options = {
             method:'post',
-            //url: constants.api.service,
-            url: constants.api.register_secondStep,
+            url: constants.api.service,
             data: {
                 iType: constants.iType.register_secondStep,
                 pwd:this.state.newPass,
@@ -224,11 +236,11 @@ class Register extends Component {
                 phone:this.state.phone,
                 email:this.state.email,
                 sure_pwd:this.state.confPass,
-                deviceId:this.state.deviceId,
-                token:'',
+                deviceId:deviceID,
+                token:token,
             }
         }
-        try {
+
             options.data=await this.gZip(options)
 
             console.log(`_fetch_sendCode options:` ,options)
@@ -236,22 +248,37 @@ class Register extends Component {
             let resultData = await this.fetch(options)
 
             let result=await this.gunZip(resultData)
-            console.log('result:',result)
-            let d=JSON.parse(result)
-            console.log('gunZip:',d)
-            if(d.code&&d.code==10){
-                Alert.alert('提示', '注册成功', () => {
-                    this.props.navigator.popToTop()
-                })
-            }else{
-                Alert.alert(d.msg)
-            }
 
+            result=JSON.parse(result)
+            console.log('gunZip:',result)
+            if(result.code&&result.code==10){
+               /* Alert.alert('提示', '注册成功', () => {
+                    this.props.navigator.popToTop()
+                })*/
+                console.log('token',result.result)
+                AsyncStorage.setItem('token',result.result)
+                AsyncStorage.setItem('phone',this.state.phone)
+                AsyncStorage.setItem('realName',this.state.realName)
+
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: '注册成功'
+                })
+                this.props.navigator.popToTop()
+
+            }else{
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: result.msg
+                })
+            }
 
         }
         catch (error) {
-            //console.log(error)
-            //..调用toast插件, show出错误信息...
+            console.log(error)
+
 
         }
         finally {
@@ -259,6 +286,7 @@ class Register extends Component {
                 loading: false,
                 //disabled: false
             })
+            this.setState({editable:true})
             //console.log(`SplashScreen.close(SplashScreen.animationType.scale, 850, 500)`)
             //SplashScreen.close(SplashScreen.animationType.scale, 850, 500)
         }
@@ -278,7 +306,7 @@ const styles = StyleSheet.create({
         height: 40,
         borderWidth: StyleSheet.hairlineWidth,
         borderColor: constants.UIBackgroundColor,
-
+        paddingLeft:10,paddingRight:10,
     },
     button: {
         height: 40,

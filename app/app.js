@@ -11,12 +11,13 @@ import {
     Platform,
     View,
     NativeAppEventEmitter,
+    AsyncStorage,
 } from 'react-native';
 
 import Index from './root';
 import constants from  './constants/constant'
 import AppEventListenerEnhance from 'react-native-smart-app-event-listener-enhance'
-
+import JPushModule from 'jpush-react-native';
 
 
 class Root extends Component {
@@ -27,6 +28,23 @@ class Root extends Component {
         }
     }
 
+    componentWillMount() {
+        if (Platform.OS === 'android') {
+            JPushModule.getInfo((map) => {
+                AsyncStorage.setItem('deviceID', map.myDeviceId)
+                AsyncStorage.setItem('version', map.myVersion)
+                //appkey: map.myAppKey,
+                //imei: map.myImei,
+                //package: map.myPackageName,
+                console.log('JPushModule:' + map.myDeviceId + `,version:` + map.myVersion)
+
+            });
+        }else{
+            //ios获取deviceID
+        }
+
+    }
+
     componentDidMount () {
         this.addAppEventListener(
             NativeAppEventEmitter.addListener('setNavigationBar.index', (navigationBar) => {
@@ -34,7 +52,9 @@ class Root extends Component {
                     navigationBar: navigationBar,
                 })
             })
+
         )
+
     }
 
 

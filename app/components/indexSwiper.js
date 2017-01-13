@@ -12,6 +12,7 @@ import {
     TouchableOpacity,
     Platform,
     Image,
+    Dimensions,
 } from 'react-native';
 //import Icon from 'react-native-vector-icons/FontAwesome';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -19,6 +20,7 @@ import constants from  '../constants/constant';
 import Swiper from 'react-native-swiper';
 import image_default_banner from '../images/banner.png';    //需要换默认banner图
 import Carousel from 'react-native-carousel';
+const { width: deviceWidth } = Dimensions.get('window');
 
 export default class IndexSwiper extends Component{
     // 构造
@@ -40,16 +42,16 @@ export default class IndexSwiper extends Component{
 
     render() {
         return (
-                 <View style={{height: 150,}} >
-                    <Carousel width={375} delay={3000} loop={true}
-                              indicatorColor={'#FB687D'}
-                              indicatorSize={20}
-                              indicatorSpace={15}
-                              indicatorOffset={0}
-                              inactiveIndicatorColor={'#fff'}
-                              indicatorAtBottom={true}
-                              inactiveIndicatorText= '•'
-                              indicatorText= '•' >
+                 <View style={{height: 150,width:deviceWidth}} >
+                    <Carousel
+                        width={deviceWidth}
+                        delay={3000}
+                        indicatorColor={'#FB687D'}
+                        indicatorSize={25}
+                        indicatorSpace={10}
+                        indicatorOffset={0}
+                        inactiveIndicatorColor={'#fff'}
+                        inactiveIndicatorText= '•'>
                         {
                             this.props.dataSource.map((item, index) => {
                                 return (
@@ -58,7 +60,6 @@ export default class IndexSwiper extends Component{
                                             style={{width: this.props.width, height: 150}}
                                                 //defaultSource={image_default_banner}
                                             source={{uri: `${item.big_url}`}}/>
-
                                 )
                             })
                         }

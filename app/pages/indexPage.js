@@ -28,11 +28,14 @@ import addOrderPage from './addOrderPage'
 import navigatorStyle from '../styles/navigatorStyle'       //navigationBar样式
 import XhrEnhance from '../lib/XhrEnhance'
 import Icon from 'react-native-vector-icons/Ionicons';
+import Toast from 'react-native-smart-toast'
+import AppEventListenerEnhance from 'react-native-smart-app-event-listener-enhance'
 
 
 import image_banner from '../images/banner.png'
 import image_button from '../images/button.png'
 import image_logo from '../images/icon.png'
+import {getDeviceID,getToken} from '../lib/User'
 
 
 //import { index_showPicture, } from '../mock/xhr-mock'   //mock data
@@ -56,6 +59,7 @@ let advertisementDataSource = [
     image_banner,
 ]
 
+
 class Index extends Component {
     // 构造
     constructor(props) {
@@ -76,12 +80,14 @@ class Index extends Component {
             count: 0,
             dataList: dataList,
             dataSource: this._dataSource.cloneWithRows(dataList),
+
         }
     }
 
     componentWillMount() {
         NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
         let currentRoute = this.props.navigator.navigationContext.currentRoute
+        this.addAppEventListener(
         this.props.navigator.navigationContext.addListener('willfocus', (event) => {
             console.log(`indexPage willfocus...`)
             console.log(`currentRoute`, currentRoute)
@@ -102,10 +108,12 @@ class Index extends Component {
             }
             //
         })
+        )
 
     }
 
     componentDidMount() {
+
         console.log(`this._pullToRefreshListView.beginRefresh()`)
         this._pullToRefreshListView.beginRefresh()
     }
@@ -113,7 +121,7 @@ class Index extends Component {
     render() {
 
         return (
-
+        <View style={{flex:1}}>
             <PullToRefreshListView
                 style={styles.container}
                 ref={ (component) => this._pullToRefreshListView = component }
@@ -130,11 +138,15 @@ class Index extends Component {
                 //pullUpDistance={70}
                 //pullUpStayDistance={100}
                 pullDownDistance={100}
-                pullDownStayDistance={constants.pullDownStayDistance}
-            >
+                pullDownStayDistance={constants.pullDownStayDistance}>
 
             </PullToRefreshListView>
+            <Toast
+                ref={ component => this._toast = component }
+                marginTop={64}>
 
+            </Toast>
+        </View>
         );
     }
     _addOrder=()=>{
@@ -147,33 +159,35 @@ class Index extends Component {
         });
     }
 
+
+
     async _fetchData () {
+        let token= await getToken()
+        let deviceID= await getDeviceID()
         let options = {
             method: 'post',
             url: constants.api.service,
             //url: constants.api.indexShowPicture,
             data: {
                 iType: constants.iType.indexShowPicture,
-                deviceId:'',
-                token:'',
+                deviceId:deviceID,
+                token:token,
             }
         }
-
         options.data = await this.gZip(options)
 
         try {
-            console.log(`options:`, options)
 
             let resultData = await this.fetch(options)
-
+            console.log('resultData:', resultData)
             let result = await this.gunZip(resultData)
-
-            result = JSON.parse(result)
             console.log('gunZip:', result)
+            result = JSON.parse(result)
+
 
             if(result.code && result.code==10) {
                 let dataList = [
-                    result.result == null ? refreshedDataSource : result.result,
+                    result.result == null||result.result.length==0 ? refreshedDataSource : result.result,
                     {buttonImage: image_button, buttonText: "发起委托单"},
                     advertisementDataSource,
                 ]
@@ -182,12 +196,17 @@ class Index extends Component {
                     dataSource: this._dataSource.cloneWithRows(dataList),
                 })
             }else{
-                alert(d.msg)
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: result.msg
+                })
                 //..调用toast插件, show出错误信息...
             }
         }
         catch(error) {
             console.log(error)
+
             //..调用toast插件, show出错误信息...
 
         }
@@ -260,22 +279,13 @@ class Index extends Component {
         console.log(`rowData`, rowData)
         //console.log(`rowID`, rowID)
         if(rowID == 0) {
-            //return (
-            //    <Swiper
-            //        autoplay={false}
-            //        width={deviceWidth}
-            //        dataSource={rowData}/>
-            //)
             return (
-                <View>
                     <Swiper
                             autoplay={true}
                             width={deviceWidth}
                             dataSource={rowData}/>
-                </View>
+
             )
-
-
         }
         else if(rowID == 1) {
             return (
@@ -312,16 +322,16 @@ class Index extends Component {
 
     _onRefresh = () => {
 
-        setTimeout(() => {
+        //setTimeout(() => {
 
             this._fetchData()
 
-        }, 1000)
+        //}, 1000)
 
     }
 }
 
-export default XhrEnhance(Index)
+export default AppEventListenerEnhance(XhrEnhance(Index))
 
 const styles = StyleSheet.create({
     container: {

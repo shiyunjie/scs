@@ -22,6 +22,7 @@ const navigatorStyles = StyleSheet.create({
         textAlign: 'center',
         textAlignVertical: 'center',
 
+
     },
     navBarTitleText: {
         color: 'white',
@@ -30,14 +31,18 @@ const navigatorStyles = StyleSheet.create({
     },
 
     navBarLeftButton: {
-        paddingLeft: 10,
+        paddingLeft: 15,
+        width:30,
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'flex-start',
 
     },
     navBarRightButton: {
-        paddingRight: 10,
+        paddingRight: 15,
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'flex-end',
     },
     navBarButtonText: {
         color: '#5890FF',

@@ -157,6 +157,7 @@ class UploadPage extends Component {
             let xhrCache = uploadTask.init()                    //执行上传任务
             this._uploadingXhrCacheList.push(xhrCache)          //缓存该上传任务的xhr对象
         }
+        console.log('this.state.photoList', this.state.photoList)
     }
 
     _upload (uploadPhoto) {
@@ -248,6 +249,15 @@ class UploadPage extends Component {
             itype: 95,
         })
 
+        //xhr.upload.onprogress = (event) => {
+        //    if (event.lengthComputable) {
+        //        console.log(`${event.loaded} / ${event.total}`)
+        //        photo.uploadProgress = event.loaded / event.total
+        //        this.setState({
+        //            photoList: [...photoList.slice(0, photoIndex), photo, ...photoList.slice(photoIndex, photoList.length - 1)]
+        //        });
+        //    }
+        //};
         xhr.upload.onprogress = (event) => {
             if (event.lengthComputable) {
                 //console.log(`${event.loaded} / ${event.total}`)
