@@ -29,8 +29,11 @@ import navigatorStyle from '../styles/navigatorStyle'       //navigationBar样�
 import Icon from 'react-native-vector-icons/Ionicons';
 
 
-
-import MessageDetail from './messageDetail';
+import {getDeviceID,getToken} from '../lib/User'
+import Toast from 'react-native-smart-toast'
+import AppEventListenerEnhance from 'react-native-smart-app-event-listener-enhance'
+import MessageDetail from './messageDetail'
+import Swipeout from 'react-native-swipeout';
 
 import XhrEnhance from '../lib/XhrEnhance' //http
 //import { message_findSysInfoShow,errorXhrMock } from '../mock/xhr-mock'   //mock data
@@ -58,84 +61,95 @@ class MessageList extends Component {
     componentWillMount() {
         NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
         let currentRoute = this.props.navigator.navigationContext.currentRoute
-        this.props.navigator.navigationContext.addListener('willfocus', (event) => {
-            console.log(`OrderDetail willfocus...`)
-            console.log(`currentRoute`, currentRoute)
-            console.log(`event.data.route`, event.data.route)
-            if (currentRoute === event.data.route) {
-                console.log("OrderDetail willAppear")
-                NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
-            } else {
-                console.log("OrderDetail willDisappear, other willAppear")
-            }
-            //
-        })
+        this.addAppEventListener(
+            this.props.navigator.navigationContext.addListener('willfocus', (event) => {
+                console.log(`OrderDetail willfocus...`)
+                console.log(`currentRoute`, currentRoute)
+                console.log(`event.data.route`, event.data.route)
+                if (currentRoute === event.data.route) {
+                    console.log("OrderDetail willAppear")
+                    NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
+                } else {
+                    console.log("OrderDetail willDisappear, other willAppear")
+                }
+                //
+            })
+        )
     }
 
     componentDidMount() {
-        this._PullToRefreshListView.beginRefresh()
+        if (this.state.dataList.length == 0) {
+            this._PullToRefreshListView.beginRefresh()
+        }
     }
-
-
 
 
     render() {
         return (
-            <PullToRefreshListView
-                onLoadMore={this._onLoadMore}
-                style={styles.container}
-                ref={ (component) => this._PullToRefreshListView = component }
-                viewType={PullToRefreshListView.constants.viewType.listView}
-                contentContainerStyle={{backgroundColor: 'transparent', }}
-                initialListSize={10}
-                pageSize={10}
-                dataSource={this.state.dataSource}
-                renderHeader={this._renderHeader}
-                renderFooter={this._renderFooter}
-                renderRow={this._renderRow}
-                onRefresh={this._onRefresh}
-                pullUpDistance={100}
-                pullUpStayDistance={constants.pullDownStayDistance}
-                pullDownDistance={100}
-                pullDownStayDistance={constants.pullDownStayDistance}>
+            <View style={{flex:1}}>
+                <PullToRefreshListView
+                    onLoadMore={this._onLoadMore}
+                    style={styles.container}
+                    ref={ (component) => this._PullToRefreshListView = component }
+                    viewType={PullToRefreshListView.constants.viewType.listView}
+                    contentContainerStyle={{backgroundColor: 'transparent', }}
+                    initialListSize={10}
+                    pageSize={10}
+                    dataSource={this.state.dataSource}
+                    renderHeader={this._renderHeader}
+                    renderFooter={this._renderFooter}
+                    renderRow={this._renderRow}
+                    onRefresh={this._onRefresh}
+                    pullUpDistance={100}
+                    pullUpStayDistance={constants.pullDownStayDistance}
+                    pullDownDistance={100}
+                    pullDownStayDistance={constants.pullDownStayDistance}>
 
-            </PullToRefreshListView>
+                </PullToRefreshListView>
+                <Toast
+                    ref={ component => this._toast = component }
+                    marginTop={64}>
 
+                </Toast>
+            </View>
         );
     }
 
-    /**
-     id: '5',
-     sender: '管理员',
-     title: '标题',
-     brief: '简介',
-     send_time: '2017-01-01 12:00'
-     * @param rowData
-     * @param sectionID
-     * @param rowID
-     * @returns {XML}
-     * @private
+    /*
+     </TouchableOpacity>
      */
+
     _renderRow = (rowData, sectionID, rowID) => {
-
         return (
+            <Swipeout
+                autoClose={true}
+                right={[{
+                text:'删除',
+                color:'white',
+                backgroundColor:'red',
+                onPress:()=>{this._fetchData_delete(rowData.id)}
+                }]}>
+                <TouchableOpacity
+                    style={{flex:1}}
+                    onPress={ ()=>{
+                    this._fetchData_read(rowData.id)
+                     this.props.navigator.push({
+                     title: '消息',
+                     component: MessageDetail,
+                     passProps: rowData,
+                     });
+                     } }>
+                    <ItemView
+                        style={[{overflow: 'hidden',}]}
+                        size={constants.IconSize}
+                        title={rowData.title}
+                        time={rowData.send_time}
+                        content={rowData.content}
+                        do_ret={rowData.do_ret}
+                    />
+                </TouchableOpacity>
+            </Swipeout>
 
-            <TouchableOpacity
-                onPress={ ()=>{
-                        this.props.navigator.push({
-                        title: '消息',
-                        component: MessageDetail,
-                        passProps: rowData,
-                        });
-                        } }>
-                <ItemView
-                    style={[{overflow: 'hidden',}]}
-                    size={constants.IconSize}
-                    title={rowData.title}
-                    time={rowData.send_time}
-                    content={rowData.brief}
-                />
-            </TouchableOpacity>
 
 
         )
@@ -251,33 +265,56 @@ class MessageList extends Component {
     }
 
     async _fetchData_refresh() {
-
-        let options = {
-            method:'post',
-            url: constants.api.service,
-            data: {
-                iType: constants.iType.message_findSysInfoShow,
-                current_page: pageIndex,
-                memberId:this.props.memberId,
-            }
-        }
         try {
-            let result = await this.fetch(options)
+            let token = await getToken()
+            let deviceID = await getDeviceID()
+
+            let options = {
+                method: 'post',
+                url: constants.api.service,
+                data: {
+                    iType: constants.iType.findSysInfoShow,
+                    current_page: pageIndex,
+                    deviceId: deviceID,
+                    token: token,
+                }
+            }
+            options.data=await this.gZip(options)
+
+            let resultData = await this.fetch(options)
+
+            let result=await this.gunZip(resultData)
+
             result = JSON.parse(result)
+            if(result.code&&result.code==-54){
+                /**
+                 * 发送事件去登录
+                 */
+                NativeAppEventEmitter.emit('getMsg_202_code_need_login');
+                return
+            }
+            if (result.code && result.code == 10) {
 
-            console.log(`result list`, JSON.stringify(result.result.list));
-            let dataList = result.result.list
+                console.log(`result list`, result.result);
+                let dataList = result.result
 
-            console.log(`dataList`, JSON.stringify(dataList));
-            this.setState({
-                dataList: dataList,
-                dataSource: this._dataSource.cloneWithRows(dataList),
-            })
+                console.log(`dataList`, dataList);
 
-            this._PullToRefreshListView.endRefresh()
+                this.setState({
+                    dataList: dataList,
+                    dataSource: this._dataSource.cloneWithRows(dataList),
+                })
+            } else {
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: result.msg
+                })
+            }
+
         }
         catch (error) {
-
+            console.log(error)
             //..调用toast插件, show出错误信息...
 
         }
@@ -290,41 +327,68 @@ class MessageList extends Component {
     }
 
     async _fetchData_loadMore() {
-        let options = {
-            //method:{'post'},
-            url: constants.api.commissionOrder_commissionOrderList,
-            data: {
-                iType: constants.iType.commissionOrder_commissionOrderList,
-                current_page: pageIndex,
-                memberId:this.props.memberId,
-            }
-        }
+        let loadedAll = false
         try {
-            let result = await this.fetch(options)
+            let token = await getToken()
+            let deviceID = await getDeviceID()
+            let options = {
+                method: 'post',
+                url: constants.api.service,
+                data: {
+                    iType: constants.iType.findSysInfoShow,
+                    current_page: pageIndex,
+                    deviceId: deviceID,
+                    token: token,
+                }
+            }
+
+            options.data=await this.gZip(options)
+
+            let resultData = await this.fetch(options)
+
+            let result=await this.gunZip(resultData)
+
             result = JSON.parse(result)
             //console.log(`fetch result -> `, typeof result)
             //console.log(`result`, result.result)
-            let loadedAll
-            if (result.result.list && result.result.list.length > 0) {
-                loadedAll = false
-                let dataList = this.state.dataList.concat(result.result.list)
+            if(result.code&&result.code==-54){
+                /**
+                 * 发送事件去登录
+                 */
+                NativeAppEventEmitter.emit('getMsg_202_code_need_login');
+                return
+            }
+            if (result.code && result.code == 10) {
+                if (result.result.list && result.result.list.length > 0) {
+                    loadedAll = false
+                    let dataList = this.state.dataList.concat(result.result.list)
 
+                    this.setState({
+                        dataList: dataList,
+                        dataSource: this._dataSource.cloneWithRows(dataList),
+                    })
+                } else {
 
-                this.setState({
-                    dataList: dataList,
-                    dataSource: this._dataSource.cloneWithRows(dataList),
-                })
-                this._PullToRefreshListView.endLoadMore(loadedAll)
+                    loadedAll = true
+
+                    pageIndex--;
+                    if (pageIndex < 1) {
+                        pageIndex = 1;
+                    }
+
+                }
             } else {
-
-                loadedAll = true
-                this._PullToRefreshListView.endLoadMore(loadedAll)
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: result.msg
+                })
                 pageIndex--;
                 if (pageIndex < 1) {
                     pageIndex = 1;
                 }
-
             }
+
 
         }
         catch (error) {
@@ -337,9 +401,141 @@ class MessageList extends Component {
             }
         }
         finally {
-            this._PullToRefreshListView.endLoadMore(false)
+            this._PullToRefreshListView.endLoadMore(loadedAll)
             //console.log(`SplashScreen.close(SplashScreen.animationType.scale, 850, 500)`)
             //SplashScreen.close(SplashScreen.animationType.scale, 850, 500)
+        }
+
+    }
+
+    async _fetchData_delete(id) {
+        try {
+            let token = await getToken()
+            let deviceID = await getDeviceID()
+
+            let options = {
+                method: 'post',
+                url: constants.api.service,
+                data: {
+                    iType: constants.iType.delSysInfo,
+                    id:id,
+                    deviceId: deviceID,
+                    token: token,
+                }
+            }
+            options.data=await this.gZip(options)
+
+            let resultData = await this.fetch(options)
+
+            let result=await this.gunZip(resultData)
+
+            result = JSON.parse(result)
+            if(result.code&&result.code==-54){
+                /**
+                 * 发送事件去登录
+                 */
+                NativeAppEventEmitter.emit('getMsg_202_code_need_login');
+                return
+            }
+            if (result.code && result.code == 10) {
+
+                /**
+                 * dataList中删除消息
+                 * @type {*[]}
+                 */
+                let dataList = this.state.dataList
+                for(let index=0;index<dataList.length;index++){
+                    if(dataList[index].id==id){
+                        dataList.splice(index, 1);
+                        break;
+                    }
+
+                }
+                console.log(`dataList`, dataList);
+
+                this.setState({
+                    dataList: dataList,
+                    dataSource: this._dataSource.cloneWithRows(dataList),
+                })
+            } else {
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: result.msg
+                })
+            }
+
+        }
+        catch (error) {
+            console.log(error)
+            //..调用toast插件, show出错误信息...
+
+        }
+
+    }
+
+    async _fetchData_read(id) {
+        try {
+            let token = await getToken()
+            let deviceID = await getDeviceID()
+
+            let options = {
+                method: 'post',
+                url: constants.api.service,
+                data: {
+                    iType: constants.iType.infoDetail,
+                    id:id,
+                    deviceId: deviceID,
+                    token: token,
+                }
+            }
+            options.data=await this.gZip(options)
+
+            let resultData = await this.fetch(options)
+
+            let result=await this.gunZip(resultData)
+
+            result = JSON.parse(result)
+            if(result.code&&result.code==-54){
+                /**
+                 * 发送事件去登录
+                 */
+                NativeAppEventEmitter.emit('getMsg_202_code_need_login');
+                return
+            }
+            if (result.code && result.code == 10) {
+
+                /**
+                 * dataList中设置已读消息
+                 * @type {*[]}
+                 */
+                let dataList = this.state.dataList
+                for(let index=0;index<dataList.length;index++){
+                    if(dataList[index].id==id){
+                        dataList[index].do_ret=true
+                        break;
+                    }
+
+                }
+                console.log(`dataList`, dataList);
+
+                this.setState({
+                    dataList: dataList,
+                    dataSource: this._dataSource.cloneWithRows(dataList),
+                })
+            } else {
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: result.msg
+                })
+            }
+
+        }
+        catch (error) {
+            console.log(error)
+            //..调用toast插件, show出错误信息...
+
         }
 
     }
@@ -373,7 +569,7 @@ const navigationBarRouteMapper = {
             return null;
         }
 
-        var previousRoute = navState.routeStack[ index - 1 ];
+        var previousRoute = navState.routeStack[index - 1];
         return (
             <TouchableOpacity
                 onPress={() => navigator.pop()}
@@ -409,4 +605,4 @@ const navigationBarRouteMapper = {
 
 }
 
-export default XhrEnhance(MessageList)
+export default AppEventListenerEnhance(XhrEnhance(MessageList))
