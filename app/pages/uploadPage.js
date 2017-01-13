@@ -130,7 +130,7 @@ class UploadPage extends Component {
         let uploadingXhrCacheIndex = this._uploadingXhrCacheList.findIndex((xhrCache) => {
             return uri == xhrCache.uri
         })
-        let xhr = this._uploadingXhrCacheList.splice(uploadingXhrCacheIndex, 1)
+        let xhr = this._uploadingXhrCacheList.splice(uploadingXhrCacheIndex, 1)[0]
         if (xhr.status != 200 || xhr.readyState != 4) {
             xhr.abort()
         }
@@ -149,9 +149,10 @@ class UploadPage extends Component {
         if (restUploadNum <= 0) {
             return
         }
-        console.log(`_startUploadQuene`)
+        //console.log(`_startUploadQuene photoList ->`, this.state.photoList)
         let shiftNum = restUploadNum <= this._waitForUploadQuene.length ? restUploadNum : this._waitForUploadQuene.length
         for (let i = 0; i < shiftNum; i++) {
+            //console.log(`i = ${i}, shiftNum = ${shiftNum}`)
             let uploadTask = this._waitForUploadQuene.shift()   //将待上传队列当前第一项任务对象从队列中取出
             let xhrCache = uploadTask.init()                    //执行上传任务
             this._uploadingXhrCacheList.push(xhrCache)          //缓存该上传任务的xhr对象
@@ -159,14 +160,9 @@ class UploadPage extends Component {
     }
 
     _upload (uploadPhoto) {
-        console.log(`_upload`)
-        let { photoList, } = this.state
+        console.log(`_upload uploadPhoto.uri = `, uploadPhoto.uri)
 
-        let photoIndex = photoList.findIndex((photo) => {
-            return uploadPhoto.uri == photo.uri
-        })
-        let photo = photoList[ photoIndex ]
-        console.log(`_upload photoList photoIndex`, photoList, photoIndex)
+        //console.log(`_upload photoList photoIndex`, photoList, photoIndex)
 
         let xhr = new XMLHttpRequest();
 
@@ -180,10 +176,14 @@ class UploadPage extends Component {
             })
             this._uploadingXhrCacheList.splice(uploadingXhrCacheIndex, 1)
 
+            let photoIndex = this.state.photoList.findIndex((photo) => {
+                return uploadPhoto.uri == photo.uri
+            })
+            let photo = this.state.photoList[ photoIndex ]
             photo.uploading = false
             photo.uploadError = true
             this.setState({
-                photoList: [...photoList.slice(0, photoIndex), photo, ...photoList.slice(photoIndex, photoList.length - 1)]
+                photoList: [...photoList.slice(0, photoIndex), photo, ...photoList.slice(photoIndex + 1, photoList.length)]
             });
             this._startUploadQuene()    //再次启动上传队列(因为this._uploadingXhrCacheList的length有变化了)
         };
@@ -198,15 +198,19 @@ class UploadPage extends Component {
             })
             this._uploadingXhrCacheList.splice(uploadingXhrCacheIndex, 1)
 
+            let photoIndex = this.state.photoList.findIndex((photo) => {
+                return uploadPhoto.uri == photo.uri
+            })
+            let photo = this.state.photoList[ photoIndex ]
             photo.uploading = false
             photo.uploadError = true
             this.setState({
-                photoList: [...photoList.slice(0, photoIndex), photo, ...photoList.slice(photoIndex, photoList.length - 1)]
+                photoList: [...this.state.photoList.slice(0, photoIndex), photo, ...this.state.photoList.slice(photoIndex + 1, this.state.photoList.length)]
             });
             this._startUploadQuene()    //再次启动上传队列(因为this._uploadingXhrCacheList的length有变化了)
         };
 
-        xhr.open('post', 'http://192.168.1.200:8080/app/gateway');
+        xhr.open('post', 'http://posttestserver.com/post.php');
         xhr.onload = () => {
             if (xhr.status == 200 && xhr.readyState == 4) {
                 console.log(`xhr.responseText = ${xhr.responseText}`)
@@ -215,13 +219,17 @@ class UploadPage extends Component {
                 })
                 this._uploadingXhrCacheList.splice(uploadingXhrCacheIndex, 1)
 
+                let photoIndex = this.state.photoList.findIndex((photo) => {
+                    return uploadPhoto.uri == photo.uri
+                })
+                let photo = this.state.photoList[ photoIndex ]
                 photo.uploading = false
                 photo.uploaded = true
-                console.log(`xhr.onload photoList = `, photoList)
-                console.log(` this._uploadingXhrCacheList = `,  this._uploadingXhrCacheList)
-                console.log(` this._waitForUploadQuene = `,  this._waitForUploadQuene)
+                //console.log(`xhr.onload photoList = `, photoList)
+                //console.log(` this._uploadingXhrCacheList = `,  this._uploadingXhrCacheList)
+                //console.log(` this._waitForUploadQuene = `,  this._waitForUploadQuene)
                 this.setState({
-                    photoList: [...photoList.slice(0, photoIndex), photo, ...photoList.slice(photoIndex, photoList.length - 1)]
+                    photoList: [...this.state.photoList.slice(0, photoIndex), photo, ...this.state.photoList.slice(photoIndex + 1, this.state.photoList.length)]
                 });
                 this._startUploadQuene()    //再次启动上传队列(因为this._uploadingXhrCacheList的length有变化了)
             }
@@ -229,7 +237,7 @@ class UploadPage extends Component {
         };
         var formdata = new FormData();
 
-        formdata.append('file', { ...uploadPhoto, type: 'image/jpg', name: uploadPhoto.filename }); //for android, must set type:'...'
+        formdata.append('image', { ...uploadPhoto, type: 'image/jpg', name: uploadPhoto.filename }); //for android, must set type:'...'
         //formdata.append('file', { ...uploadPhoto, name: uploadPhoto.filename }); //for android, must set type:'...'
 
         //这里增加其他参数, 比如: itype
@@ -242,10 +250,14 @@ class UploadPage extends Component {
 
         xhr.upload.onprogress = (event) => {
             if (event.lengthComputable) {
-                console.log(`${event.loaded} / ${event.total}`)
+                //console.log(`${event.loaded} / ${event.total}`)
+                let photoIndex = this.state.photoList.findIndex((photo) => {
+                    return uploadPhoto.uri == photo.uri
+                })
+                let photo = this.state.photoList[ photoIndex ]
                 photo.uploadProgress = event.loaded / event.total
                 this.setState({
-                    photoList: [...photoList.slice(0, photoIndex), photo, ...photoList.slice(photoIndex, photoList.length - 1)]
+                    photoList: [...this.state.photoList.slice(0, photoIndex), photo, ...this.state.photoList.slice(photoIndex + 1, this.state.photoList.length)]
                 });
             }
         };
@@ -254,9 +266,35 @@ class UploadPage extends Component {
 
         xhr.send(formdata);
 
+        let photoIndex = this.state.photoList.findIndex((photo) => {
+            return uploadPhoto.uri == photo.uri
+        })
+        let photo = this.state.photoList[ photoIndex ]
         photo.uploading = true
+
+        let newPhotoList
+        //if(photoIndex == 0) {
+        //    newPhotoList = [photo, ...photoList.slice(photoIndex, photoList.length)]
+        //    console.log(`newPhotoList photoIndex == 0`, newPhotoList)
+        //}
+        //else if(photoIndex == photoList.length - 1) {
+        //    newPhotoList = [...photoList.slice(0, photoIndex), photo]
+        //    console.log(`newPhotoList photoIndex == photoList.length - 1`, newPhotoList)
+        //}
+        //else {
+        //    newPhotoList = [...photoList.slice(0, photoIndex), photo, ...photoList.slice(photoIndex + 1, photoList.length)]
+        //    console.log(`else`, newPhotoList)
+        //}
+        //
+        //this.setState({
+        //    photoList: newPhotoList
+        //});
+
+        //console.log(`photoIndex, this.state.photoList.slice(0, photoIndex)`, photoIndex, this.state.photoList.slice(0, photoIndex))
+        //console.log(`photoIndex, his.state.photoList.slice(photoIndex + 1, this.state.photoList.length)`, photoIndex, this.state.photoList.slice(photoIndex + 1, this.state.photoList.length))
+
         this.setState({
-            photoList: [...photoList.slice(0, photoIndex), photo, ...photoList.slice(photoIndex, photoList.length - 1)]
+            photoList: [...this.state.photoList.slice(0, photoIndex), photo, ...this.state.photoList.slice(photoIndex + 1, this.state.photoList.length)]
         });
 
         let xhrCache = { xhr, uri: uploadPhoto.uri }    //用uri来做唯一性
@@ -264,7 +302,7 @@ class UploadPage extends Component {
     }
 
     _renderGridCell = (data, index, list) => {
-            console.log(`_renderGridCell data.uri`, data.uri)
+            //console.log(`_renderGridCell data.uri`, data.uri)
             return (
                 <TouchableOpacity underlayColor={'#eee'} style={{backgroundColor: 'red'}}>
                     <View style={{ overflow: 'hidden',
