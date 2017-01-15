@@ -15,6 +15,7 @@ import {
     Dimensions,
     Alert,
     NativeAppEventEmitter,
+    ActivityIndicator,
 } from 'react-native'
 
 import constants from  '../constants/constant';
@@ -22,6 +23,7 @@ import SudokuGrid from 'react-native-smart-sudoku-grid'
 import Icon from 'react-native-vector-icons/Ionicons'
 import XhrEnhance from '../lib/XhrEnhance'
 import AppEventListenerEnhance from 'react-native-smart-app-event-listener-enhance'
+import TimerEnhance from 'react-native-smart-timer-enhance'
 import PicturePicker from './picturePicker'
 import navigatorStyle from '../styles/navigatorStyle'       //navigationBar样式
 import Button from 'react-native-smart-button'
@@ -30,35 +32,34 @@ import {getDeviceID,getToken} from '../lib/User'
 const { width: deviceWidth } = Dimensions.get('window')
 const columnCount = 3;
 const photoList = [
-    //{
-    //filename: "IMG_0004.JPG",
-    //height: 2500,
-    //isStored: true,
-    //uploaded:true,
-    //uploading:false,
-    //uri: "assets-library://asset/asset.JPG?id=99D53A1F-FEEF-40E1-8BB3-7DD55A43C8B7&ext=JPG",
-    //width: 1668
-    //}
+    {
+    filename: "IMG_0003.JPG",
+    height: 2500,
+    isStored: true,
+    uploaded:true,
+    uploading:false,
+    uri: "assets-library://asset/asset.JPG?id=9F983DBA-EC35-42B8-8773-B597CF782EDD&ext=JPG",
+    width: 1668
+    }
 ];
 
 const maxiumUploadImagesCount = 30 //最多上传图片总数
 const maxiumXhrNums = 5 //最多同时上传数量
-let firstDataList = []
 
 class UploadPage extends Component {
 
-  /*  // 构造
-    constructor (props) {
-        super(props)
-        // 初始状态
-        this.state = {
-            photoList,   //{ uri: 'xxx', compressedUri: 'xxx', uploadProgress: 0.9, uploadError: false, uploading: true, uploaded: false,   }, { uri: 'xxx', compressedUri: 'xxx', uploadProgress: 1, uploadError: false, uploading: false, uploaded: true,  }
-        };
-        this._uploadingXhrCacheList = []    //正在上传中的(包含上传失败的)xhr缓存列表, 用uri做唯一性, 该列表长度会影响当前可用的上传线程数
-        this._waitForUploadQuene = []       //待上传队列, 用uri做唯一性
-    }*/
+    /*  // 构造
+     constructor (props) {
+     super(props)
+     // 初始状态
+     this.state = {
+     photoList,   //{ uri: 'xxx', compressedUri: 'xxx', uploadProgress: 0.9, uploadError: false, uploading: true, uploaded: false,   }, { uri: 'xxx', compressedUri: 'xxx', uploadProgress: 1, uploadError: false, uploading: false, uploaded: true,  }
+     };
+     this._uploadingXhrCacheList = []    //正在上传中的(包含上传失败的)xhr缓存列表, 用uri做唯一性, 该列表长度会影响当前可用的上传线程数
+     this._waitForUploadQuene = []       //待上传队列, 用uri做唯一性
+     }*/
     // 构造
-    constructor(props) {
+    constructor (props) {
         super(props);
         // 初始状态
         this._dataSource = new ListView.DataSource({
@@ -67,26 +68,37 @@ class UploadPage extends Component {
         });
 
         this.state = {
-            service_id:this.props.service_id,//服务单id
-            photoList: firstDataList,
-            dataSource: this._dataSource.cloneWithRows(firstDataList),
+            service_id: this.props.service_id,//服务单id
+            photoList,
+            dataSource: this._dataSource.cloneWithRows(photoList),
         }
         this._uploadingXhrCacheList = []    //正在上传中的(包含上传失败的)xhr缓存列表, 用uri做唯一性, 该列表长度会影响当前可用的上传线程数
         this._waitForUploadQuene = []       //待上传队列, 用uri做唯一性
+        this._waitForAddPhotos = null
+
+        this._initCustomData()
+
     }
 
-
-    componentWillMount() {
+    componentWillMount () {
         NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
         let currentRoute = this.props.navigator.navigationContext.currentRoute
         this.addAppEventListener(
             this.props.navigator.navigationContext.addListener('willfocus', (event) => {
                 console.log(`orderPage willfocus...`)
                 console.log(`currentRoute`, currentRoute)
-                //console.log(`event.data.route`, event.data.route)
-                if (event&&currentRoute === event.data.route) {
+                console.log(`event.data.route`, event.data.route)
+                if (event && currentRoute === event.data.route) {
                     console.log("orderPage willAppear")
                     NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
+                    if(this._waitForAddPhotos && this._waitForAddPhotos.length > 0) {
+                        this.setTimeout( () => {
+                            //@todo async this._getCompressedPhotos 返回photos数组, 遍历this._waitForAddPhotos {let compressedUri = await NativeCompressedModule.compress(...); 遍历的photo对象uri赋值compressedUri }
+                            this._addToUploadQuene(this._waitForAddPhotos)
+                            this._waitForAddPhotos = null
+                        }, 300)
+
+                    }
                 } else {
                     console.log("orderPage willDisappear, other willAppear")
                 }
@@ -95,47 +107,17 @@ class UploadPage extends Component {
         )
     }
 
-/*    render () {
-        return (
-            <ScrollView style={styles.container}>
-                <Text style={styles.welcome}>
-                    单证资料上传,支持jpg、png,最多支持30张,单张图片小于5M
-                </Text>
-                <TouchableOpacity underlayColor={'#eee'} onPress={()=>{
-                     this.props.navigator.push({
-                        title: '相机胶卷',
-                        component: PicturePicker,
-                        passProps: {
-                            maxiumUploadImagesCount,
-                            currentUploadImagesCount: this.state.photoList.length,
-                            addToUploadQuene: this._addToUploadQuene
-                        }
-                    })
-                }}>
-                    <View style={{ overflow: 'hidden',
-                      justifyContent: 'center', alignItems: 'center', height: 150,
-                      borderWidth: StyleSheet.hairlineWidth, borderColor: constants.UIInActiveColor,
-                      borderRightWidth: StyleSheet.hairlineWidth, }}>
-                                <Icon
-                                    name='md-add'  // 图标
-                                    size={50}
-                                    color={constants.UIInActiveColor}/>
-                    </View>
-                </TouchableOpacity>
-                <SudokuGrid
-                    style={styles.sudokuGrid}
-                    rowWidth={deviceWidth - 4}
-                    containerStyle={{ backgroundColor: '#fff',}}
-                    columnCount={columnCount}
-                    dataSource={this.state.photoList}
-                    renderCell={this._renderGridCell}
-                />
+    async _initCustomData () {
+        this._token = await getToken()
+        this._deviceID = await getDeviceID()
+        this._data = await this.gZip({data:  {
+            iType: constants.iType.upload,
+            deviceId: this._deviceID,
+            token: this._token,
+        }})
+    }
 
-            </ScrollView>
-        );
-    }*/
-
-    render() {
+    render () {
         return (
             <View style={styles.container}>
                 <ListView
@@ -149,14 +131,15 @@ class UploadPage extends Component {
                     underlayColor={constants.UIInActiveColor}
                     style={styles.buttonStyle}
                     textStyle={{fontSize: 17, color: 'white'}}
-                onPress={()=>{
+                    onPress={()=>{
                             this.props.navigator.push({
                         title: '相机胶卷',
                         component: PicturePicker,
                         passProps: {
                             maxiumUploadImagesCount,
                             currentUploadImagesCount: this.state.photoList.length,
-                            addToUploadQuene: this._addToUploadQuene
+                            waitForAddToUploadQuene: this._waitForAddToUploadQuene
+                            //addToUploadQuene: this._addToUploadQuene
                         }
                     })
                 }}>
@@ -171,21 +154,36 @@ class UploadPage extends Component {
     }
 
     _renderRow = (rowData, sectionID, rowID) => {
-        return(
+        let width = height = deviceWidth / 3
+        return (
             <View
                 key={`key${rowID}img`}
-                style={[styles.itemViewStyle,{width: deviceWidth / 3,}]}>
+                style={[styles.itemViewStyle,{width, height,}]}>
                 <Image
                     source={{uri: rowData.uri}}
-                    style={{flex:1, }}/>
-                <TouchableOpacity
-                    style={{position:'absolute',top:0,right:0}}
-                    onPress={()=> Alert.alert(`删除${rowData.uri}`)}>
-                    <Icon
-                        name='md-close-circle'  // 图标
-                        size={constants.IconSize}
-                        color={constants.UIActiveColor}/>
-                </TouchableOpacity>
+                    style={{flex: 1, position: 'relative', }}>
+                    {
+                        rowData.uploading ? <View
+                            style={{flex: 1, backgroundColor: 'rgba(160, 160, 160, 0.5)', justifyContent: 'center', alignItems: 'center',}}>
+                            <ActivityIndicator
+                                animating={true}
+                                color={'#fff'}
+                                size={'small'}/>
+                            <Text
+                                style={{color: '#fff', padding: 5, fontSize: 14,}}>{rowData.uploadProgress ? Math.floor(rowData.uploadProgress * 100) : 0}%</Text>
+                        </View> : null
+                    }
+                    <TouchableOpacity
+                        style={{position:'absolute',top:2,right:2, backgroundColor: 'transparent',}}
+                        onPress={this._removeFromUploadQuene.bind(this, rowData.uri)}>
+                        <Icon
+                            name='md-close-circle'  // 图标
+                            size={constants.IconSize}
+                            color={constants.UIActiveColor}/>
+                    </TouchableOpacity>
+                </Image>
+
+
             </View>
         )
     }
@@ -200,6 +198,10 @@ class UploadPage extends Component {
         })
     }
 
+    _waitForAddToUploadQuene = (photos) => {
+        this._waitForAddPhotos = photos;
+    }
+
     _addToUploadQuene = (photos) => {
         for (let photo of photos) {
             let uploadTask = {
@@ -211,36 +213,39 @@ class UploadPage extends Component {
         //很明显, 这里UI要更新
         let photoList = this.state.photoList
         photoList = photoList.concat(photos)
-        console.log(`_addToUploadQuene photoList = `, photoList)
         this.setState({
             photoList,
-            dataSource:this._dataSource.cloneWithRows(photoList),
+            dataSource: this._dataSource.cloneWithRows(photoList),
         }, () => {
             this._startUploadQuene()    //启动一次上传队列
         })
     }
 
-    _removeFromUploadQuene = (index, uri) => {
+    _removeFromUploadQuene = (uri) => {
         //先看待waitForUploadQuene上传队列中是否存在, 存在直接移除队列中的这个对象, 阻止后续的上传
-        let uploadTaskIndex = this._waitForUploadQuene.find( uploadTask => {
+        let uploadTaskIndex = this._waitForUploadQuene.find(uploadTask => {
             return uri == uploadTask.uri
         })
         this._waitForUploadQuene.splice(uploadTaskIndex, 1)
 
         //再看uploadingXhrCacheList中是否存在(会包含上传失败的xhr), 存在就移除, 这个list的长度会影响当前的上传可用线程数
-        let uploadingXhrCacheIndex = this._uploadingXhrCacheList.findIndex((xhrCache) => {
+        let xhrCache = this._uploadingXhrCacheList.find((xhrCache) => {
             return uri == xhrCache.uri
         })
-        let xhr = this._uploadingXhrCacheList.splice(uploadingXhrCacheIndex, 1)[0]
-        if (xhr.status != 200 || xhr.readyState != 4) {
+        let xhr = xhrCache && xhrCache.xhr
+        if (xhr && (xhr.status != 200 || xhr.readyState != 4)) {
             xhr.abort()
         }
 
         //根据photoIndex, 删除photoList, 并更新state
         let { photoList, } = this.state
-        photoList.splice(index, 1)
+        let photoIndex = photoList.findIndex((photo) => {
+            return photo.uri == uri
+        })
+        photoList.splice(photoIndex, 1)
         this.setState({
             photoList,
+            dataSource: this._dataSource.cloneWithRows(photoList),
         });
     }
 
@@ -256,35 +261,36 @@ class UploadPage extends Component {
             //console.log(`i = ${i}, shiftNum = ${shiftNum}`)
             let uploadTask = this._waitForUploadQuene.shift()   //将待上传队列当前第一项任务对象从队列中取出
             let xhrCache = uploadTask.init()                    //执行上传任务
+            console.log(`_startUploadQuene xhrCache -> `, xhrCache)
             this._uploadingXhrCacheList.push(xhrCache)          //缓存该上传任务的xhr对象
         }
-        console.log('this.state.photoList', this.state.photoList)
+        console.log('end this.state.photoList', this.state.photoList)
+        console.log('end this.state.dataSource', this.state.dataSource)
     }
 
-   async _upload (uploadPhoto) {
+    _upload (uploadPhoto) {
         console.log(`_upload uploadPhoto.uri = `, uploadPhoto.uri)
-       /**
-        * 处理 S  sign
-        */
-       let token = await getToken()
-       let deviceID = await getDeviceID()
-       let options = {
-           method: 'post',
-           url: constants.api.service,
-           data: {
-               iType: constants.iType.upload,
-               deviceId: deviceID,
-               token: token,
-           }
-       }
+        /**
+         * 处理 S  sign
+         */
+        let options = {
+            method: 'post',
+            url: constants.api.service,
+            data: this._data,
+            //data: {
+            //    iType: constants.iType.upload,
+            //    deviceId: this._deviceID,
+            //    token: this._token,
+            //}
+        }
 
-       options.data = await this.gZip(options)
+        //options.data = await this.gZip(options)
 
-       console.log(`_fetch_sendCode options:`, options)
-       /**
-        * S sign处理完成
-        * @type {XMLHttpRequest}
-        */
+        console.log(`_fetch_sendCode options:`, options)
+        /**
+         * S sign处理完成
+         * @type {XMLHttpRequest}
+         */
 
 
         //console.log(`_upload photoList photoIndex`, photoList, photoIndex)
@@ -296,21 +302,28 @@ class UploadPage extends Component {
             console.log('Status ', xhr.status);
             console.log('Error ', xhr.responseText);
 
-            let uploadingXhrCacheIndex = this._uploadingXhrCacheList.findIndex((xhrCache) => {
-                return uploadPhoto.uri == xhrCache.uri
-            })
-            this._uploadingXhrCacheList.splice(uploadingXhrCacheIndex, 1)
-
-            let photoIndex = this.state.photoList.findIndex((photo) => {
-                return uploadPhoto.uri == photo.uri
-            })
-            let photo = this.state.photoList[ photoIndex ]
-            photo.uploading = false
-            photo.uploadError = true
+            let photoList = this._handlePhotoList({ uploadPhoto, eventName: 'onerror' })
             this.setState({
-                photoList: [...photoList.slice(0, photoIndex), photo, ...photoList.slice(photoIndex + 1, photoList.length)],
-                dataSource: this._dataSource.cloneWithRows(firstDataList),
+                photoList,
+                dataSource: this._dataSource.cloneWithRows(photoList),
             });
+
+            //let uploadingXhrCacheIndex = this._uploadingXhrCacheList.findIndex((xhrCache) => {
+            //    return uploadPhoto.uri == xhrCache.uri
+            //})
+            //this._uploadingXhrCacheList.splice(uploadingXhrCacheIndex, 1)
+            //
+            //let photoIndex = this.state.photoList.findIndex((photo) => {
+            //    return uploadPhoto.uri == photo.uri
+            //})
+            //let photo = this.state.photoList[ photoIndex ]
+            //photo.uploading = false
+            //photo.uploadError = true
+            //this.setState({
+            //    photoList: [...photoList.slice(0, photoIndex), photo, ...photoList.slice(photoIndex + 1, photoList.length)],
+            //    dataSource: this._dataSource.cloneWithRows(photoList),
+            //});
+
             this._startUploadQuene()    //再次启动上传队列(因为this._uploadingXhrCacheList的length有变化了)
         };
 
@@ -319,178 +332,205 @@ class UploadPage extends Component {
             console.log('Status ', xhr.status);
             console.log('Response ', xhr.responseText);
 
-            let uploadingXhrCacheIndex = this._uploadingXhrCacheList.findIndex((xhrCache) => {
-                return uploadPhoto.uri == xhrCache.uri
-            })
-            this._uploadingXhrCacheList.splice(uploadingXhrCacheIndex, 1)
-
-            let photoIndex = this.state.photoList.findIndex((photo) => {
-                return uploadPhoto.uri == photo.uri
-            })
-            let photo = this.state.photoList[ photoIndex ]
-            photo.uploading = false
-            photo.uploadError = true
+            let photoList = this._handlePhotoList({ uploadPhoto, eventName: 'ontimeout' })
             this.setState({
-                photoList: [...this.state.photoList.slice(0, photoIndex), photo, ...this.state.photoList.slice(photoIndex + 1, this.state.photoList.length)],
-                dataSource: this._dataSource.cloneWithRows(firstDataList),
+                photoList,
+                dataSource: this._dataSource.cloneWithRows(photoList),
             });
+
+            //let uploadingXhrCacheIndex = this._uploadingXhrCacheList.findIndex((xhrCache) => {
+            //    return uploadPhoto.uri == xhrCache.uri
+            //})
+            //this._uploadingXhrCacheList.splice(uploadingXhrCacheIndex, 1)
+            //
+            //let photoIndex = this.state.photoList.findIndex((photo) => {
+            //    return uploadPhoto.uri == photo.uri
+            //})
+            //let photo = this.state.photoList[ photoIndex ]
+            //photo.uploading = false
+            //photo.uploadError = true
+            //this.setState({
+            //    photoList: [...this.state.photoList.slice(0, photoIndex), photo, ...this.state.photoList.slice(photoIndex + 1, this.state.photoList.length)],
+            //    dataSource: this._dataSource.cloneWithRows(photoList),
+            //});
+
             this._startUploadQuene()    //再次启动上传队列(因为this._uploadingXhrCacheList的length有变化了)
         };
 
-        xhr.open('post', constants.api.service);
+        //xhr.open('post', 'http://posttestserver.com/post.php')
+        xhr.open('post', constants.api.service)
         xhr.onload = () => {
             if (xhr.status == 200 && xhr.readyState == 4) {
                 console.log(`xhr.responseText = ${xhr.responseText}`)
-                let uploadingXhrCacheIndex = this._uploadingXhrCacheList.findIndex((xhrCache) => {
-                    return uploadPhoto.uri == xhrCache.uri
-                })
-                this._uploadingXhrCacheList.splice(uploadingXhrCacheIndex, 1)
 
-                let photoIndex = this.state.photoList.findIndex((photo) => {
-                    return uploadPhoto.uri == photo.uri
-                })
-                let photo = this.state.photoList[ photoIndex ]
-                photo.uploading = false
-                photo.uploaded = true
-                //console.log(`xhr.onload photoList = `, photoList)
-                //console.log(` this._uploadingXhrCacheList = `,  this._uploadingXhrCacheList)
-                //console.log(` this._waitForUploadQuene = `,  this._waitForUploadQuene)
+                let photoList = this._handlePhotoList({ uploadPhoto, eventName: 'onload' })
                 this.setState({
-                    photoList: [...this.state.photoList.slice(0, photoIndex), photo, ...this.state.photoList.slice(photoIndex + 1, this.state.photoList.length)],
-                    dataSource: this._dataSource.cloneWithRows(firstDataList),
+                    photoList,
+                    dataSource: this._dataSource.cloneWithRows(photoList),
                 });
+
+                //let uploadingXhrCacheIndex = this._uploadingXhrCacheList.findIndex((xhrCache) => {
+                //    return uploadPhoto.uri == xhrCache.uri
+                //})
+                //this._uploadingXhrCacheList.splice(uploadingXhrCacheIndex, 1)
+                //
+                //let photoIndex = this.state.photoList.findIndex((photo) => {
+                //    return uploadPhoto.uri == photo.uri
+                //})
+                //let photo = this.state.photoList[ photoIndex ]
+                //photo.uploading = false
+                //photo.uploaded = true
+                //this.setState({
+                //    photoList: [...this.state.photoList.slice(0, photoIndex), photo, ...this.state.photoList.slice(photoIndex + 1, this.state.photoList.length)],
+                //    dataSource: this._dataSource.cloneWithRows(photoList),
+                //});
+
                 this._startUploadQuene()    //再次启动上传队列(因为this._uploadingXhrCacheList的length有变化了)
             }
 
         };
         var formdata = new FormData();
 
-
-
-
-
-        formdata.append('image', { ...uploadPhoto, type: 'image/jpg', name: uploadPhoto.filename }); //for android, must set type:'...'
-        //formdata.append('file', { ...uploadPhoto, name: uploadPhoto.filename }); //for android, must set type:'...'
+        //formdata.append('image', { ...uploadPhoto, type: 'image/jpg', name: uploadPhoto.filename }); //for android, must set type:'...'
+        formdata.append('file', { ...uploadPhoto, type: 'image/jpg', name: uploadPhoto.filename }); //for android, must set type:'...'
 
         //这里增加其他参数, 比如: itype
-        formdata.append({
-            //s: JSON.stringify({
-            //    itype: 95,
-            //}),
-            //itype: 95,
-            s:options.data.s,
-            sign:options.data.sign,
-        })
+        formdata.append('s', options.data.s);
+        formdata.append('sign', options.data.sign);
 
-        //xhr.upload.onprogress = (event) => {
-        //    if (event.lengthComputable) {
-        //        console.log(`${event.loaded} / ${event.total}`)
-        //        photo.uploadProgress = event.loaded / event.total
-        //        this.setState({
-        //            photoList: [...photoList.slice(0, photoIndex), photo, ...photoList.slice(photoIndex, photoList.length - 1)]
-        //        });
-        //    }
-        //};
         xhr.upload.onprogress = (event) => {
             if (event.lengthComputable) {
                 //console.log(`${event.loaded} / ${event.total}`)
-                let photoIndex = this.state.photoList.findIndex((photo) => {
-                    return uploadPhoto.uri == photo.uri
+
+                let photoList = this._handlePhotoList({
+                    uploadPhoto,
+                    eventName: 'onprogress',
+                    loaded: event.loaded,
+                    total: event.total,
                 })
-                let photo = this.state.photoList[ photoIndex ]
-                photo.uploadProgress = event.loaded / event.total
                 this.setState({
-                    photoList: [...this.state.photoList.slice(0, photoIndex), photo, ...this.state.photoList.slice(photoIndex + 1, this.state.photoList.length)],
-                    dataSource: this._dataSource.cloneWithRows(firstDataList),
+                    photoList,
+                    dataSource: this._dataSource.cloneWithRows(photoList),
                 });
+
+                //let photoIndex = this.state.photoList.findIndex((photo) => {
+                //    return uploadPhoto.uri == photo.uri
+                //})
+                //let photo = this.state.photoList[ photoIndex ]
+                //photo.uploadProgress = event.loaded / event.total
+                //this.setState({
+                //    photoList: [...this.state.photoList.slice(0, photoIndex), photo, ...this.state.photoList.slice(photoIndex + 1, this.state.photoList.length)],
+                //    dataSource: this._dataSource.cloneWithRows(photoList),
+                //});
             }
-        };
+        }
 
         xhr.timeout = 600000 //超时60秒
 
         xhr.send(formdata);
 
-        let photoIndex = this.state.photoList.findIndex((photo) => {
-            return uploadPhoto.uri == photo.uri
-        })
-        let photo = this.state.photoList[ photoIndex ]
-        photo.uploading = true
+        let photoList = this._handlePhotoList({ uploadPhoto, })
+        this.setState({
+            photoList,
+            dataSource: this._dataSource.cloneWithRows(photoList),
+        });
 
-        let newPhotoList
-        //if(photoIndex == 0) {
-        //    newPhotoList = [photo, ...photoList.slice(photoIndex, photoList.length)]
-        //    console.log(`newPhotoList photoIndex == 0`, newPhotoList)
-        //}
-        //else if(photoIndex == photoList.length - 1) {
-        //    newPhotoList = [...photoList.slice(0, photoIndex), photo]
-        //    console.log(`newPhotoList photoIndex == photoList.length - 1`, newPhotoList)
-        //}
-        //else {
-        //    newPhotoList = [...photoList.slice(0, photoIndex), photo, ...photoList.slice(photoIndex + 1, photoList.length)]
-        //    console.log(`else`, newPhotoList)
-        //}
+        //let photoIndex = this.state.photoList.findIndex((photo) => {
+        //    return uploadPhoto.uri == photo.uri
+        //})
+        //let photo = this.state.photoList[ photoIndex ]
+        //photo.uploading = true
         //
         //this.setState({
-        //    photoList: newPhotoList
+        //    photoList: [...this.state.photoList.slice(0, photoIndex), photo, ...this.state.photoList.slice(photoIndex + 1, this.state.photoList.length)],
+        //    dataSource: this._dataSource.cloneWithRows(photoList),
         //});
-
-        //console.log(`photoIndex, this.state.photoList.slice(0, photoIndex)`, photoIndex, this.state.photoList.slice(0, photoIndex))
-        //console.log(`photoIndex, his.state.photoList.slice(photoIndex + 1, this.state.photoList.length)`, photoIndex, this.state.photoList.slice(photoIndex + 1, this.state.photoList.length))
-
-        this.setState({
-            photoList: [...this.state.photoList.slice(0, photoIndex), photo, ...this.state.photoList.slice(photoIndex + 1, this.state.photoList.length)],
-            dataSource: this._dataSource.cloneWithRows(firstDataList),
-        });
 
         let xhrCache = { xhr, uri: uploadPhoto.uri }    //用uri来做唯一性
         return xhrCache
     }
-/*
-    _renderGridCell = (data, index, list) => {
-            //console.log(`_renderGridCell data.uri`, data.uri)
-            return (
-                <TouchableOpacity underlayColor={'#eee'} style={{backgroundColor: 'red'}}>
-                    <View style={{ overflow: 'hidden',
-                          justifyContent: 'center', alignItems: 'center', height: 150,
-                          borderWidth: StyleSheet.hairlineWidth, borderColor:constants.UIInActiveColor,
-                          borderRightWidth: (index + 1) % columnCount ? StyleSheet.hairlineWidth: 0, }}>
-                        <Image source={{uri: data.uri}} style={{width: 100, height: 100, }}/>
-                    </View>
-                </TouchableOpacity>
-            )
-    }*/
+
+    _handlePhotoList ({uploadPhoto, eventName, loaded, total,}) {
+        let uploadingXhrCacheIndex = this._uploadingXhrCacheList.findIndex((xhrCache) => {
+            return uploadPhoto.uri == xhrCache.uri
+        })
+        let photoIndex = this.state.photoList.findIndex((photo) => {
+            return uploadPhoto.uri == photo.uri
+        })
+        let photo = this.state.photoList[ photoIndex ]
+        switch (eventName) {
+            case 'onerror':
+            case 'ontimeout':
+                this._uploadingXhrCacheList.splice(uploadingXhrCacheIndex, 1)
+
+                photo.uploading = false
+                photo.uploadError = true
+
+                break;
+            case 'onprogress':
+                photo.uploadProgress = loaded / total
+
+                break;
+            case 'onload':
+                this._uploadingXhrCacheList.splice(uploadingXhrCacheIndex, 1)
+                photo.uploading = false
+                photo.uploaded = true
+
+                break;
+            default:
+                photo.uploading = true
+
+                break;
+        }
+        return [ ...this.state.photoList.slice(0, photoIndex), photo, ...this.state.photoList.slice(photoIndex + 1, this.state.photoList.length) ];
+    }
+
+    /*
+     _renderGridCell = (data, index, list) => {
+     //console.log(`_renderGridCell data.uri`, data.uri)
+     return (
+     <TouchableOpacity underlayColor={'#eee'} style={{backgroundColor: 'red'}}>
+     <View style={{ overflow: 'hidden',
+     justifyContent: 'center', alignItems: 'center', height: 150,
+     borderWidth: StyleSheet.hairlineWidth, borderColor:constants.UIInActiveColor,
+     borderRightWidth: (index + 1) % columnCount ? StyleSheet.hairlineWidth: 0, }}>
+     <Image source={{uri: data.uri}} style={{width: 100, height: 100, }}/>
+     </View>
+     </TouchableOpacity>
+     )
+     }*/
 }
 
-export default AppEventListenerEnhance(XhrEnhance(UploadPage))
+export default TimerEnhance(AppEventListenerEnhance(XhrEnhance(UploadPage)))
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         marginTop: Platform.OS == 'ios' ? 64 : 56,
         backgroundColor: constants.UIBackgroundColor,
-        flexDirection:'column',
+        flexDirection: 'column',
     },
-    listStyle:{
-        flexDirection:'row', //改变ListView的主轴方向
-        flexWrap:'wrap', //换行
+    listStyle: {
+        flexDirection: 'row', //改变ListView的主轴方向
+        flexWrap: 'wrap', //换行
     },
-    itemViewStyle:{
-        justifyContent: 'center',
-        alignItems:'center', //这里要注意，如果每个Item都在外层套了一个 Touchable的时候，一定要设置Touchable的宽高
+    itemViewStyle: {
+        //justifyContent: 'center',
+        //alignItems:'center', //这里要注意，如果每个Item都在外层套了一个 Touchable的时候，一定要设置Touchable的宽高
 
-        height:150,
+        //height:150,
         overflow: 'hidden',
         borderBottomWidth: StyleSheet.hairlineWidth,
         borderLeftWidth: StyleSheet.hairlineWidth,
         borderColor: constants.UIInActiveColor,
     },
-    buttonStyle:{
-        position:'absolute',
-        bottom:10,
+    buttonStyle: {
+        position: 'absolute',
+        bottom: 10,
         margin: 10,
         justifyContent: 'center',
         height: 40,
-        width:deviceWidth-20,
+        width: deviceWidth - 20,
         backgroundColor: constants.UIActiveColor,
         borderRadius: 3,
         //borderWidth: StyleSheet.hairlineWidth,
@@ -539,7 +579,7 @@ const navigationBarRouteMapper = {
     },
 
     RightButton: function (route, navigator, index, navState) {
-        return(
+        return (
             <TouchableOpacity
                 onPress={() =>  Alert.alert(`完成`)}
                 style={navigatorStyle.navBarRightButton}>

@@ -25,7 +25,8 @@ RCT_EXPORT_METHOD(gzipRSA:(NSString *)data
                   rejecter:(RCTPromiseRejectBlock)reject)
 {
     NSLog(@"data------------%@",data);
-    NSString *s = [LFCGzip_Base64Util gzipData:[data dataUsingEncoding:NSUTF8StringEncoding]];
+//  NSString *s = [LFCGzip_Base64Util gzipData:[data dataUsingEncoding:NSUTF8StringEncoding]];
+    NSString *s = data;
     NSLog(@"s------------%@",s);
     //      RSADataSigner *rsaDataSigner = [[RSADataSigner alloc] initWithPrivateKey:privateKey];
     //      NSString *result = [rsaDataSigner signString:s withRSA2:YES];
