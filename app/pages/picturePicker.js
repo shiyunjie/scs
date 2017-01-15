@@ -39,8 +39,9 @@ export default class PicturePicker extends Component {
                         style={{flex:1,alignItems:'center',justifyContent:'center'}}
                         underlayColor={'#eee'}
                         onPress={() => {
-                        this.props.addToUploadQuene(this.state.selected)
-                        this.props.navigator.pop()
+                            this.props.waitForAddToUploadQuene(this.state.selected)
+                            //this.props.addToUploadQuene(this.state.selected)
+                            this.props.navigator.pop()
                     }}>
                         <Text style={[styles.text,{color:constants.UIActiveColor,fontSize:17}]}>
                             发送

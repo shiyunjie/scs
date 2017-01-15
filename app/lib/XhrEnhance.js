@@ -132,7 +132,7 @@ export default XhrEnhance = (ComposedComponent) => {
                         delete(sendData.data['iType'])
                         delete(sendData.data['deviceId'])
                         delete(sendData.data['token'])
-                    console.log('data_deviceId:',sendData.deviceId);
+                        console.log('data_deviceId:',sendData.deviceId);
 
                         console.log('data_sendData:',sendData);
 
@@ -153,9 +153,9 @@ export default XhrEnhance = (ComposedComponent) => {
         gunZip = (data) => {
             return new Promise((resolve, reject) => {
                 try {
-                    let responseData = HttpRSAModule.gunzipRSA(data)
-                    resolve(responseData)
-                    //resolve(data)
+                    //let responseData = HttpRSAModule.gunzipRSA(data)
+                    //resolve(responseData)
+                    resolve(data)
                     } catch (error) {
                     reject(error)
                     }
