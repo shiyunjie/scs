@@ -33,7 +33,7 @@ import {getDeviceID,getToken} from '../lib/User'
 import Toast from 'react-native-smart-toast'
 import AppEventListenerEnhance from 'react-native-smart-app-event-listener-enhance'
 import MessageDetail from './messageDetail'
-import Swipeout from 'react-native-swipeout';
+//import Swipeout from 'react-native-swipeout';
 
 import XhrEnhance from '../lib/XhrEnhance' //http
 //import { message_findSysInfoShow,errorXhrMock } from '../mock/xhr-mock'   //mock data
@@ -117,18 +117,21 @@ class MessageList extends Component {
 
     /*
      </TouchableOpacity>
+     <Swipeout
+     autoClose={true}
+     right={[{
+     text:'删除',
+     color:'white',
+     backgroundColor:'red',
+     onPress:()=>{this._fetchData_delete(rowData.id)}
+     }]}>
+
+     </Swipeout>
      */
 
     _renderRow = (rowData, sectionID, rowID) => {
         return (
-            <Swipeout
-                autoClose={true}
-                right={[{
-                text:'删除',
-                color:'white',
-                backgroundColor:'red',
-                onPress:()=>{this._fetchData_delete(rowData.id)}
-                }]}>
+
                 <TouchableOpacity
                     style={{flex:1}}
                     onPress={ ()=>{
@@ -148,7 +151,7 @@ class MessageList extends Component {
                         do_ret={rowData.do_ret}
                     />
                 </TouchableOpacity>
-            </Swipeout>
+
 
 
 
