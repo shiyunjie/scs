@@ -29,6 +29,7 @@ import navigatorStyle from '../styles/navigatorStyle'       //navigationBaræ ·å¼
 import XhrEnhance from '../lib/XhrEnhance'
 import Icon from 'react-native-vector-icons/Ionicons';
 import Toast from 'react-native-smart-toast'
+import ModalProgress from '../components/modalProgress'
 import AppEventListenerEnhance from 'react-native-smart-app-event-listener-enhance'
 
 
@@ -80,7 +81,8 @@ class Index extends Component {
             count: 0,
             dataList: dataList,
             dataSource: this._dataSource.cloneWithRows(dataList),
-
+            showProgress:false,
+            showReload:false,
         }
     }
 
@@ -116,12 +118,16 @@ class Index extends Component {
 
         console.log(`this._pullToRefreshListView.beginRefresh()`)
         this._pullToRefreshListView.beginRefresh()
+
     }
 
     render() {
 
         return (
         <View style={{flex:1}}>
+            <ModalProgress
+                showProgress={this.state.showProgress}
+                showReload={this.state.showReload}/>
             <PullToRefreshListView
                 style={styles.container}
                 ref={ (component) => this._pullToRefreshListView = component }
@@ -146,6 +152,7 @@ class Index extends Component {
                 marginTop={64}>
 
             </Toast>
+
         </View>
         );
     }
@@ -212,6 +219,7 @@ class Index extends Component {
         }
         finally {
             this._pullToRefreshListView.endRefresh()
+            this.setState({showProgress:false,})
             //console.log(`SplashScreen.close(SplashScreen.animationType.scale, 850, 500)`)
             //SplashScreen.close(SplashScreen.animationType.scale, 850, 500)
         }
@@ -323,7 +331,7 @@ class Index extends Component {
     _onRefresh = () => {
 
         //setTimeout(() => {
-
+        this.setState({showProgress:true,})
             this._fetchData()
 
         //}, 1000)
@@ -336,7 +344,7 @@ export default AppEventListenerEnhance(XhrEnhance(Index))
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        marginTop: Platform.OS == 'ios' ? 64 : 56,
+        paddingTop: Platform.OS == 'ios' ? 64 : 56,
         backgroundColor: constants.UIBackgroundColor,
     },
     progress: {

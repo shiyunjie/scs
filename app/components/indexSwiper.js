@@ -22,7 +22,7 @@ import image_default_banner from '../images/banner.png';    //需要换默认ban
 import Carousel from 'react-native-carousel';
 const { width: deviceWidth } = Dimensions.get('window');
 
-export default class IndexSwiper extends Component{
+export default class IndexSwiper extends Component {
     // 构造
     constructor(props) {
         super(props);
@@ -34,47 +34,83 @@ export default class IndexSwiper extends Component{
     static propTypes = {
 
         ...View.propTypes, // 包含默认的View的属性
-        dataSource:PropTypes.array.isRequired,
-        width:PropTypes.number.isRequired,
-        autoplay:PropTypes.bool.isRequired,
+        dataSource: PropTypes.array.isRequired,
+        width: PropTypes.number.isRequired,
+        autoplay: PropTypes.bool.isRequired,
 
     }
 
+    /*
+     <Swiper style={styles.swiperStyle}
+     autoplay={this.props.autoplay}
+     height={150}
+     width={this.props.width}
+     autoplayTimeout={3}
+     loop={true}>
+     <Image
+     key={index}
+     style={[{width: this.props.width, height: 150}]}
+     //defaultSource={image_default_banner}
+     source={{uri: `${item.big_url}`}}/>*/
+
+
     render() {
         return (
-                 <View style={{height: 150,width:deviceWidth}} >
-                    <Carousel
-                        width={deviceWidth}
-                        delay={3000}
-                        indicatorColor={'#FB687D'}
-                        indicatorSize={25}
-                        indicatorSpace={10}
-                        indicatorOffset={0}
-                        inactiveIndicatorColor={'#fff'}
-                        inactiveIndicatorText= '•'>
-                        {
-                            this.props.dataSource.map((item, index) => {
-                                return (
+            <View style={{height: 150,width:deviceWidth}}>
+                {()=> {
+                    return Platform.OS == 'android' ?
+                        <Carousel
+                            width={deviceWidth}
+                            delay={3000}
+                            indicatorColor={'#FB687D'}
+                            indicatorSize={25}
+                            indicatorSpace={10}
+                            indicatorOffset={0}
+                            inactiveIndicatorColor={'#fff'}
+                            inactiveIndicatorText='•'>
+                            {
+                                this.props.dataSource.map((item, index) => {
+                                    return (
                                         <Image
                                             key={index}
                                             style={{width: this.props.width, height: 150}}
-                                                //defaultSource={image_default_banner}
+                                            //defaultSource={image_default_banner}
                                             source={{uri: `${item.big_url}`}}/>
-                                )
-                            })
-                        }
-                    </Carousel>
-                 </View>
+                                    )
+                                })
+                            }
+                        </Carousel> :
+                        <Swiper style={styles.swiperStyle}
+                                autoplay={this.props.autoplay}
+                                height={150}
+                                width={this.props.width}
+                                autoplayTimeout={3}
+                                loop={true}>
+                            {
+                                this.props.dataSource.map((item, index) => {
+                                    return (
+                                        <Image
+                                            key={index}
+                                            style={{width: this.props.width, height: 150}}
+                                            //defaultSource={image_default_banner}
+                                            source={{uri: `${item.big_url}`}}/>
+                                    )
+                                })
+                            }
+                        </Swiper>
+                            }
+                   }
+            </View>
 
         )
     }
 
 }
 
-var styles = StyleSheet.create({
+let styles = StyleSheet.create({
     swiperStyle: {
         //overflow: 'hidden',
-        //flex: 1,
+        flex: 1,
         //backgroundColor: constants.UIActiveColor,
     },
 

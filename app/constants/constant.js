@@ -42,6 +42,9 @@ export const constant = {
     },
 
     iType: {
+        upload:95,
+
+
         login:100,
         register_firstStep:101,
         checkMsgCode:102,

@@ -258,7 +258,7 @@ class Login extends Component {
                 animating={true}
                 color={'#fff'}
                 size={'small'}/>
-        ) : Platform.OS == 'android' ?
+            ) : Platform.OS == 'android' ?
             (
                 <ProgressBarAndroid
                     style={{margin: 10,}}

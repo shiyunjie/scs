@@ -33,6 +33,7 @@ import Toast from 'react-native-smart-toast'
 import AppEventListenerEnhance from 'react-native-smart-app-event-listener-enhance'
 
 let nextPage;
+let secondNum
 
 class ForgetPassword extends Component {
     // 构造
@@ -43,8 +44,10 @@ class ForgetPassword extends Component {
         this.state = {
             phone: '',
             code: '',
+            ButtonText:'',
 
         };
+        secondNum=60
     }
 
     componentWillMount() {
@@ -70,6 +73,16 @@ class ForgetPassword extends Component {
         //获取设备号
     }
 
+
+    componentWillUnmount() {
+        // 如果存在this.timer，则使用clearTimeout清空。
+        // 如果你使用多个timer，那么用多个变量，或者用个数组来保存引用，然后逐个clear
+        this.timer && clearInterval(this.timer);
+        this._button_3.setState({
+            loading: true,
+            //disabled: true,
+        })
+    }
 
     render() {
 
@@ -107,7 +120,7 @@ class ForgetPassword extends Component {
                             loadingComponent={
                             <View style={{flexDirection: 'row', alignItems: 'center'}}>
                                 {this._renderActivityIndicator()}
-                                <Text style={{fontSize: 15, color: 'white', fontWeight: 'bold', fontFamily: '.HelveticaNeueInterface-MediumP4',}}>发送中</Text>
+                                <Text style={{fontSize: 15, color: 'white', fontWeight: 'bold', fontFamily: '.HelveticaNeueInterface-MediumP4',}}>{this.state.ButtonText}</Text>
                             </View>
                             }
                             onPress={ () => {
@@ -119,6 +132,23 @@ class ForgetPassword extends Component {
                         })
 
                         }else{
+                           this.timer = setInterval(
+                          () => {
+                          secondNum--
+                          this.setState({ButtonText:`${secondNum}秒`})
+
+                          if(secondNum<=0){
+                          this._button_3.setState({
+                            loading: false,
+                            //disabled: false
+                            })
+                         clearInterval(this.timer);
+                         secondNum=60
+                          this.setState({ButtonText:`${secondNum}秒`})
+                          }
+                           },
+                          1000
+                        );
                          this._button_3.setState({
                             loading: true,
                             //disabled: true,
@@ -150,7 +180,7 @@ class ForgetPassword extends Component {
                             <View style={{flexDirection: 'row', alignItems: 'center'}}>
                                 {this._renderActivityIndicator()}
                                 <Text style={{fontSize: 17, color: 'white', fontWeight: 'bold', fontFamily: '.HelveticaNeueInterface-MediumP4',}}>
-                                加载中...</Text>
+                                {this.state.ButtonText}</Text>
                             </View>
                     }
                         onPress={ () => {
@@ -262,6 +292,14 @@ class ForgetPassword extends Component {
                     duration: 255,
                     children: result.msg
                 })
+                //发送错误,重置按钮
+                this._button_3.setState({
+                    loading: false,
+                    //disabled: false
+                })
+                clearInterval(this.timer);
+                secondNum=60
+                this.setState({ButtonText:`${secondNum}秒`})
             }
 
 
@@ -270,10 +308,10 @@ class ForgetPassword extends Component {
 
 
         } finally {
-            this._button_3.setState({
+           /* this._button_3.setState({
                 loading: false,
                 //disabled: false
-            })
+            })*/
             //console.log(`SplashScreen.close(SplashScreen.animationType.scale, 850, 500)`)
             //SplashScreen.close(SplashScreen.animationType.scale, 850, 500)
         }
