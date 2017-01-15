@@ -29,8 +29,9 @@ export default class ListItemView extends Component {
         time: PropTypes.string,
         rightText: PropTypes.string,
         logistics: PropTypes.string,
-        cost: PropTypes.string,
+        cost: PropTypes.num,
         route: PropTypes.string,
+        showCost:PropTypes.bool,
 
 
     }
@@ -40,13 +41,13 @@ export default class ListItemView extends Component {
         time: '',
         rightText: '状态',
         logistics: '',
-        cost: '',
+        showCost:false,
         route: '',
     }
 
 
     render() {
-
+console.log(` cost: PropTypes.string,`+ this.props.cost)
             return (
                 <View style={styles.itemView}>
                     <View style={styles.itemIcon}/>
@@ -65,9 +66,9 @@ export default class ListItemView extends Component {
                             <Text style={{flex:2,color:constants.UIInActiveColor}}>{this.props.logistics}</Text>
                             </View>:<View/>}
                         {
-                            this.props.cost?<View style={styles.itemDetail}>
+                            this.props.showCost?<View style={styles.itemDetail}>
                             <Text style={{color:constants.UIInActiveColor}}>服务费总计:</Text>
-                            <Text style={{flex:2,color:constants.UIInActiveColor}}>{this.props.cost}</Text>
+                            <Text style={{flex:2,color:constants.UIInActiveColor}}>￥{this.props.cost}</Text>
                             </View>:<View/>
                         }
                         <View style={styles.itemDetail}>

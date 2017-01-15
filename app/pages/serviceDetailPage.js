@@ -11,50 +11,403 @@ import {
     ScrollView,
     TextInput,
     Linking,
+    NativeAppEventEmitter,
 } from 'react-native';
 
 
-import constants from  '../constants/constant';
-import UploadPage from './uploadPage';
+import UploadPage from './uploadPage'
+import LogisticsPage from './logisticsPage'
+import LoginPage from './loginPage'
+import PayPage from './payPage'
+import AddOrderPage from './addOrderPage'
+import constants from  '../constants/constant'
+import navigatorStyle from '../styles/navigatorStyle'       //navigationBar样式
+import Icon from 'react-native-vector-icons/Ionicons'
+import AppEventListenerEnhance from 'react-native-smart-app-event-listener-enhance'
 
-export default class ServiceDetail extends Component {
+import {getDeviceID,getToken} from '../lib/User'
+import XhrEnhance from '../lib/XhrEnhance' //http
+import Toast from 'react-native-smart-toast'
+
+let service_id
+class ServiceDetail extends Component {
+    // 构造
+    constructor(props) {
+        super(props);
+
+        // 初始状态
+        this.state = {
+            service_no: '',// 服务单号
+
+            order_status_name: '',// 服务单状态名称
+
+            order_status: '',// 服务单状态
+
+            remark: '',// 备注
+
+            trade_terms: '',// 贸易条款
+
+            country_name: '',// 起运国
+
+            destination_name: '',// 目的国
+
+            logistics_status_name: '',// 物流状态名称
+
+            time_name: '',// 接单时间
+
+            id: this.props.id,// 服务单id
+
+            import_clearance: '',// 进口清关,0否，1是
+
+            international_logistics: '',// 国际物流,0否，1是
+
+            export_country_land: '',// 出口国陆运,0否，1是
+
+            booking_service_name: '',// 订舱服务,0海运，1空运
+
+            domestic_logistics: '',// 国内物流,0否，1是
+
+            credit_letter: '',// 信用证0否，1是
+
+            client_name: '',// 委托人
+
+            client_phone: '',// 联系电话
+
+            commission_content: '',// 委托内容
+
+            ship_company_code: '',// 船公司代码
+
+            ship_company_name: '',// 船公司名称
+
+            ship_name_english: '',// 英文船名
+
+            voyage: '',// 航次
+
+            bill_num: '',// 提单号
+
+            destination_port_name: '',// 目的港
+
+            box_quantity_information: '',// 箱型数量信息
+
+            suitcase_yard: '',// 提箱堆场
+
+            packing_place: '',// 装箱地点
+
+            number: '',// 件数
+
+            weight: '',// 毛重
+
+            volume: '',// 体积
+
+            contract_number: '',// 合同号
+
+            billing_number: '',// 发票号
+
+            consignee_name: '',// 收货人
+
+            consignor_name: '',// 发货人
+            logistics_status_name: '',//物流状态
+        }
+        service_id=this.props.id
+    }
+
+    componentWillMount() {
+        NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
+        let currentRoute = this.props.navigator.navigationContext.currentRoute
+        this.addAppEventListener(
+            this.props.navigator.navigationContext.addListener('willfocus', (event) => {
+                console.log(`OrderDetail willfocus...`)
+                console.log(`currentRoute`, currentRoute)
+                console.log(`event.data.route`, event.data.route)
+                if (currentRoute === event.data.route) {
+                    console.log("OrderDetail willAppear")
+                    NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
+                } else {
+                    console.log("OrderDetail willDisappear, other willAppear")
+                }
+                //
+            })
+        )
+
+        this.addAppEventListener(
+            NativeAppEventEmitter.addListener('bill_has_be_conform_should_refresh',(event)=>{
+                if(event) {
+                    this._fetchData()
+                }
+            })
+        )
+    }
+
+    componentDidMount() {
+        this._fetchData()
+
+    }
+
+    async _fetchData() {
+        try {
+
+            let token = await getToken()
+            let deviceID = await getDeviceID()
+            let options = {
+                method: 'post',
+                url: constants.api.service,
+                data: {
+                    iType: constants.iType.serviceOrderDetail,
+                    id: this.state.id,
+                    deviceId: deviceID,
+                    token: token,
+                }
+            }
+
+            options.data = await this.gZip(options)
+
+            console.log(`_fetch_sendCode options:`, options)
+
+            let resultData = await this.fetch(options)
+
+            let result = await this.gunZip(resultData)
+
+            result = JSON.parse(result)
+            console.log('gunZip:', result)
+            if (result.code && result.code == -54) {
+                /**
+                 * 发送事件去登录
+                 */
+                AsyncStorage.removeItem('token')
+                AsyncStorage.removeItem('realName')
+                this.props.navigator.replace({
+                    title: '用户登录',
+                    component: LoginPage,
+                })
+            }
+            if (result.code && result.code == 10) {
+
+                this.setState(
+                    {
+                        service_no: result.result.service_no,// 服务单号
+
+                        order_status_name: result.result.order_status_name,// 服务单状态名称
+
+                        order_status: result.result.order_status,// 服务单状态
+
+                        remark: result.result.remark,// 备注
+
+                        trade_terms: result.result.trade_terms,// 贸易条款
+
+                        country_name: result.result.country_name,// 起运国
+
+                        destination_name: result.result.destination_name,// 目的国
+
+                        logistics_status_name: result.result.logistics_status_name,// 物流状态名称
+
+                        time_name: result.result.time_name,// 接单时间
+
+
+                        import_clearance: result.result.import_clearance,// 进口清关,0否，1是
+
+                        international_logistics: result.result.international_logistics,// 国际物流,0否，1是
+
+                        export_country_land: result.result.export_country_land,// 出口国陆运,0否，1是
+
+                        booking_service_name: result.result.booking_service_name,// 订舱服务,0海运，1空运
+
+                        domestic_logistics: result.result.domestic_logistics,// 国内物流,0否，1是
+
+                        credit_letter: result.result.credit_letter,// 信用证0否，1是
+
+                        client_name: result.result.client_name,// 委托人
+
+                        client_phone: result.result.client_phone,// 联系电话
+
+                        commission_content: result.result.commission_content,// 委托内容
+
+                        ship_company_code: result.result.ship_company_code,// 船公司代码
+
+                        ship_company_name: result.result.ship_company_name,// 船公司名称
+
+                        ship_name_english: result.result.ship_name_english,// 英文船名
+
+                        voyage: result.result.voyage,// 航次
+
+                        bill_num: result.result.bill_num,// 提单号
+
+                        destination_port_name: result.result.destination_port_name,// 目的港
+
+                        box_quantity_information: result.result.box_quantity_information,// 箱型数量信息
+
+                        suitcase_yard: result.result.suitcase_yard,// 提箱堆场
+
+                        packing_place: result.result.packing_place,// 装箱地点
+
+                        number: result.result.number,// 件数
+
+                        weight: result.result.weight,// 毛重
+
+                        volume: result.result.volume,// 体积
+
+                        contract_number: result.result.contract_number,// 合同号
+
+                        billing_number: result.result.billing_number,// 发票号
+
+                        consignee_name: result.result.consignee_name,// 收货人
+
+                        consignor_name: result.result.consignor_name,// 发货人
+
+                        logistics_status_name: result.result.logistics_status_name,// 物流状态
+                    }
+                )
+
+            } else {
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: result.msg
+                })
+            }
+
+
+        }
+        catch (error) {
+            console.log(error)
+
+        }
+        finally {
+
+            //console.log(`SplashScreen.close(SplashScreen.animationType.scale, 850, 500)`)
+            //SplashScreen.close(SplashScreen.animationType.scale, 850, 500)
+        }
+    }
+
+    async _fetch_cancel() {
+        try {
+
+            let token = await getToken()
+            let deviceID = await getDeviceID()
+            let options = {
+                method: 'post',
+                url: constants.api.service,
+                data: {
+                    iType: constants.iType.serviceOrder_cancelServiceOrder,
+                    id: this.state.id,
+                    deviceId: deviceID,
+                    token: token,
+                }
+            }
+
+            options.data = await this.gZip(options)
+
+            console.log(`_fetch_sendCode options:`, options)
+
+            let resultData = await this.fetch(options)
+
+            let result = await this.gunZip(resultData)
+
+            result = JSON.parse(result)
+            console.log('gunZip:', result)
+            if (result.code && result.code == -54) {
+                /**
+                 * 发送事件去登录
+                 */
+                AsyncStorage.removeItem('token')
+                AsyncStorage.removeItem('realName')
+                this.props.navigator.replace({
+                    title: '用户登录',
+                    component: LoginPage,
+                })
+            }
+            if (result.code && result.code == 10) {
+                //统计总价
+                NativeAppEventEmitter.emit('serviceDetail_hasCancel_should_resetState',this.state.id)
+
+           this.props.navigator.pop()
+
+            } else {
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: result.msg
+                })
+            }
+
+
+        }
+        catch (error) {
+            console.log(error)
+
+        }
+        finally {
+
+            //console.log(`SplashScreen.close(SplashScreen.animationType.scale, 850, 500)`)
+            //SplashScreen.close(SplashScreen.animationType.scale, 850, 500)
+        }
+    }
+
     render() {
         return (
-            <ScrollView style={styles.container}>
-                <View style={styles.viewItem}>
-                    <View style={{flex:3, flexDirection: 'row',justifyContent:'flex-start',}}>
-                        <Text>单号:</Text>
-                        <Text>{this.props.orderNum}</Text>
-                    </View>
-                    <View
-                        style={{flex:1,justifyContent:'flex-end',paddingRight:constants.MarginLeftRight,}}>
-                        <Text style={{color:constants.UIActiveColor}}>{this.props.rightText}</Text>
-                    </View>
-                </View>
-                <View style={styles.line}/>
-                <View style={styles.viewItem}>
-                    <Text>发布时间:</Text>
-                    <Text>{this.props.time}</Text>
-                </View>
-                <View style={styles.line}/>
-                <View style={styles.viewItem}>
-                    <Text>贸易条款:</Text>
-                    <Text>{this.props.time}</Text>
-                </View>
-                <View style={styles.line}/>
-                <View style={styles.viewItem}>
-                    <Text>委托人:</Text>
-                    <Text>用户名</Text>
-                </View>
-                <View style={styles.line}/>
-                <View style={[styles.viewItem]}>
-                    <TouchableOpacity style={{flex:1,justifyContent:'center',alignItems:'center',}} onPress={()=>{
+            <View style={{flex:1}}>
+                <ScrollView style={styles.container}>
+                    <View style={styles.viewItem}>
 
-                    }}>
-                        <Text style={{color:constants.UIActiveColor}}>账单</Text>
+                        <Text style={{flex:1}}>单号:</Text>
+                        <Text style={{flex:2}}>{this.state.service_no}</Text>
 
-                    </TouchableOpacity>
-                    <TouchableOpacity style={{flex:1,justifyContent:'center',alignItems:'center',}} onPress={()=>{
+                        <View
+                            style={{flex:1,justifyContent:'flex-end',paddingRight:constants.MarginLeftRight,}}>
+                            <Text style={{color:constants.UIActiveColor}}>{this.state.order_status_name}</Text>
+                        </View>
+                    </View>
+                    <View style={styles.viewItem}>
+                        <Text style={{flex:1}}>发布时间:</Text>
+                        <Text style={{flex:3}}>{this.state.time_name}</Text>
+                    </View>
+
+                    <View style={styles.viewItem}>
+                        <Text style={{flex:1}}>贸易条款:</Text>
+                        <Text style={{flex:3}}>{this.state.trade_terms}</Text>
+                    </View>
+
+                    <View style={styles.viewItem}>
+                        <Text style={{flex:1}}>委托人:</Text>
+                        <Text style={{flex:3}}>{this.state.client_name}</Text>
+                    </View>
+
+                    <View style={styles.line}/>
+                    <View style={[styles.viewItem]}>
+                        <TouchableOpacity style={[{justifyContent:'center',alignItems:'center',},
+                                        this.state.order_status==10?{width:0}:{flex:1}]}
+                                          onPress={()=>{
+                                          let type='pay'
+                                          if(this.state.order_status==20||this.state.order_status==30||
+                                          this.state.order_status==70||this.state.order_status==100){
+                                            type='show'
+                                          }
+
+                                        if(this.state.order_status!=10){
+
+                                           this.props.navigator.push({
+                                            title: '账单',
+                                            component: PayPage,
+                                            passProps: {
+                                            id:this.state.id,
+                                            pageType:type,
+                                             order_status: this.state.order_status,
+                                            }
+                                        });
+                                        }
+
+                                        }}>
+                            <Text style={{color:constants.UIActiveColor}}>账单</Text>
+
+                        </TouchableOpacity>
+                        <View
+                            style={[{height:30,backgroundColor:constants.UIInActiveColor},
+                             this.state.order_status==30||this.state.order_status==80||this.state.order_status==90||
+                            this.state.order_status==100||this.state.order_status==10?
+                            {width:0}:{width:StyleSheet.hairlineWidth,}]}/>
+                        <TouchableOpacity style={[{justifyContent:'center',alignItems:'center',},
+                            this.state.order_status==30||this.state.order_status==80||this.state.order_status==90||
+                            this.state.order_status==100?
+                            {width:0}:{flex:1}]} onPress={()=>{
                             this.props.navigator.push({
                                         title: '上传资料',
                                         component: UploadPage,
@@ -63,192 +416,232 @@ export default class ServiceDetail extends Component {
                                         }
                                     });
                     }}>
-                        <Text style={{color:constants.UIActiveColor}}>上传</Text>
+                            <Text style={{color:constants.UIActiveColor}}>上传</Text>
 
-                    </TouchableOpacity>
-                    <TouchableOpacity style={{flex:1,justifyContent:'center',alignItems:'center',}} onPress={()=>{
+                        </TouchableOpacity>
+                        <View
+                            style={[{height:30,backgroundColor:constants.UIInActiveColor},
+                            this.state.order_status==10||this.state.order_status==20||this.state.order_status==40||
+                            this.state.order_status==70?
+                            {width:StyleSheet.hairlineWidth,}:{width:0}]}/>
+                        <TouchableOpacity style={[{justifyContent:'center',alignItems:'center',},
+                    this.state.order_status==10||this.state.order_status==20||this.state.order_status==40||
+                            this.state.order_status==70? {flex:1,}:{width:0}]}
+                                          onPress={()=>{
+                                          this._fetch_cancel()
 
-                    }}>
-                        <Text style={{color:constants.UIActiveColor}}>取消</Text>
+                                            }}>
+                            <Text style={{color:constants.UIActiveColor}}>取消</Text>
 
-                    </TouchableOpacity>
-                </View>
-                <View style={styles.line}/>
-                <View style={styles.viewItem}>
-                    <Text>联系方式:</Text>
-                    <Text>13313313131</Text>
-                </View>
-                <View style={styles.line}/>
-                <View style={styles.viewItem}>
-                    <Text>出发国家:</Text>
-                    <Text>日本</Text>
-                </View>
-                <View style={styles.line}/>
-                <View style={styles.viewItem}>
-                    <Text>目的国家:</Text>
-                    <Text>中国</Text>
-                </View>
-                <View style={styles.line}/>
-                <View style={[styles.viewItem,{flex:1},]}>
-                    <Text>货代服务:</Text>
-                    <Text >进口清关、需求国际物流、需求国内物流、出口国陆运</Text>
-                </View>
-                <View style={styles.line}/>
-                <View style={styles.viewItem}>
-                    <Text>支付方式:</Text>
-                    <Text>信用证</Text>
-                </View>
-                <View style={styles.line}/>
-                <View style={[styles.viewItem,{flex:1,}]}>
-                    <Text>委托内容:</Text>
-                    <Text style={{ fontStyle:'italic',}}>FOB模式,体积2立方米,5件运品,谢谢</Text>
-                </View>
-                <View style={[styles.line,{marginBottom:10}]}/>
-                <View style={[styles.viewItem,{flex:1,}]}>
-                    <Text>船公司:</Text>
-                    <Text style={{ fontStyle:'italic',}}>UASC</Text>
-                </View>
-                <View style={[styles.line,]}/>
-                <View style={[styles.viewItem,{flex:1,}]}>
+                        </TouchableOpacity>
+                    </View>
+                    <View style={styles.line}/>
 
-                    <Text>公司名字:</Text>
-                    <Text style={{ fontStyle:'italic',}}>阿拉伯轮船</Text>
+                    <View style={styles.viewItem}>
+                        <Text style={{flex:1}}>联系方式:</Text>
+                        <Text style={{flex:3}}>{this.state.client_phone}</Text>
+                    </View>
 
-                </View>
-                <View style={[styles.line,]}/>
-                <View style={[styles.viewItem,{flex:1,}]}>
+                    <View style={styles.viewItem}>
+                        <Text style={{flex:1}}>出发国家:</Text>
+                        <Text style={{flex:3}}>{this.state.country_name}</Text>
+                    </View>
 
-                    <Text>英文船名:</Text>
-                    <Text style={{ fontStyle:'italic',}}>UACE</Text>
+                    <View style={styles.viewItem}>
+                        <Text style={{flex:1}}>目的国家:</Text>
+                        <Text style={{flex:3}}>{this.state.destination_name}</Text>
+                    </View>
 
-                </View>
-                <View style={[styles.line,]}/>
-                <View style={[styles.viewItem,{flex:1,}]}>
+                    <View style={[{flexDirection: 'row',
+                        justifyContent: 'flex-start',
+                        alignItems: 'center',
+                        paddingLeft: constants.MarginLeftRight,
+                        backgroundColor: 'white',},]}>
+                        <View style={{flex:1}}>
+                            <Text >货代服务:</Text>
+                        </View>
+                        <View style={{flex:3}}>
+                            <Text >{this.state.import_clearance == 1 ? '进口清关、' : ``}
+                                {this.state.international_logistics == 1 ? '国际物流、' : ``}
+                                {this.state.export_country_land == 1 ? '出口国陆运、' : ``}
+                                {this.state.booking_service_name == 0 ? '订舱服务海运、' : ``}
+                                {this.state.domestic_logistics == 1 ? '国内物流、' : ``}</Text>
+                        </View>
+                    </View>
 
-                    <Text>航次:</Text>
-                    <Text style={{ fontStyle:'italic',}}>062</Text>
+                    <View style={styles.viewItem}>
+                        <Text style={{flex:1}}>支付方式:</Text>
+                        <Text style={{flex:3}}>{this.state.credit_letter == 1 ? '信用证' : ``}</Text>
+                    </View>
 
-                </View>
-                <View style={[styles.line,]}/>
-                <View style={[styles.viewItem,{flex:1,}]}>
+                    <View style={[{flexDirection: 'row',
+                        justifyContent: 'flex-start',
+                        alignItems: 'center',
+                        paddingLeft: constants.MarginLeftRight,
+                        backgroundColor: 'white',},]}>
+                        <Text style={{flex:1}}>委托内容:</Text>
+                        <Text style={{flex:3}}> {this.state.commission_content}</Text>
+                    </View>
 
-                    <Text>提单号:</Text>
-                    <Text style={{ fontStyle:'italic',}}>GNNCSY</Text>
 
-                </View>
-                <View style={[styles.line,]}/>
-                <View style={[styles.viewItem,{flex:1,}]}>
+                    <View style={[styles.viewItem,{flex:1,}]}>
+                        <Text style={{flex:1}}>船公司:</Text>
+                        <Text style={{flex:3}}>{this.state.ship_company_code}</Text>
+                    </View>
 
-                    <Text>目的港:</Text>
-                    <Text style={{ fontStyle:'italic',}}>UAGN</Text>
+                    <View style={[styles.viewItem]}>
 
-                </View>
-                <View style={[styles.line,]}/>
-                <View style={[styles.viewItem,{flex:1,}]}>
+                        <Text style={{flex:1}}>公司名字:</Text>
+                        <Text style={{flex:3}}>{this.state.ship_company_name}</Text>
 
-                    <Text>箱型数量:</Text>
-                    <Text style={{ fontStyle:'italic',}}>45GP*2</Text>
+                    </View>
 
-                </View>
-                <View style={[styles.line,]}/>
-                <View style={[styles.viewItem,{flex:1,}]}>
+                    <View style={[{flexDirection: 'row',
+                        justifyContent: 'flex-start',
+                        alignItems: 'center',
+                        paddingLeft: constants.MarginLeftRight,
+                        backgroundColor: 'white',},]}>
 
-                    <Text>提箱堆场:</Text>
-                    <Text style={{ fontStyle:'italic',}}>兴合货柜</Text>
+                        <Text style={{flex:1}}>英文船名:</Text>
+                        <Text style={{flex:3}}>{this.state.ship_name_english}</Text>
 
-                </View>
-                <View style={[styles.line,]}/>
-                <View style={[styles.viewItem,{flex:1,}]}>
+                    </View>
 
-                    <Text>装箱地点:</Text>
-                    <Text style={{ fontStyle:'italic',}}>雅戈尔</Text>
+                    <View style={[styles.viewItem]}>
 
-                </View>
-                <View style={[styles.line,]}/>
-                <View style={[styles.viewItem,{flex:1,}]}>
+                        <Text style={{flex:1}}>航次:</Text>
+                        <Text style={{flex:3}}>{this.state.voyage}</Text>
 
-                    <Text>件数:</Text>
-                    <Text style={{ fontStyle:'italic',}}>10</Text>
+                    </View>
 
-                </View>
-                <View style={[styles.line,]}/>
-                <View style={[styles.viewItem,{flex:1,}]}>
+                    <View style={[styles.viewItem]}>
 
-                    <Text>毛重:</Text>
-                    <Text style={{ fontStyle:'italic',}}>10</Text>
+                        <Text style={{flex:1}}>提单号:</Text>
+                        <Text style={{flex:3}}>{this.state.bill_num}</Text>
 
-                </View>
-                <View style={[styles.line,]}/>
-                <View style={[styles.viewItem,{flex:1,}]}>
+                    </View>
 
-                    <Text>体积:</Text>
-                    <Text style={{ fontStyle:'italic',}}>234</Text>
+                    <View style={[styles.viewItem]}>
 
-                </View>
-                <View style={[styles.line,]}/>
-                <View style={[styles.viewItem,{flex:1,}]}>
+                        <Text style={{flex:1}}>目的港:</Text>
+                        <Text style={{flex:3}}>{this.state.destination_port_name}</Text>
 
-                    <Text>合同号:</Text>
-                    <Text style={{ fontStyle:'italic',}}>GN234</Text>
+                    </View>
 
-                </View>
-                <View style={[styles.line,]}/>
-                <View style={[styles.viewItem,{flex:1,}]}>
+                    <View style={[styles.viewItem]}>
 
-                    <Text>发票号:</Text>
-                    <Text style={{ fontStyle:'italic',}}>934782</Text>
+                        <Text style={{flex:1}}>箱型数量:</Text>
+                        <Text style={{flex:3}}>{this.state.box_quantity_information}</Text>
 
-                </View>
-                <View style={[styles.line,]}/>
-                <View style={[styles.viewItem,{flex:1,}]}>
+                    </View>
 
-                    <Text>收货人:</Text>
-                    <Text style={{ fontStyle:'italic',}}>YGS</Text>
+                    <View style={[styles.viewItem]}>
 
-                </View>
-                <View style={[styles.line,]}/>
-                <View style={[styles.viewItem,{flex:1,}]}>
+                        <Text style={{flex:1}}>提箱堆场:</Text>
+                        <Text style={{flex:3}}>{this.state.suitcase_yard}</Text>
 
-                    <Text>发货人:</Text>
-                    <Text style={{ fontStyle:'italic',}}>BBQ</Text>
+                    </View>
 
-                </View>
-                <View style={[styles.viewItem,{flex:1,}]}>
+                    <View style={[styles.viewItem,{flex:1,}]}>
 
-                    <Text>物流状态:</Text>
-                    <Text style={{ fontStyle:'italic',color:constants.UIActiveColor}}>已接单</Text>
+                        <Text style={{flex:1}}>装箱地点:</Text>
+                        <Text style={{flex:3}}>{this.state.packing_place}</Text>
 
-                </View>
-                <View style={[styles.line,{marginBottom:10}]}/>
+                    </View>
 
-                <TextInput
-                    style={{flex:1,fontSize:15,textAlignVertical:'top',
+                    <View style={[styles.viewItem]}>
+
+                        <Text style={{flex:1}}>件数:</Text>
+                        <Text style={{flex:3}}>{this.state.number}</Text>
+
+                    </View>
+
+                    <View style={[styles.viewItem]}>
+
+                        <Text style={{flex:1}}>毛重:</Text>
+                        <Text style={{flex:3}}>{this.state.weight}</Text>
+
+                    </View>
+
+                    <View style={[styles.viewItem]}>
+
+                        <Text style={{flex:1}}>体积:</Text>
+                        <Text style={{flex:3}}>{this.state.volume}</Text>
+
+                    </View>
+
+                    <View style={[styles.viewItem,{flex:1,}]}>
+
+                        <Text style={{flex:1}}>合同号:</Text>
+                        <Text style={{flex:3}}>{this.state.contract_number}</Text>
+
+                    </View>
+
+                    <View style={[styles.viewItem]}>
+
+                        <Text style={{flex:1}}>发票号:</Text>
+                        <Text style={{flex:3}}>{this.state.billing_number}</Text>
+
+                    </View>
+
+                    <View style={[styles.viewItem,{flex:1,}]}>
+
+                        <Text style={{flex:1}}>收货人:</Text>
+                        <Text style={{flex:3}}>{this.state.consignee_name}</Text>
+
+                    </View>
+
+                    <View style={[styles.viewItem,{flex:1,}]}>
+
+                        <Text style={{flex:1}}>发货人:</Text>
+                        <Text style={{flex:3}}>{this.state.consignor_name}</Text>
+
+                    </View>
+                    <View style={[styles.viewItem]}>
+
+                        <Text style={{ flex:1}}>物流状态:</Text>
+                        <Text style={{ flex:3,color:constants.UIActiveColor}}>{this.state.logistics_status_name}</Text>
+
+                    </View>
+                    <View style={[{marginBottom:10}]}/>
+
+                    <TextInput
+                        style={{flex:1,fontSize:15,textAlignVertical:'top',
 
                       justifyContent:'flex-start',
-
+                        backgroundColor:'white',
                       }}
-                    clearButtonMode="while-editing"
-                    placeholder='拒绝原因'
-                    maxLength={300}
-                    underlineColorAndroid='transparent'
-                    multiline={true}//多行输入
-                    numberOfLines={6}
-                />
-                <View style={[styles.line,{marginBottom:10}]}/>
-                <View style={[styles.line,{marginBottom:10}]}/>
-                <View style={[styles.viewItem]}>
-                    <TouchableOpacity
-                        style={{flex:1,justifyContent:'center',alignItems:'center',}}
-                        onPress={()=>{
-        //打电话
-        return Linking.openURL(constants.Tel);
+                        clearButtonMode="while-editing"
+                        placeholder='拒绝原因'
+                        maxLength={300}
+                        underlineColorAndroid='transparent'
+                        multiline={true}//多行输入
+                        numberOfLines={6}
+                        editable={false}
+                        value={this.state.remark}/>
+                    <View style={[{marginBottom:10}]}/>
+                    <View style={[styles.viewItem]}>
+                        <TouchableOpacity
+                            style={{flex:1,justifyContent:'center',alignItems:'center',}}
+                            onPress={()=>{
+                        //打电话
+                        return Linking.openURL(constants.Tel);
                     }}><Text style={{color:constants.UIActiveColor}}>联系客服</Text></TouchableOpacity>
-                    <View style={[styles.line,{marginBottom:10}]}/>
-                </View>
-            </ScrollView>
+                        <View style={[styles.line,{marginBottom:10}]}/>
+                    </View>
+                    <View style={{height:50}}/>
+                </ScrollView>
+                <Toast
+                    ref={ component => this._toast = component }
+                    marginTop={64}>
+                </Toast>
+            </View>
         );
     }
 }
+
+
+export default AppEventListenerEnhance(XhrEnhance(ServiceDetail))
 
 const styles = StyleSheet.create({
     container: {
@@ -264,12 +657,76 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-start',
         alignItems: 'center',
         paddingLeft: constants.MarginLeftRight,
+        backgroundColor: 'white',
     },
     line: {
-        marginLeft: constants.MarginLeftRight,
-        marginRight: constants.MarginLeftRight,
+        //marginLeft: constants.MarginLeftRight,
+        //marginRight: constants.MarginLeftRight,
         borderBottomWidth: StyleSheet.hairlineWidth,
         borderColor: constants.UIInActiveColor,
     }
 
 });
+
+const navigationBarRouteMapper = {
+
+    LeftButton: function (route, navigator, index, navState) {
+        if (index === 0) {
+            return null;
+        }
+
+        var previousRoute = navState.routeStack[index - 1];
+        return (
+            <TouchableOpacity
+                onPress={() => navigator.pop()}
+                style={navigatorStyle.navBarLeftButton}>
+                <View style={navigatorStyle.navBarLeftButtonAndroid}>
+                    <Icon
+                        style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText,{fontSize: 20,}]}
+                        name={'ios-arrow-back'}
+                        size={constants.IconSize}
+                        color={'white'}/>
+                </View>
+            </TouchableOpacity>
+
+        );
+    },
+
+    RightButton: function (route, navigator, index, navState) {
+        return (
+            <TouchableOpacity
+                onPress={() => {
+            //查看物流
+               navigator.push({
+            title: '查看物流',
+            component: LogisticsPage,
+            passProps: {
+                service_id:service_id,
+            }
+        });
+            }}
+                style={navigatorStyle.navBarRightButton}>
+                <View style={navigatorStyle.navBarLeftButtonAndroid}>
+                    <Text
+                        style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText,{fontSize:14}]}
+                        color={'white'}>
+                        查看物流
+                    </Text>
+                </View>
+            </TouchableOpacity>)
+    },
+
+    Title: function (route, navigator, index, navState) {
+        return (
+            Platform.OS == 'ios' ?
+                <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText]}>
+                    {route.title}
+                </Text> : <View style={navigatorStyle.navBarTitleAndroid}>
+                <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText]}>
+                    {route.title}
+                </Text>
+            </View>
+        )
+    },
+
+}

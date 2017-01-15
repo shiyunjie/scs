@@ -12,30 +12,25 @@ import {
     ListView,
     Image,
     TouchableOpacity,
+    NativeAppEventEmitter,
 } from 'react-native';
 
 import constants from  '../constants/constant';
 import PullToRefreshListView from 'react-native-smart-pull-to-refresh-listview';
 import ItemView from '../components/orderListItemView';
 import ServiceDetailPage from './serviceDetailPage';
-
+import {getDeviceID,getToken} from '../lib/User'
 import HeaderView from '../components/listViewheaderView';
-let firstDataList = [{
-    id: '1',
-    commission_order_no: '888777655',
-    departure_name: '日本',
-    destination_name: '中国',
-    create_time_str: '2017-01-01 12:00',
-    order_status_name: '已下单', // 订单状态 中文名称
-    order_status: 10,// 订单状态 值
-    logistics_status:20,
-    total_cost:3000,
-}];
+import Toast from 'react-native-smart-toast'
+import AppEventListenerEnhance from 'react-native-smart-app-event-listener-enhance'
+
+
+let firstDataList = [];
 
 import XhrEnhance from '../lib/XhrEnhance' //http
 //import { serviceOrder_serviceOrderList,errorXhrMock } from '../mock/xhr-mock'   //mock data
 
-let pageIndex=1;//当前页码
+let pageIndex = 1;//当前页码
 
 class ServiceList extends Component {
     // 构造
@@ -48,52 +43,106 @@ class ServiceList extends Component {
 
         this.state = {
             dataList: firstDataList,
-            dataSource:  this._dataSource.cloneWithRows(firstDataList),
+            dataSource: this._dataSource.cloneWithRows(firstDataList),
         }
+    }
+
+    componentWillMount() {
+
+        this.addAppEventListener(
+            NativeAppEventEmitter.addListener('serviceDetail_hasCancel_should_resetState', (event) => {
+                let DataList = this.state.dataList
+                for (let data of DataList) {
+                    if (data.id == event) {
+                        data.order_status = 100
+                        data.order_status_name = '已取消'
+                        break
+                    }
+                }
+                this.setState({
+                    dataList: DataList,
+                    dataSource: this._dataSource.cloneWithRows(DataList),
+                })
+            })
+        )
+
+        this.addAppEventListener(
+            NativeAppEventEmitter.addListener('bill_has_be_conform_should_refresh', (event)=> {
+                let DataList = this.state.dataList
+                for (let data of DataList) {
+                    if (data.id == event) {
+                        data.order_status = 40
+                        data.order_status_name = '待审核'
+                        break
+                    }
+                }
+                this.setState({
+                    dataList: DataList,
+                    dataSource: this._dataSource.cloneWithRows(DataList),
+                })
+
+            })
+        )
     }
 
 
     componentDidMount() {
-        this._pullToRefreshServiceListView.beginRefresh()
+        if (firstDataList.length == 0 || firstDataList.length == 1) {
+            this._pullToRefreshServiceListView.beginRefresh()
+        }
     }
 
     render() {
         return (
+            <View style={{flex:1}}>
+                <PullToRefreshListView
+                    onLoadMore={this._onLoadMore}
+                    style={styles.container}
+                    ref={ (component) => this._pullToRefreshServiceListView = component }
+                    viewType={PullToRefreshListView.constants.viewType.listView}
+                    contentContainerStyle={{backgroundColor: 'transparent', }}
+                    initialListSize={10}
+                    pageSize={10}
+                    dataSource={this.state.dataSource}
+                    renderHeader={this._renderHeader}
+                    renderFooter={this._renderFooter}
+                    renderRow={this._renderRow}
+                    onRefresh={this._onRefresh}
+                    pullUpDistance={100}
+                    pullUpStayDistance={constants.pullDownStayDistance}
+                    pullDownDistance={100}
+                    pullDownStayDistance={constants.pullDownStayDistance}>
 
-            <PullToRefreshListView
-                onLoadMore={this._onLoadMore}
-                style={styles.container}
-                ref={ (component) => this._pullToRefreshServiceListView = component }
-                viewType={PullToRefreshListView.constants.viewType.listView}
-                contentContainerStyle={{backgroundColor: 'transparent', }}
-                initialListSize={10}
-                pageSize={10}
-                dataSource={this.state.dataSource}
-                renderHeader={this._renderHeader}
-                renderFooter={this._renderFooter}
-                renderRow={this._renderRow}
-                onRefresh={this._onRefresh}
-                pullUpDistance={100}
-                pullUpStayDistance={constants.pullDownStayDistance}
-                pullDownDistance={100}
-                pullDownStayDistance={constants.pullDownStayDistance}>
-
-            </PullToRefreshListView>
+                </PullToRefreshListView>
+                <Toast
+                    ref={ component => this._toast = component }
+                    marginTop={64}>
+                </Toast>
+            </View>
 
         );
     }
+
     /**
      * {
-    id: '1',
-    commission_order_no: '888777655',
-    departure_name: '日本',
-    destination_name: '中国',
-    create_time_str: '2017-01-01 12:00',
-    order_status_name: '已下单', // 订单状态 中文名称
-    order_status: 10,// 订单状态 值
-    logistics_status:20,
-    total_cost:3000,
-    }
+id 服务单id
+
+commission_order_no 服务单号
+
+departure_name 起运国
+
+destination_name 目的国
+
+create_time_str 生成时间
+
+order_status_name 订单状态 中文名称
+
+order_status 订单状态 值
+
+logistics_status 物流状态 值
+
+total_cost 服务费总计
+}
      */
     _renderRow = (rowData, sectionID, rowID) => {
         return (
@@ -105,15 +154,18 @@ class ServiceList extends Component {
                             this.props.navigator.push({
                             title: '服务单',
                             component: ServiceDetailPage,
-                            passProps: rowData,
+                            passProps: {
+                            id:rowData.id,
+                            },
                             });
                             } }>
                 <ItemView
                     orderNum={rowData.commission_order_no}
                     time={rowData.create_time_str}
                     rightText={rowData.order_status_name}
-                    logistics={rowData.logistics_status}
+                    logistics={rowData.logistics_status_str}
                     cost={rowData.total_cost}
+                    showCost={true}
                     route={`${rowData.departure_name} -- -- ${rowData.destination_name}`}
                     style={[{overflow: 'hidden'}]}/>
             </TouchableOpacity>
@@ -221,88 +273,111 @@ class ServiceList extends Component {
         //simulate request data
         pageIndex = 1;
         this._fetchData_refresh()
-       /* setTimeout(() => {
+        /* setTimeout(() => {
 
-            //console.log('outside _onRefresh end...')
+         //console.log('outside _onRefresh end...')
 
 
-            this.setState({
-                dataSource: refreshedDataSource,
-            })
-            this._pullToRefreshServiceListView.endRefresh()
+         this.setState({
+         dataSource: refreshedDataSource,
+         })
+         this._pullToRefreshServiceListView.endRefresh()
 
-        }, 3000)*/
+         }, 3000)*/
     }
 
     _onLoadMore = () => {
         //console.log('outside _onLoadMore start...')
         pageIndex++;
         this._fetchData_loadMore()
-    /*    setTimeout(() => {
+        /*    setTimeout(() => {
 
-            //console.log('outside _onLoadMore end...')
+         //console.log('outside _onLoadMore end...')
 
-            let length = this.state.dataSource.length
+         let length = this.state.dataSource.length
 
-            let addedDataSource = [{
-                id: (length + 1) + '',
-                orderNum: '23366555',
-                time: '2017-01-01 12:00',
-                rightText: '已报价',
-                logistics: '已抵达',
-                cost: '￥3000.00',
-                route: '日本----中国'
-            }]
+         let addedDataSource = [{
+         id: (length + 1) + '',
+         orderNum: '23366555',
+         time: '2017-01-01 12:00',
+         rightText: '已报价',
+         logistics: '已抵达',
+         cost: '￥3000.00',
+         route: '日本----中国'
+         }]
 
-            this.setState({
-                dataSource: this.state.dataSource.concat(addedDataSource),
-            })
+         this.setState({
+         dataSource: this.state.dataSource.concat(addedDataSource),
+         })
 
-            let loadedAll
-            if (length >= 30) {
-                loadedAll = true
-                this._pullToRefreshServiceListView.endLoadMore(loadedAll)
-            }
-            else {
-                loadedAll = false
-                this._pullToRefreshServiceListView.endLoadMore(loadedAll)
-            }
+         let loadedAll
+         if (length >= 30) {
+         loadedAll = true
+         this._pullToRefreshServiceListView.endLoadMore(loadedAll)
+         }
+         else {
+         loadedAll = false
+         this._pullToRefreshServiceListView.endLoadMore(loadedAll)
+         }
 
-        }, 3000)*/
+         }, 3000)*/
     }
 
     async _fetchData_refresh() {
+        try {
+            let token = await getToken()
+            let deviceID = await getDeviceID()
+            let options = {
+                method: 'post',
+                url: constants.api.service,
+                //url: constants.api.serviceOrder_serviceOrderList,
+                data: {
+                    iType: constants.iType.serviceOrderList,
+                    current_page: pageIndex,
+                    deviceId: deviceID,
+                    token: token,
+                }
+            }
 
-        let options = {
-            method:'post',
-            url: constants.api.service,
-            //url: constants.api.serviceOrder_serviceOrderList,
-            data: {
-                iType: constants.iType.serviceOrder_serviceOrderList,
-                current_page: pageIndex,
+            options.data = await this.gZip(options)
+
+            console.log(`_fetch_sendCode options:`, options)
+
+            let resultData = await this.fetch(options)
+
+            let result = await this.gunZip(resultData)
+
+            result = JSON.parse(result)
+            console.log('gunZip:', result)
+            if (result.code && result.code == -54) {
+                /**
+                 * 发送事件去登录
+                 */
+                NativeAppEventEmitter.emit('getMsg_202_code_need_login');
+                return
+            }
+            if (result.code && result.code == 10) {
+                this.setState({
+                    dataList: result.result,
+                    dataSource: this._dataSource.cloneWithRows(result.result),
+                })
+
+            } else {
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: result.msg
+                })
             }
         }
-        try {
-            let result = await this.fetch(options)
-            result = JSON.parse(result)
-            console.log(`result list`, JSON.stringify(result.result.list));
-            let dataList = result.result.list
-
-            console.log(`dataList`, JSON.stringify(dataList));
-            this.setState({
-                dataList: dataList,
-                dataSource: this._dataSource.cloneWithRows(dataList),
-            })
-            console.log('_pullToRefreshServiceListView endRefresh'+this._pullToRefreshServiceListView);
-            this._pullToRefreshServiceListView.endRefresh()
-        }
         catch (error) {
-
+            console.log('_pullToRefreshServiceListView error:' + error);
             //..调用toast插件, show出错误信息...
-            this._pullToRefreshServiceListView.endRefresh()
+
         }
         finally {
-            console.log('_pullToRefreshServiceListView error:'+error);
+
+            this._pullToRefreshServiceListView.endRefresh()
             //console.log(`SplashScreen.close(SplashScreen.animationType.scale, 850, 500)`)
             //SplashScreen.close(SplashScreen.animationType.scale, 850, 500)
         }
@@ -310,39 +385,66 @@ class ServiceList extends Component {
     }
 
     async _fetchData_loadMore() {
-        let options = {
-            //method:{'post'},
-            url: constants.api.serviceOrder_serviceOrderList,
-            data: {
-                iType: constants.iType.serviceOrder_serviceOrderList,
-                current_page: pageIndex,
-            }
-        }
+        let loadedAll = false;
         try {
-            let result = await this.fetch(options)
-            result = JSON.parse(result)
-            //console.log(`fetch result -> `, typeof result)
-            //console.log(`result`, result.result)
-            let loadedAll
-            if (result.result.list && result.result.list.length > 0) {
-                loadedAll = false
-                let dataList = this.state.dataList.concat(result.result.list)
-
-
-                this.setState({
-                    dataList: dataList,
-                    dataSource: this._dataSource.cloneWithRows(dataList),
-                })
-                this._pullToRefreshServiceListView.endLoadMore(loadedAll)
-            } else {
-
-                loadedAll = true
-                this._pullToRefreshServiceListView.endLoadMore(loadedAll)
-                pageIndex--;
-                if (pageIndex < 1) {
-                    pageIndex = 1;
+            let token = await getToken()
+            let deviceID = await getDeviceID()
+            let options = {
+                //method:{'post'},
+                url: constants.api.service,
+                data: {
+                    iType: constants.iType.serviceOrderList,
+                    current_page: pageIndex,
+                    deviceId: deviceID,
+                    token: token,
                 }
+            }
 
+            options.data = await this.gZip(options)
+
+            console.log(`_fetch_sendCode options:`, options)
+
+            let resultData = await this.fetch(options)
+
+            let result = await this.gunZip(resultData)
+
+            result = JSON.parse(result)
+            console.log('gunZip:', result)
+            if (result.code && result.code == -54) {
+                /**
+                 * 发送事件去登录
+                 */
+                NativeAppEventEmitter.emit('getMsg_202_code_need_login');
+                return
+            }
+            if (result.code && result.code == 10) {
+
+                if (result.result && result.result.length > 0) {
+                    loadedAll = false
+                    let dataList = this.state.dataList.concat(result.result)
+
+
+                    this.setState({
+                        dataList: dataList,
+                        dataSource: this._dataSource.cloneWithRows(dataList),
+                    })
+                    this._pullToRefreshServiceListView.endLoadMore(loadedAll)
+                } else {
+
+                    loadedAll = true
+                    this._pullToRefreshServiceListView.endLoadMore(loadedAll)
+                    pageIndex--;
+                    if (pageIndex < 1) {
+                        pageIndex = 1;
+                    }
+
+                }
+            } else {
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: result.msg
+                })
             }
 
         }
@@ -356,7 +458,7 @@ class ServiceList extends Component {
             }
         }
         finally {
-            this._pullToRefreshServiceListView.endLoadMore()
+            this._pullToRefreshServiceListView.endLoadMore(loadedAll)
         }
 
     }
@@ -370,4 +472,4 @@ const styles = StyleSheet.create({
     },
 
 });
-export default XhrEnhance(ServiceList)
+export default AppEventListenerEnhance(XhrEnhance(ServiceList))

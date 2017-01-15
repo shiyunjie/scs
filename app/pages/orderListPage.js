@@ -11,6 +11,7 @@ import {
     ListView,
     Image,
     TouchableOpacity,
+    NativeAppEventEmitter,
 } from 'react-native';
 
 import constants from  '../constants/constant';
@@ -19,10 +20,15 @@ import ItemView from '../components/orderListItemView';
 
 import HeaderView from '../components/listViewheaderView';
 import OrderDetailPage from './orderDetailPage';
+import {getDeviceID,getToken} from '../lib/User'
 
-
+import Toast from 'react-native-smart-toast'
 import XhrEnhance from '../lib/XhrEnhance' //http
+import AppEventListenerEnhance from 'react-native-smart-app-event-listener-enhance'
 //import { commissionOrder_commissionOrderList,errorXhrMock } from '../mock/xhr-mock'   //mock data
+
+
+
 
 let pageIndex = 1;//当前页码
 let firstDataList = [];
@@ -43,11 +49,35 @@ class OrderList extends Component {
     }
 
     componentDidMount() {
-        this._PullToRefreshListView.beginRefresh()
+        if(firstDataList.length==0) {
+            this._PullToRefreshListView.beginRefresh()
+        }
     }
+
+    componentWillMount() {
+
+        this.addAppEventListener(
+            NativeAppEventEmitter.addListener('orderDetail_hasCancel_should_resetState', (event) => {
+                let DataList=this.state.dataList
+                for(let data of DataList){
+                    if(data.id==event){
+                        data.order_status=100
+                        data.order_status_name='已取消'
+                        break
+                    }
+                }
+                this.setState({
+                    dataList: DataList,
+                    dataSource: this._dataSource.cloneWithRows(DataList),
+                })
+            })
+        )
+    }
+
 
     render() {
         return (
+            <View style={{flex:1}}>
             <PullToRefreshListView
                 onLoadMore={this._onLoadMore}
                 style={styles.container}
@@ -66,7 +96,11 @@ class OrderList extends Component {
                 pullDownDistance={100}
                 pullDownStayDistance={constants.pullDownStayDistance}>
             </PullToRefreshListView>
-
+                <Toast
+                    ref={ component => this._toast = component }
+                    marginTop={64}>
+                </Toast>
+            </View>
         );
     }
 
@@ -95,7 +129,9 @@ class OrderList extends Component {
                               this.props.navigator.push({
                               title: '委托单',
                               component: OrderDetailPage,
-                              passProps: rowData,
+                              passProps: {
+                              id:rowData.id
+                              },
                               });
                               } }>
                 <ItemView
@@ -291,29 +327,50 @@ class OrderList extends Component {
 
 
     async _fetchData_refresh() {
-
+        try {
+        let token = await getToken()
+        let deviceID = await getDeviceID()
         let options = {
             method:'post',
             url: constants.api.service,
             data: {
-                iType: constants.iType.commissionOrder_commissionOrderList,
+                iType: constants.iType.commissionOrderList,
                 current_page: pageIndex,
+                deviceId: deviceID,
+                token: token,
             }
         }
-        try {
-            let result = await this.fetch(options)
+
+            options.data = await this.gZip(options)
+
+            console.log(`_fetch_sendCode options:`, options)
+
+            let resultData = await this.fetch(options)
+
+            let result = await this.gunZip(resultData)
+
             result = JSON.parse(result)
-
-            console.log(`result list`, JSON.stringify(result.result.list));
-            let dataList = result.result.list
-
-            console.log(`dataList`, JSON.stringify(dataList));
+            console.log('gunZip:', result)
+            if (result.code && result.code == -54) {
+                /**
+                 * 发送事件去登录
+                 */
+                NativeAppEventEmitter.emit('getMsg_202_code_need_login');
+                return
+            }
+            if (result.code && result.code == 10) {
             this.setState({
-                dataList: dataList,
-                dataSource: this._dataSource.cloneWithRows(dataList),
+                dataList: result.result,
+                dataSource: this._dataSource.cloneWithRows(result.result),
             })
 
-            this._PullToRefreshListView.endRefresh()
+            } else {
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: result.msg
+                })
+            }
         }
         catch (error) {
 
@@ -329,40 +386,69 @@ class OrderList extends Component {
     }
 
     async _fetchData_loadMore() {
+        let loadedAll=false
+        try {
+        let token = await getToken()
+        let deviceID = await getDeviceID()
         let options = {
-            //method:{'post'},
-            url: constants.api.commissionOrder_commissionOrderList,
+
+            method:'post',
+            url: constants.api.service,
             data: {
-                iType: constants.iType.commissionOrder_commissionOrderList,
+                iType: constants.iType.commissionOrderList,
                 current_page: pageIndex,
+                deviceId: deviceID,
+                token: token,
             }
         }
-        try {
-            let result = await this.fetch(options)
+
+            options.data = await this.gZip(options)
+
+            console.log(`_fetch_sendCode options:`, options)
+
+            let resultData = await this.fetch(options)
+
+            let result = await this.gunZip(resultData)
+
             result = JSON.parse(result)
-            //console.log(`fetch result -> `, typeof result)
-            //console.log(`result`, result.result)
-            let loadedAll
-            if (result.result.list && result.result.list.length > 0) {
-                loadedAll = false
-                let dataList = this.state.dataList.concat(result.result.list)
+            console.log('gunZip:', result)
+            if (result.code && result.code == -54) {
+                /**
+                 * 发送事件去登录
+                 */
+                NativeAppEventEmitter.emit('getMsg_202_code_need_login');
+                return
+            }
+            if (result.code && result.code == 10) {
+
+                if (result.result && result.result.length > 0) {
+                    loadedAll = false
+                    let dataList = this.state.dataList.concat(result.result)
 
 
-                this.setState({
-                    dataList: dataList,
-                    dataSource: this._dataSource.cloneWithRows(dataList),
-                })
-                this._PullToRefreshListView.endLoadMore(loadedAll)
-            } else {
+                    this.setState({
+                        dataList: dataList,
+                        dataSource: this._dataSource.cloneWithRows(dataList),
+                    })
+                    this._PullToRefreshListView.endLoadMore(loadedAll)
+                } else {
 
-                loadedAll = true
-                this._PullToRefreshListView.endLoadMore(loadedAll)
-                pageIndex--;
-                if (pageIndex < 1) {
-                    pageIndex = 1;
+                    loadedAll = true
+                    this._PullToRefreshListView.endLoadMore(loadedAll)
+                    pageIndex--;
+                    if (pageIndex < 1) {
+                        pageIndex = 1;
+                    }
+
+                }
+            }else {
+                    this._toast.show({
+                        position: Toast.constants.gravity.center,
+                        duration: 255,
+                        children: result.msg
+                    })
                 }
 
-            }
 
         }
         catch (error) {
@@ -375,7 +461,7 @@ class OrderList extends Component {
             }
         }
         finally {
-            this._PullToRefreshListView.endLoadMore(false)
+            this._PullToRefreshListView.endLoadMore(loadedAll)
             //console.log(`SplashScreen.close(SplashScreen.animationType.scale, 850, 500)`)
             //SplashScreen.close(SplashScreen.animationType.scale, 850, 500)
         }
@@ -394,4 +480,4 @@ const styles = StyleSheet.create({
 
 });
 
-export default XhrEnhance(OrderList)
+export default AppEventListenerEnhance(XhrEnhance(OrderList))

@@ -28,7 +28,7 @@ export default class ListItemView extends Component {
         color: PropTypes.string,
         title: PropTypes.string.isRequired,
         show: PropTypes.bool,
-
+        do_ret:PropTypes.bool,
         time:PropTypes.string,
         content:PropTypes.string,
 
@@ -37,6 +37,7 @@ export default class ListItemView extends Component {
 
     static defaultProps = {
         show: false,
+        do_ret:false,
         size:constants.IconSize,
         color: constants.UIInActiveColor,
         time:'',
@@ -53,11 +54,11 @@ export default class ListItemView extends Component {
 
                 <View style={styles.itemText}>
                     <View style={styles.TextView}>
-                        <Text style={styles.TabText}>{this.props.title}</Text>
-                        <Text style={[styles.TabText,{color:constants.UIInActiveColor,marginLeft:10}]}>{this.props.time}</Text>
+                        <Text style={[styles.TabText,this.props.do_ret?{color:constants.UIInActiveColor}:{color:'black'}]}>{this.props.title}</Text>
+                        <Text style={[styles.TabText,{marginLeft:10},this.props.do_ret?{color:constants.UIInActiveColor}:{color:'black'}]}>{this.props.time}</Text>
                     </View>
                     <View style={styles.TextView}>
-                        <Text style={[styles.TabText,{color:constants.UIInActiveColor}]}>{this.props.content}</Text>
+                        <Text style={[styles.TabText,{color:constants.UIInActiveColor,}]} numberOfLines={1}>{this.props.content}</Text>
                     </View>
 
 
@@ -82,7 +83,7 @@ var styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'flex-start',
         alignItems: 'stretch',
-        padding: 0,
+
         backgroundColor: 'white',
 
 
@@ -102,6 +103,8 @@ var styles = StyleSheet.create({
         alignItems: 'flex-start',
         borderBottomWidth: StyleSheet.hairlineWidth,
         borderColor: constants.UIInActiveColor,
+        paddingTop: 10,
+        paddingBottom: 10,
     },
     itemButton: {
         flex: 1,

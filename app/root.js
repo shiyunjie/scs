@@ -10,11 +10,13 @@ import {
     Platform,
     NativeAppEventEmitter,
     TouchableOpacity,
-    Modal,
+
     AsyncStorage,
 } from 'react-native';
 
 import IndexPage from './pages/indexPage';
+//import IndexPage from './pages/uploadPage';
+
 import UserPage from './pages/userPage';
 import OrderPage from './pages/orderPage';
 import MorePage from './pages/morePage';
@@ -22,10 +24,10 @@ import LoginPage from './pages/loginPage';
 
 import TabNavigator from 'react-native-tab-navigator';
 import Badge from 'react-native-smart-badge'
-
+import navigatorStyle from './styles/navigatorStyle'       //navigationBar样式
 import Icon from 'react-native-vector-icons/Ionicons';
 import AppEventListenerEnhance from 'react-native-smart-app-event-listener-enhance'
-import { checkLogin, } from './lib/User'
+import { getToken, } from './lib/User'
 
 
 import constants from  './constants/constant';
@@ -34,32 +36,36 @@ let backFirstClick = 0//判断一次点击回退键
 
 class Root extends Component {
     // 构造
-    constructor (props) {
+    constructor(props) {
         super(props);
         // 初始状态
         this.state = {
             selectedTab: '首页',
-            hasBadge:false,
+            hasBadge: false,
             //modalVisible:false,
         };
     }
 
-    componentWillMount () {
+    componentWillMount() {
         if (Platform.OS === 'android') {
-            BackAndroid.addEventListener('hardwareBackPress', this.onBackAndroid);
+            this.addAppEventListener(
+                BackAndroid.addEventListener('hardwareBackPress', this.onBackAndroid)
+            )
         }
+        //NativeAppEventEmitter.sendEvent('getMsg_202_code_need_login')
+        this.addAppEventListener(
+            NativeAppEventEmitter.addListener('getMsg_202_code_need_login', () => {
+                //需要登录
+                AsyncStorage.removeItem('token')
+                AsyncStorage.removeItem('realName')
+                this._PushLogin()
+            })
+        )
+
     }
 
-    componentWillUnmount () {
-        if (Platform.OS === 'android') {
-            BackAndroid.removeEventListener('hardwareBackPress', this.onBackAndroid);
-        }
-    }
 
-    componentDidMount () {
-        //AsyncStorage.setItem('useID', 'chenyiqin') //test code, need remove
-        //AsyncStorage.removeItem('useID') //test code, need remove
-    }
+
 
     onBackAndroid = () => {
         const routers = this.props.navigator.getCurrentRoutes();
@@ -86,7 +92,7 @@ class Root extends Component {
      color={constants.UIInActiveColor}/><Text style={styles.tabText}>首页</Text>
      </View>*/
 
-    render () {
+    render() {
         return (
             <TabNavigator style={{flex:1,}}>
                 <TabNavigator.Item
@@ -99,7 +105,7 @@ class Root extends Component {
                     onPress={ () => {
 
                         this.setState({selectedTab: '首页',})
-                         //NativeAppEventEmitter.emit('setNavigationBar.index', NavigationBarRouteMapperList[0])
+                         NativeAppEventEmitter.emit('setNavigationBar.index', NavigationBarRouteMapperList[0])
                     } }>
                     <IndexPage navigator={this.props.navigator}/>
                 </TabNavigator.Item>
@@ -111,9 +117,8 @@ class Root extends Component {
                                             title='订单'
                                             selected={this.state.selectedTab === '订单'}/> }
                     onPress={ () => {
-                        this.setState({selectedTab: '订单',})
-                         //NativeAppEventEmitter.emit('setNavigationBar.index', NavigationBarRouteMapperList[1])
-                    } }>
+                        this._handlePressOrder()
+                         } }>
                     <OrderPage navigator={this.props.navigator}/>
                 </TabNavigator.Item>
                 <TabNavigator.Item
@@ -137,9 +142,8 @@ class Root extends Component {
                                             title='更多'
                                             selected={this.state.selectedTab === '更多'}/> }
                     onPress={ () => {
-                        this.setState({ selectedTab: '更多',})
-                         //NativeAppEventEmitter.emit('setNavigationBar.index', NavigationBarRouteMapperList[3])
-                    } }>
+                        this._handlePressMore()
+                        } }>
                     <MorePage navigator={this.props.navigator}/>
                 </TabNavigator.Item>
             </TabNavigator>
@@ -147,19 +151,58 @@ class Root extends Component {
     }
 
     _handlePressPerson = async () => {
-        let userID = await checkLogin()
-        console.log('userID', userID)
-        if(userID) {
+        let token = await getToken()
+
+        console.log('token', token)
+        if (token && token != '') {
             this.setState({selectedTab: '我的',})
+            NativeAppEventEmitter.emit('setNavigationBar.index', NavigationBarRouteMapperList[2])
         }
         else {
-            this.props.navigator.push({
-                title: '用户登录',
-                component: LoginPage,
-            });
+
+            console.log(`_handlePressPerson`)
+            this._PushLogin()
+
+        }
+    }
+    _handlePressMore = async () => {
+        let token = await getToken()
+
+        console.log('token', token)
+        if (token && token != '') {
+            this.setState({selectedTab: '更多',})
+            NativeAppEventEmitter.emit('setNavigationBar.index', NavigationBarRouteMapperList[3])
+        }
+        else {
+
+            console.log(`_handlePressPerson`)
+            this._PushLogin()
+
         }
     }
 
+    _handlePressOrder = async () => {
+        let token = await getToken()
+
+        console.log('token', token)
+        if (token && token != '') {
+            this.setState({selectedTab: '订单',})
+            NativeAppEventEmitter.emit('setNavigationBar.index', NavigationBarRouteMapperList[1])
+        }
+        else {
+
+            console.log(`_handlePressPerson`)
+            this._PushLogin()
+
+        }
+    }
+
+    _PushLogin() {
+        this.props.navigator.push({
+            title: '用户登录',
+            component: LoginPage,
+        });
+    }
 }
 
 export default AppEventListenerEnhance(Root)
@@ -208,3 +251,154 @@ const styles = StyleSheet.create({
     }
 
 });
+
+let NavigationBarRouteMapperList = [
+    {
+
+        LeftButton: function (route, navigator, index, navState) {
+            if (index === 0) {
+                return null;
+            }
+
+            var previousRoute = navState.routeStack[ index - 1 ];
+            return (
+                <TouchableOpacity
+                    onPress={() => navigator.pop()}
+                    style={navigatorStyle.navBarLeftButton}>
+                    <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarButtonText]}>
+                        back
+                    </Text>
+                </TouchableOpacity>
+            );
+        },
+
+        RightButton: function (route, navigator, index, navState) {
+
+        },
+
+        Title: function (route, navigator, index, navState) {
+            return (
+                Platform.OS == 'ios' ?
+                    <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText]}>
+                        首页
+                    </Text> : <View style={{alignSelf: 'center', position: 'relative', left: -35,}}>
+                    <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText]}>
+                        首页
+                    </Text>
+                </View>
+            )
+        },
+
+    },
+    {
+
+        LeftButton: function (route, navigator, index, navState) {
+            if (index === 0) {
+                return null;
+            }
+
+            var previousRoute = navState.routeStack[ index - 1 ];
+            return (
+                <TouchableOpacity
+                    onPress={() => navigator.pop()}
+                    style={navigatorStyle.navBarLeftButton}>
+                    <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarButtonText]}>
+                        back
+                    </Text>
+                </TouchableOpacity>
+            );
+        },
+
+        RightButton: function (route, navigator, index, navState) {
+
+        },
+
+        Title: function (route, navigator, index, navState) {
+            return (
+                Platform.OS == 'ios' ?
+                    <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText]}>
+                        订单
+                    </Text> : <View style={{alignSelf: 'center', position: 'relative', left: -35,}}>
+                    <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText]}>
+                        订单
+                    </Text>
+                </View>
+            )
+        },
+
+    },
+    {
+
+        LeftButton: function (route, navigator, index, navState) {
+            if (index === 0) {
+                return null;
+            }
+
+            var previousRoute = navState.routeStack[ index - 1 ];
+            return (
+                <TouchableOpacity
+                    onPress={() => navigator.pop()}
+                    style={navigatorStyle.navBarLeftButton}>
+                    <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarButtonText]}>
+                        back
+                    </Text>
+                </TouchableOpacity>
+            );
+        },
+
+        RightButton: function (route, navigator, index, navState) {
+
+        },
+
+        Title: function (route, navigator, index, navState) {
+            return (
+                Platform.OS == 'ios' ?
+                    <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText]}>
+                        个人中心
+                    </Text> : <View style={{alignSelf: 'center', position: 'relative', left: -35,}}>
+                    <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText]}>
+                        个人中心
+                    </Text>
+                </View>
+            )
+        },
+
+    },
+    {
+
+        LeftButton: function (route, navigator, index, navState) {
+            if (index === 0) {
+                return null;
+            }
+
+            var previousRoute = navState.routeStack[ index - 1 ];
+            return (
+                <TouchableOpacity
+                    onPress={() => navigator.pop()}
+                    style={navigatorStyle.navBarLeftButton}>
+                    <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarButtonText]}>
+                        back
+                    </Text>
+                </TouchableOpacity>
+            );
+        },
+
+        RightButton: function (route, navigator, index, navState) {
+
+        },
+
+        Title: function (route, navigator, index, navState) {
+            return (
+                Platform.OS == 'ios' ?
+                    <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText]}>
+                        更多
+                    </Text> : <View style={{alignSelf: 'center', position: 'relative', left: -35,}}>
+                    <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText]}>
+                        更多
+                    </Text>
+                </View>
+            )
+        },
+
+    },
+];

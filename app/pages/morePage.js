@@ -21,6 +21,8 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import navigatorStyle from '../styles/navigatorStyle'       //navigationBar样式
 
 import XhrEnhance from '../lib/XhrEnhance' //http
+
+import AppEventListenerEnhance from 'react-native-smart-app-event-listener-enhance'
 //import { member_changePwd,errorXhrMock } from '../mock/xhr-mock'   //mock data
 
 class More extends Component {
@@ -36,6 +38,7 @@ class More extends Component {
     componentWillMount() {
         NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
         let currentRoute = this.props.navigator.navigationContext.currentRoute
+        this.addAppEventListener(
         this.props.navigator.navigationContext.addListener('willfocus', (event) => {
             console.log(`orderPage willfocus...`)
             console.log(`currentRoute`, currentRoute)
@@ -48,7 +51,7 @@ class More extends Component {
             }
             //
         })
-
+        )
     }
 
     render() {
@@ -103,20 +106,21 @@ class More extends Component {
     _onCall=()=>{
         //打电话
         //return Linking.openURL(constants.Tel)
-       /* this.props.navigator.push({
+        this.props.navigator.push({
             title: '联系我们',
             component: ContactPage,
 
-        });*/
+        });
     };
     _onHelp=()=>{
-        /*this.props.navigator.push({
+        this.props.navigator.push({
             title: '帮助中心',
             component: HelpPage,
 
-        });*/
+        });
     };
     _onEdit=()=>{
+
         this.props.navigator.push({
             title: '用户反馈',
             component: EditPage,
@@ -191,4 +195,4 @@ const navigationBarRouteMapper = {
 }
 
 
-export default XhrEnhance(More)
+export default AppEventListenerEnhance(XhrEnhance(More))

@@ -31,6 +31,7 @@ export default class ListItemView extends Component {
         rightText: PropTypes.string,
         show: PropTypes.bool,
         hasCheckBox: PropTypes.bool,
+        hasLine: PropTypes.bool,
 
 
     }
@@ -41,6 +42,7 @@ export default class ListItemView extends Component {
         hasCheckBox: false,
         size:constants.IconSize,
         color:constants.UIInActiveColor,
+        hasLine:true,
     }
 
 
@@ -49,10 +51,10 @@ export default class ListItemView extends Component {
             return (
                 <View style={styles.itemView}>
                     <View style={styles.itemIcon}/>
-                    <View style={styles.itemText}>
+                    <View style={[styles.itemText,this.props.hasLine?{borderBottomWidth:StyleSheet.hairlineWidth}:{borderBottomWidth:0}]}>
                         <Text style={styles.TabText}>{this.props.title}</Text>
                     </View>
-                    <View style={styles.itemButton}>
+                    <View style={[styles.itemButton,this.props.hasLine?{borderBottomWidth:StyleSheet.hairlineWidth}:{borderBottomWidth:0}]}>
                         <Text style={styles.TabText}>{this.props.rightText}</Text>
                         <Icon
                             name={this.props.name}  // 图标
@@ -102,7 +104,7 @@ var styles = StyleSheet.create({
         flex: 4,
         flexDirection: 'row',
         alignItems: 'center',
-        borderBottomWidth: StyleSheet.hairlineWidth,
+        borderBottomWidth:StyleSheet.hairlineWidth,
         borderColor: constants.UIInActiveColor,
     },
     itemButton: {
@@ -110,7 +112,7 @@ var styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'flex-end',
         alignItems: 'center',
-        borderBottomWidth: StyleSheet.hairlineWidth,
+        borderBottomWidth:StyleSheet.hairlineWidth,
         borderColor: constants.UIInActiveColor,
         paddingRight:10,
     },

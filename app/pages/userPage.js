@@ -23,6 +23,11 @@ import image_head from '../images/head.png';
 import EditInfoPage from './changeInfoPage';
 import ChangePwdPage from './changepwdPage';
 import MessagePage from './messagePage';
+import LoginPage from './loginPage';
+
+import {getDeviceID,getToken,getRealName} from '../lib/User'
+
+import AppEventListenerEnhance from 'react-native-smart-app-event-listener-enhance'
 
 //import XhrEnhance from '../lib/XhrEnhance' //http
 //import { errorXhrMock } from '../mock/xhr-mock'   //mock data
@@ -30,7 +35,9 @@ import MessagePage from './messagePage';
 
 const { width: deviceWidth } = Dimensions.get('window');
 
-export default class UserPage extends Component {
+
+
+class UserPage extends Component {
     // 构造
       constructor(props) {
         super(props);
@@ -44,6 +51,7 @@ export default class UserPage extends Component {
     componentWillMount() {
         NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
         let currentRoute = this.props.navigator.navigationContext.currentRoute
+        this.addAppEventListener(
         this.props.navigator.navigationContext.addListener('willfocus', (event) => {
             console.log(`orderPage willfocus...`)
             console.log(`currentRoute`, currentRoute)
@@ -56,6 +64,12 @@ export default class UserPage extends Component {
             }
             //
         })
+        )
+        this._getUserName()
+    }
+    async _getUserName(){
+        let userName=await getRealName()
+        this.setState({userName:userName})
 
     }
 
@@ -127,11 +141,13 @@ export default class UserPage extends Component {
     }
 
     _onProfile=()=>{
-
     };
 
     _onSingOut=()=>{
-
+        /**
+         * 发送事件去登录
+         */
+        NativeAppEventEmitter.emit('getMsg_202_code_need_login');
     };
     _onMessage=()=>{
         this.props.navigator.push({
@@ -166,6 +182,7 @@ export default class UserPage extends Component {
     };
 }
 
+export default AppEventListenerEnhance(UserPage)
 const styles = StyleSheet.create({
     container: {
         flex: 1,

@@ -39,6 +39,8 @@ export default class InputView extends Component {
         maxLength: PropTypes.number,
         secureTextEntry: PropTypes.bool,
         onChangeText: PropTypes.func,
+        value:PropTypes.object,
+        secureTextEntry:PropTypes.bool,
 
     }
 
@@ -48,6 +50,7 @@ export default class InputView extends Component {
         secureTextEntry: false,
         placeholderTextColor: constants.UIInActiveColor,
         iconColor: constants.UIActiveColor,
+        secureTextEntry:false,
     }
 
 
@@ -68,6 +71,9 @@ export default class InputView extends Component {
                     maxLength={this.props.maxLength}
                     onChangeText={this.props.onChangeText}
                     underlineColorAndroid='transparent'
+                    secureTextEntry={this.props.secureTextEntry}
+                    value={this.props.value}
+                    onChangeText={this.props.onChangeText}
                 />
                 <View style={styles.view}/>
 

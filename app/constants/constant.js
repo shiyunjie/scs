@@ -25,40 +25,64 @@ export const constant = {
 
 
     api: {
-        //service:'http://192.168.1.200:8080/app/gateway',
-        service:'http://posttestserver.com/post.php',
-        indexShowPicture: '/index/showPicture',
-        commissionOrder_commissionOrderList:'/commissionOrder/commissionOrderList',
-        serviceOrder_serviceOrderList:'/serviceOrder/serviceOrderList',
-        message_findSysInfoShow:'/message/findSysInfoShow',
-        member_changeInfoShow:'/member/changeInfoShow',
-        member_changeInfo:'/member/changeInfo',
-        member_changePwd:'/member/changePwd',
-        sysInfo_helpCenter:'/sysInfo/helpCenter',
-        sysInfo_feedBack:'/sysInfo/feedBack',
-        register_firstStep:'/register/firstStep',
-        checkMsgCode:'/checkMsgCode',
-        register_secondStep:'/register/secondStep'
+        service:'http://192.168.1.200:8080/app/gateway',
+        //service:'http://f154876m19.imwork.net:16374/app/gateway',
+            /*indexShowPicture: '/index/showPicture',
+            commissionOrder_commissionOrderList:'/commissionOrder/commissionOrderList',
+            serviceOrder_serviceOrderList:'/serviceOrder/serviceOrderList',
+            message_findSysInfoShow:'/message/findSysInfoShow',
+            member_changeInfoShow:'/member/changeInfoShow',
+            member_changeInfo:'/member/changeInfo',
+            member_changePwd:'/member/changePwd',
+            sysInfo_helpCenter:'/sysInfo/helpCenter',
+            sysInfo_feedBack:'/sysInfo/feedBack',
+            register_firstStep:'/register/firstStep',
+            checkMsgCode:'/checkMsgCode',
+            register_secondStep:'/register/secondStep'*/
     },
 
     iType: {
+        upload:95,
+
+
+        login:100,
+        register_firstStep:101,
+        checkMsgCode:102,
+        register_secondStep:103,
+
+        forgetPwdCode:104,
+        checkForgetCode:105,
+        SavePwd:106,
+
+
         indexShowPicture: 111,
-        member_changeInfoShow:131,
-        member_changeInfo:132,
+
+        changePwd:131,
+        changeInfoShow:132,
+        changeInfo:133,
         member_changePwd:130,
 
+        commissionOrderStart:231,
+        commissionOrderList: 232,
+        cancelCommissionOrder:233,
+        showCommissionOrderDetail:234,
 
-        commissionOrder_commissionOrderList: 232,
+        commissionOrder_commissionOrderEditSave:237,
 
-        serviceOrder_serviceOrderList: 331,
+        serviceOrderList: 331,
+        serviceOrderDetail:332,
+        serviceCost_findServiceCost:333,
+        serviceOrder_cancelServiceOrder:335,
+        LogisticsLog:334,
+        serviceOrder_confirmServiceOrder:336,
 
-        sysInfo_feedBack:431,
+        feedBack:431,
         sysInfo_helpCenter:432,
 
-        message_findSysInfoShow:531,
-        register_firstStep:101,
-        register_secondStep:103,
-        checkMsgCode:102,
+        findSysInfoShow:531,
+        delSysInfo:532,
+        infoDetail:533,
+
 
 
 

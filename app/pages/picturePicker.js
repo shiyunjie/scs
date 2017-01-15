@@ -31,15 +31,19 @@ export default class PicturePicker extends Component {
         return (
             <View style={styles.container}>
                 <View style={styles.content}>
-                    <Text style={styles.text}>
+                    <View style={{flex:1}}/>
+                    <Text style={[styles.text,{color:'black'}]}>
                         <Text style={styles.bold}>已选择{this.state.num}张</Text>照片
                     </Text>
-                    <TouchableOpacity underlayColor={'#eee'} onPress={() => {
+                    <TouchableOpacity
+                        style={{flex:1,alignItems:'center',justifyContent:'center'}}
+                        underlayColor={'#eee'}
+                        onPress={() => {
                         this.props.addToUploadQuene(this.state.selected)
                         this.props.navigator.pop()
                     }}>
-                        <Text>
-                            {this.state.num ? this.state.num : null} 发送
+                        <Text style={[styles.text,{color:constants.UIActiveColor,fontSize:17}]}>
+                            发送
                         </Text>
                     </TouchableOpacity>
                 </View>

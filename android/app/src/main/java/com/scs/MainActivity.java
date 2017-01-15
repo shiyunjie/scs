@@ -18,6 +18,8 @@ import com.reactnativecomponet.http.RCTHttpRSAPackage;
 import java.util.Arrays;
 import java.util.List;
 
+import cn.jpush.reactnativejpush.JPushPackage;
+
 public class MainActivity extends ReactActivity {
 
     /**
@@ -49,7 +51,8 @@ public class MainActivity extends ReactActivity {
                         new RNSpinkitPackage(),
                         new RCTSplashScreenPackage(),  //register Module
                         new PickerViewPackage(),
-                        new RCTHttpRSAPackage()
+                        new RCTHttpRSAPackage(),
+                        new JPushPackage(false,false)
                 );
             }
 

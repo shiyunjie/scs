@@ -24,36 +24,39 @@ import navigatorStyle from '../styles/navigatorStyle'       //navigationBar样�
 import XhrEnhance from '../lib/XhrEnhance' //http
 //import { sysInfo_feedBack,errorXhrMock } from '../mock/xhr-mock'   //mock data
 
-import {getDeviceID,getToken,getRealName} from '../lib/User'
+import {getDeviceID,getToken} from '../lib/User'
 import Toast from 'react-native-smart-toast'
 import AppEventListenerEnhance from 'react-native-smart-app-event-listener-enhance'
 
-class Edit extends Component {
+class OnLinePay extends Component {
     // 构造
-      constructor(props) {
+    constructor(props) {
         super(props);
         // 初始状态
         this.state = {
-            text:'',
+            id:this.props.service_id,
+            payList:this.props.payList,
+            hasPayList:this.props.hasPayList,
+            total:this.props.total,
         };
-      }
+    }
 
     componentWillMount() {
         NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
         let currentRoute = this.props.navigator.navigationContext.currentRoute
         this.addAppEventListener(
-        this.props.navigator.navigationContext.addListener('willfocus', (event) => {
-            console.log(`orderPage willfocus...`)
-            console.log(`currentRoute`, currentRoute)
-            //console.log(`event.data.route`, event.data.route)
-            if (event&&currentRoute === event.data.route) {
-                console.log("orderPage willAppear")
-                NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
-            } else {
-                console.log("orderPage willDisappear, other willAppear")
-            }
-            //
-        })
+            this.props.navigator.navigationContext.addListener('willfocus', (event) => {
+                console.log(`orderPage willfocus...`)
+                console.log(`currentRoute`, currentRoute)
+                //console.log(`event.data.route`, event.data.route)
+                if (event && currentRoute === event.data.route) {
+                    console.log("orderPage willAppear")
+                    NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
+                } else {
+                    console.log("orderPage willDisappear, other willAppear")
+                }
+                //
+            })
         )
     }
 
@@ -62,32 +65,17 @@ class Edit extends Component {
         return (
             <View
                 style={styles.container}>
-              <View
-                  style={{flex:1,}}>
-                  <TextInput
-                      style={{flex:1,
-                      fontSize:16,
-                      backgroundColor:'white',
-                      textAlignVertical:'top',
-                      margin:3,
-                      borderTopWidth: StyleSheet.hairlineWidth,
-                      borderBottomWidth: StyleSheet.hairlineWidth,
-                      borderColor: constants.UIInActiveColor,
-                      justifyContent:'flex-start'
-                      }}
-                      clearButtonMode="while-editing"
-                      placeholder='请提供宝贵意见'
-                      maxLength={300}
-                      underlineColorAndroid='transparent'
-                      multiline={true}//多行输入
-                      numberOfLines={10}
-                      editable = {true}
-                      value={this.state.text}
-                      onChangeText={(text) => this.setState({text:text})}/>
-                  <Text style={{color:constants.UIInActiveColor,position:'absolute',
-                  bottom:5,right:5,}}>300字以内</Text>
-              </View>
-                <View  style={{flex:1,padding:10}}>
+                <View
+                    style={{flex:1,flexDirection:'column',justifyContent:'flex-start',alignItems:'stretch'}}>
+                    <View>
+                        <Text>银联</Text>
+                    </View>
+                    <View>
+                        <Text>微信</Text>
+                    </View>
+                    <View>
+                        <Text>支付宝</Text>
+                    </View>
                     <Button
                         ref={ component => this.button2 = component }
                         touchableType={Button.constants.touchableTypes.fadeContent}
@@ -114,7 +102,7 @@ class Edit extends Component {
                             })
                             }, 3000)*/
                     }}>
-                        提交
+                        确认
                     </Button>
                 </View>
                 <Toast
@@ -126,72 +114,72 @@ class Edit extends Component {
         );
     }
 
-    async _fetch_edit(){
+    async _fetch_edit() {
         try {
-        let token= await getToken()
-        let deviceID= await getDeviceID()
-        let options = {
-            method:'post',
-            url: constants.api.service,
-            data: {
-                iType: constants.iType.feedBack,
-                content:this.state.text,
-                deviceId:deviceID,
-                token:token,
+            let token = await getToken()
+            let deviceID = await getDeviceID()
+            let options = {
+                method: 'post',
+                url: constants.api.service,
+                data: {
+                    iType: constants.iType.feedBack,
+
+                    deviceId: deviceID,
+                    token: token,
+                }
             }
-        }
 
-        options.data=await this.gZip(options)
+            options.data = await this.gZip(options)
 
-        console.log(`_fetch_sendCode options:` ,options)
+            console.log(`_fetch_sendCode options:`, options)
 
-        let resultData = await this.fetch(options)
+            let resultData = await this.fetch(options)
 
-        let result=await this.gunZip(resultData)
+            let result = await this.gunZip(resultData)
 
-            result=JSON.parse(result)
-        console.log('gunZip:',result)
-            if(result.code&&result.code==-54){
+            result = JSON.parse(result)
+            console.log('gunZip:', result)
+            if (result.code && result.code == -54) {
                 /**
                  * 发送事件去登录
                  */
                 NativeAppEventEmitter.emit('getMsg_202_code_need_login');
                 return
             }
-        if(result.code&&result.code==10){
-            /* Alert.alert('提示', '注册成功', () => {
-             this.props.navigator.popToTop()
-             })*/
-            this._toast.show({
-                position: Toast.constants.gravity.center,
-                duration: 255,
-                children: '提交成功'
-            })
+            if (result.code && result.code == 10) {
+                /* Alert.alert('提示', '注册成功', () => {
+                 this.props.navigator.popToTop()
+                 })*/
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: '提交成功'
+                })
 
-            this.props.navigator.pop()
-        }else{
-            this._toast.show({
-                position: Toast.constants.gravity.center,
-                duration: 255,
-                children: result.msg
-            })
+                this.props.navigator.pop()
+            } else {
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: result.msg
+                })
+            }
+
+
         }
+        catch (error) {
+            console.log(error)
 
 
-    }
-    catch (error) {
-        console.log(error)
-
-
-    }
-    finally {
-        this.button2.setState({
-            loading: false,
-            //disabled: false
-        })
-        //console.log(`SplashScreen.close(SplashScreen.animationType.scale, 850, 500)`)
-        //SplashScreen.close(SplashScreen.animationType.scale, 850, 500)
-    }
+        }
+        finally {
+            this.button2.setState({
+                loading: false,
+                //disabled: false
+            })
+            //console.log(`SplashScreen.close(SplashScreen.animationType.scale, 850, 500)`)
+            //SplashScreen.close(SplashScreen.animationType.scale, 850, 500)
+        }
     }
 
 
@@ -246,7 +234,7 @@ const navigationBarRouteMapper = {
             return null;
         }
 
-        var previousRoute = navState.routeStack[ index - 1 ];
+        var previousRoute = navState.routeStack[index - 1];
         return (
             <TouchableOpacity
                 onPress={() => navigator.pop()}
@@ -282,4 +270,4 @@ const navigationBarRouteMapper = {
 
 }
 
-export default AppEventListenerEnhance(XhrEnhance(Edit))
+export default AppEventListenerEnhance(XhrEnhance(OnLinePay))

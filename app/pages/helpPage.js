@@ -1,7 +1,7 @@
 /**
  * Created by shiyunjie on 16/12/6.
  */
-import React, { Component } from 'react';
+import React, { PropTypes,Component } from 'react';
 import {
     StyleSheet,
     Text,
@@ -18,22 +18,28 @@ import {
     NativeAppEventEmitter,
 } from 'react-native';
 
-import constants from  '../constants/constant';
+import constants from  '../constants/constant'
+import firstDataList from '../constants/helpData'
 
-import PullToRefreshListView from 'react-native-smart-pull-to-refresh-listview';
-import ItemView from '../components/orderItemView';
-import HeaderView from '../components/listViewheaderView';
-import MessageDetail from './messageDetail';
+//import PullToRefreshListView from 'react-native-smart-pull-to-refresh-listview'
+//import ItemView from '../components/orderItemView'
+import HeaderView from '../components/listViewheaderView'
+import MessageDetail from './messageDetail'
 import navigatorStyle from '../styles/navigatorStyle'       //navigationBar样式
-import Icon from 'react-native-vector-icons/Ionicons';
+import Icon from 'react-native-vector-icons/Ionicons'
 
 
-import XhrEnhance from '../lib/XhrEnhance' //http
+//import XhrEnhance from '../lib/XhrEnhance' //http
 //import { sysInfo_helpCenter,errorXhrMock } from '../mock/xhr-mock'   //mock data
 
 
+import AppEventListenerEnhance from 'react-native-smart-app-event-listener-enhance'
+import ItemView from '../components/helpItemView'
+
 let pageIndex = 1;//当前页码
-let firstDataList = [];
+let dataList=[]
+
+
 
 
 
@@ -55,6 +61,7 @@ class Help extends Component {
     componentWillMount() {
         NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
         let currentRoute = this.props.navigator.navigationContext.currentRoute
+        this.addAppEventListener(
         this.props.navigator.navigationContext.addListener('willfocus', (event) => {
             console.log(`OrderDetail willfocus...`)
             console.log(`currentRoute`, currentRoute)
@@ -67,46 +74,53 @@ class Help extends Component {
             }
             //
         })
+        )
+
+
     }
 
 
     componentDidMount() {
-        this._pullToRefreshListView.beginRefresh()
+        //this._pullToRefreshListView.beginRefresh()
     }
+
+    /*<PullToRefreshListView
+     onLoadMore={this._onLoadMore}
+     style={styles.container}
+     ref={ (component) => this._PullToRefreshListView= component }
+     viewType={PullToRefreshListView.constants.viewType.listView}
+     contentContainerStyle={{backgroundColor: 'transparent', }}
+     initialListSize={10}
+     pageSize={10}
+     dataSource={this.state.dataSource}
+     renderHeader={this._renderHeader}
+     renderFooter={this._renderFooter}
+     renderRow={this._renderRow}
+     onRefresh={this._onRefresh}
+     pullUpDistance={100}
+     pullUpStayDistance={constants.pullDownStayDistance}
+     pullDownDistance={100}
+     pullDownStayDistance={constants.pullDownStayDistance}>
+
+     </PullToRefreshListView>*/
 
     render() {
         return (
-
-            <PullToRefreshListView
-                onLoadMore={this._onLoadMore}
+            <ListView
                 style={styles.container}
-                ref={ (component) => this._PullToRefreshListView = component }
-                viewType={PullToRefreshListView.constants.viewType.listView}
-                contentContainerStyle={{backgroundColor: 'transparent', }}
-                initialListSize={10}
-                pageSize={10}
                 dataSource={this.state.dataSource}
-                renderHeader={this._renderHeader}
-                renderFooter={this._renderFooter}
                 renderRow={this._renderRow}
-                onRefresh={this._onRefresh}
-                pullUpDistance={100}
-                pullUpStayDistance={constants.pullDownStayDistance}
-                pullDownDistance={100}
-                pullDownStayDistance={constants.pullDownStayDistance}>
-
-            </PullToRefreshListView>
-
+                contentContainerStyle={styles.listStyle}
+                showsVerticalScrollIndicator={false}
+                showsHorizontalScrollIndicator={false}/>
         );
     }
 
-    _renderRow = (rowData, sectionID, rowID) => {
-
-        return (
-            <TouchableOpacity
-                key={`item-${rowID}`}
-                style={{height:50,}}
-                onPress={()=>{
+    /**
+     *  <TouchableOpacity
+     key={`item-${rowID}`}
+     style={{height:50,}}
+     onPress={()=>{
                     this.props.navigator.push({
                     title: '帮助中心',
                     component: MessageDetail,
@@ -117,13 +131,24 @@ class Help extends Component {
                         }
                         });
                         }}>
-                <ItemView
-                    style={[{overflow: 'hidden',borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: '#ccc',}]}
-                    name='ios-arrow-forward'
-                    size={constants.IconSize}
-                    title={rowData.title}/>
-            </TouchableOpacity>
-
+     <ItemView
+     style={[{overflow: 'hidden',borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: '#ccc',}]}
+     name='ios-arrow-forward'
+     size={constants.IconSize}
+     title={rowData.title}/>
+     </TouchableOpacity>
+     * @param rowData
+     * @param sectionID
+     * @param rowID
+     * @private
+     */
+    _renderRow = (rowData, sectionID, rowID) => {
+        return (
+            <ItemView
+                key={`key${rowID}`}
+                show={false}
+                data={rowData}
+                index={rowID}/>
         )
     }
 
@@ -235,6 +260,7 @@ class Help extends Component {
         this._fetchData_loadMore()
 
     }
+
     async _fetchData_refresh() {
 
         let options = {
@@ -243,7 +269,7 @@ class Help extends Component {
             data: {
                 iType: constants.iType.sysInfo_helpCenter,
                 current_page: pageIndex,
-                memberId:this.props.memberId,
+                memberId: this.props.memberId,
             }
         }
         try {
@@ -261,7 +287,7 @@ class Help extends Component {
 
         }
         catch (error) {
-
+            console.log(error)
             //..调用toast插件, show出错误信息...
 
         }
@@ -276,11 +302,12 @@ class Help extends Component {
     async _fetchData_loadMore() {
         let options = {
             //method:{'post'},
-            url: constants.api.service,
+            //url: constants.api.service,
+            url: constants.api.sysInfo_helpCenter,
             data: {
                 iType: constants.iType.sysInfo_helpCenter,
                 current_page: pageIndex,
-                memberId:this.props.memberId,
+                memberId: this.props.memberId,
             }
         }
         try {
@@ -312,7 +339,7 @@ class Help extends Component {
 
         }
         catch (error) {
-            //console.log(error)
+            console.log(error)
             //..调用toast插件, show出错误信息...
 
             pageIndex--;
@@ -347,6 +374,7 @@ const styles = StyleSheet.create({
 
     },
 
+
 });
 
 const navigationBarRouteMapper = {
@@ -356,7 +384,7 @@ const navigationBarRouteMapper = {
             return null;
         }
 
-        var previousRoute = navState.routeStack[ index - 1 ];
+        var previousRoute = navState.routeStack[index - 1];
         return (
             <TouchableOpacity
                 onPress={() => navigator.pop()}
@@ -392,4 +420,4 @@ const navigationBarRouteMapper = {
 
 }
 
-export default XhrEnhance(Help)
+export default AppEventListenerEnhance(Help)
