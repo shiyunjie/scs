@@ -31,11 +31,11 @@
 		67A96A1652A54079AFFD9E0F /* MaterialIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 95418E460C6A4DBBA709D43C /* MaterialIcons.ttf */; };
 		6A812932DB8A4CA8962E0032 /* libRCTJPushModule.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D581C1F908F742ACB10CCCAF /* libRCTJPushModule.a */; };
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
+		836AD31D1E2B1ACA0013B1DE /* GBase64.m in Sources */ = {isa = PBXBuildFile; fileRef = 836AD3161E2B1ACA0013B1DE /* GBase64.m */; };
+		836AD31E1E2B1ACA0013B1DE /* http_rsa_gzip.m in Sources */ = {isa = PBXBuildFile; fileRef = 836AD3181E2B1ACA0013B1DE /* http_rsa_gzip.m */; };
+		836AD31F1E2B1ACA0013B1DE /* LFCGzip+Base64Util.m in Sources */ = {isa = PBXBuildFile; fileRef = 836AD31A1E2B1ACA0013B1DE /* LFCGzip+Base64Util.m */; };
+		836AD3201E2B1ACA0013B1DE /* LFCGzipUtillity.m in Sources */ = {isa = PBXBuildFile; fileRef = 836AD31C1E2B1ACA0013B1DE /* LFCGzipUtillity.m */; };
 		83D2531B825D45BC8426892B /* Ionicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A56CBE8EB69E4BB1B5114DEF /* Ionicons.ttf */; };
-		83F8EAE11E24A65A00CC78EF /* LFCGzip+Base64Util.m in Sources */ = {isa = PBXBuildFile; fileRef = 83F8EADE1E24A65A00CC78EF /* LFCGzip+Base64Util.m */; };
-		83F8EAE21E24A65A00CC78EF /* LFCGzipUtillity.m in Sources */ = {isa = PBXBuildFile; fileRef = 83F8EAE01E24A65A00CC78EF /* LFCGzipUtillity.m */; };
-		83F8EAE71E24A66900CC78EF /* GBase64.m in Sources */ = {isa = PBXBuildFile; fileRef = 83F8EAE41E24A66900CC78EF /* GBase64.m */; };
-		83F8EAE81E24A66900CC78EF /* http_rsa_gzip.m in Sources */ = {isa = PBXBuildFile; fileRef = 83F8EAE61E24A66900CC78EF /* http_rsa_gzip.m */; };
 		9342A3AC32384637ADD01A12 /* Octicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0063527B63AD42C1A20B260E /* Octicons.ttf */; };
 		9FD4E0441E222EDD0015B6FD /* libRCTCameraRoll.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FD4E0431E222E940015B6FD /* libRCTCameraRoll.a */; };
 		A594C66395D04BB994FB93DF /* libRNSpinkit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4EDC8207CCDF4E7FBDEBABA1 /* libRNSpinkit.a */; };
@@ -261,14 +261,14 @@
 		78C398B01ACF4ADC00677621 /* RCTLinking.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTLinking.xcodeproj; path = "../node_modules/react-native/Libraries/LinkingIOS/RCTLinking.xcodeproj"; sourceTree = "<group>"; };
 		7B33988A716D4AF5BE41E270 /* RCTBEEPickerManager.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RCTBEEPickerManager.xcodeproj; path = "../node_modules/react-native-picker/ios/RCTBEEPickerManager.xcodeproj"; sourceTree = "<group>"; };
 		832341B01AAA6A8300B99B32 /* RCTText.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTText.xcodeproj; path = "../node_modules/react-native/Libraries/Text/RCTText.xcodeproj"; sourceTree = "<group>"; };
-		83F8EADD1E24A65A00CC78EF /* LFCGzip+Base64Util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "LFCGzip+Base64Util.h"; sourceTree = "<group>"; };
-		83F8EADE1E24A65A00CC78EF /* LFCGzip+Base64Util.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "LFCGzip+Base64Util.m"; sourceTree = "<group>"; };
-		83F8EADF1E24A65A00CC78EF /* LFCGzipUtillity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LFCGzipUtillity.h; sourceTree = "<group>"; };
-		83F8EAE01E24A65A00CC78EF /* LFCGzipUtillity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LFCGzipUtillity.m; sourceTree = "<group>"; };
-		83F8EAE31E24A66900CC78EF /* GBase64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GBase64.h; sourceTree = "<group>"; };
-		83F8EAE41E24A66900CC78EF /* GBase64.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GBase64.m; sourceTree = "<group>"; };
-		83F8EAE51E24A66900CC78EF /* http_rsa_gzip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = http_rsa_gzip.h; sourceTree = "<group>"; };
-		83F8EAE61E24A66900CC78EF /* http_rsa_gzip.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = http_rsa_gzip.m; sourceTree = "<group>"; };
+		836AD3151E2B1ACA0013B1DE /* GBase64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GBase64.h; sourceTree = "<group>"; };
+		836AD3161E2B1ACA0013B1DE /* GBase64.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GBase64.m; sourceTree = "<group>"; };
+		836AD3171E2B1ACA0013B1DE /* http_rsa_gzip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = http_rsa_gzip.h; sourceTree = "<group>"; };
+		836AD3181E2B1ACA0013B1DE /* http_rsa_gzip.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = http_rsa_gzip.m; sourceTree = "<group>"; };
+		836AD3191E2B1ACA0013B1DE /* LFCGzip+Base64Util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "LFCGzip+Base64Util.h"; sourceTree = "<group>"; };
+		836AD31A1E2B1ACA0013B1DE /* LFCGzip+Base64Util.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "LFCGzip+Base64Util.m"; sourceTree = "<group>"; };
+		836AD31B1E2B1ACA0013B1DE /* LFCGzipUtillity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LFCGzipUtillity.h; sourceTree = "<group>"; };
+		836AD31C1E2B1ACA0013B1DE /* LFCGzipUtillity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LFCGzipUtillity.m; sourceTree = "<group>"; };
 		850590DA1F8447C989941C44 /* RNSpinkit.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNSpinkit.xcodeproj; path = "../node_modules/react-native-spinkit/ios/RNSpinkit.xcodeproj"; sourceTree = "<group>"; };
 		88F10F25BA764F37B974101E /* SimpleLineIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = SimpleLineIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/SimpleLineIcons.ttf"; sourceTree = "<group>"; };
 		8E39FE77E2E34B2990E77475 /* EvilIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = EvilIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/EvilIcons.ttf"; sourceTree = "<group>"; };
@@ -399,14 +399,14 @@
 		13B07FAE1A68108700A75B9A /* scs */ = {
 			isa = PBXGroup;
 			children = (
-				83F8EAE31E24A66900CC78EF /* GBase64.h */,
-				83F8EAE41E24A66900CC78EF /* GBase64.m */,
-				83F8EAE51E24A66900CC78EF /* http_rsa_gzip.h */,
-				83F8EAE61E24A66900CC78EF /* http_rsa_gzip.m */,
-				83F8EADD1E24A65A00CC78EF /* LFCGzip+Base64Util.h */,
-				83F8EADE1E24A65A00CC78EF /* LFCGzip+Base64Util.m */,
-				83F8EADF1E24A65A00CC78EF /* LFCGzipUtillity.h */,
-				83F8EAE01E24A65A00CC78EF /* LFCGzipUtillity.m */,
+				836AD3151E2B1ACA0013B1DE /* GBase64.h */,
+				836AD3161E2B1ACA0013B1DE /* GBase64.m */,
+				836AD3171E2B1ACA0013B1DE /* http_rsa_gzip.h */,
+				836AD3181E2B1ACA0013B1DE /* http_rsa_gzip.m */,
+				836AD3191E2B1ACA0013B1DE /* LFCGzip+Base64Util.h */,
+				836AD31A1E2B1ACA0013B1DE /* LFCGzip+Base64Util.m */,
+				836AD31B1E2B1ACA0013B1DE /* LFCGzipUtillity.h */,
+				836AD31C1E2B1ACA0013B1DE /* LFCGzipUtillity.m */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
@@ -949,12 +949,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				83F8EAE81E24A66900CC78EF /* http_rsa_gzip.m in Sources */,
-				83F8EAE71E24A66900CC78EF /* GBase64.m in Sources */,
+				836AD31F1E2B1ACA0013B1DE /* LFCGzip+Base64Util.m in Sources */,
+				836AD3201E2B1ACA0013B1DE /* LFCGzipUtillity.m in Sources */,
+				836AD31E1E2B1ACA0013B1DE /* http_rsa_gzip.m in Sources */,
+				836AD31D1E2B1ACA0013B1DE /* GBase64.m in Sources */,
 				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
-				83F8EAE11E24A65A00CC78EF /* LFCGzip+Base64Util.m in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
-				83F8EAE21E24A65A00CC78EF /* LFCGzipUtillity.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -14,8 +14,8 @@ import {
     AsyncStorage,
 } from 'react-native';
 
-import IndexPage from './pages/indexPage';
-//import IndexPage from './pages/uploadPage';
+//import IndexPage from './pages/indexPage';
+import IndexPage from './pages/uploadPage';
 
 import UserPage from './pages/userPage';
 import OrderPage from './pages/orderPage';
