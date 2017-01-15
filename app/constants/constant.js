@@ -42,7 +42,8 @@ export const constant = {
     },
 
     iType: {
-        upload:95,
+        //upload:95,
+        upload:29,
 
 
         login:100,
