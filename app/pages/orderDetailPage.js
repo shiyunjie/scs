@@ -26,12 +26,18 @@ import {getDeviceID,getToken,getPhone,getRealName} from '../lib/User'
 import XhrEnhance from '../lib/XhrEnhance' //http
 import Toast from 'react-native-smart-toast'
 
+import ModalProgress from '../components/modalProgress'
+import ModalDialog from '../components/modalDialog'
 class OrderDetail extends Component {
     // 构造
     constructor(props) {
         super(props);
         // 初始状态
         this.state = {
+            showProgress: true,//显示加载
+            showReload: false,//显示加载更多
+            showDialog:false,//显示确认框
+
             id: this.props.id, //委托单id
             service_no: '',// 委托单号
 
@@ -94,45 +100,73 @@ class OrderDetail extends Component {
 
     }
 
+    _onRequestClose(){
+    this.props.navigator.pop()
+}
+
     render() {
 
-        console.log(`this.state.order_status`,this.state.order_status)
+        console.log(`this.state.order_status`, this.state.order_status)
         return (
             <View style={{flex:1}}>
-                <ScrollView style={styles.container}>
-                    <View style={styles.viewItem}>
+                <ModalProgress
+                    showProgress={this.state.showProgress}
+                    showReload={this.state.showReload}
+                    fetchData={()=>{
+                    this.setState({
+                    showProgress:true,//显示加载
+                    showReload:false,//显示加载更多
+                     })
+                    this._fetchData()
+                    }}
+                    onRequestClose={this._onRequestClose.bind(this)}/>
+                <ModalDialog
+                    showDialog={this.state.showDialog}
+                    title='确认要取消订单吗'
+                    fetchData={()=>{
+                    this.setState({
+                    showDialog:false,
+                     })
+                     //取消订单
+                            if(this.state.order_status_name){
+                            this._fetchData_cancel()
+                            }
+                    }}/>
+                {this.state.showProgress||this.state.showReload?null:(
+                    <ScrollView style={styles.container}>
+                        <View style={styles.viewItem}>
 
                             <Text style={{flex:1}}>单号:</Text>
                             <Text style={{flex:2}}>{this.state.service_no}</Text>
 
-                        <View
-                            style={{flex:1,justifyContent:'flex-end',paddingRight:constants.MarginLeftRight,}}>
-                            <Text style={{color:constants.UIActiveColor}}>{this.state.order_status_name}</Text>
+                            <View
+                                style={{flex:1,justifyContent:'flex-end',paddingRight:constants.MarginLeftRight,}}>
+                                <Text style={{color:constants.UIActiveColor}}>{this.state.order_status_name}</Text>
+                            </View>
                         </View>
-                    </View>
 
-                    <View style={styles.viewItem}>
-                        <Text style={{flex:1}}>发布时间:</Text>
-                        <Text style={{flex:3}}>{this.state.create_time_str}</Text>
-                    </View>
+                        <View style={styles.viewItem}>
+                            <Text style={{flex:1}}>发布时间:</Text>
+                            <Text style={{flex:3}}>{this.state.create_time_str}</Text>
+                        </View>
 
-                    <View style={styles.viewItem}>
-                        <Text style={{flex:1}}>贸易条款:</Text>
-                        <Text style={{flex:3}}>{this.state.trade_terms}</Text>
-                    </View>
+                        <View style={styles.viewItem}>
+                            <Text style={{flex:1}}>贸易条款:</Text>
+                            <Text style={{flex:3}}>{this.state.trade_terms}</Text>
+                        </View>
 
-                    <View style={styles.viewItem}>
-                        <Text style={{flex:1}}>委托人:</Text>
-                        <Text style={{flex:3}}>{this.state.client_name}</Text>
-                    </View>
+                        <View style={styles.viewItem}>
+                            <Text style={{flex:1}}>委托人:</Text>
+                            <Text style={{flex:3}}>{this.state.client_name}</Text>
+                        </View>
 
-                    <View style={[styles.line,{height:10}]}/>
-                    <View style={[styles.viewItem,{paddingRight:constants.MarginLeftRight},
-                                {height:50}]}>
-                        <TouchableOpacity
-                            style={[{justifyContent:'center',alignItems:'center',},
+                        <View style={[this.state.order_status==30||this.state.order_status==0?{height:10}:{height:0}]}/>
+                        <View style={[styles.viewItem,{paddingRight:constants.MarginLeftRight},
+                                this.state.order_status==30||this.state.order_status==0?{height:50}:{height:0}]}>
+                            <TouchableOpacity
+                                style={[{justifyContent:'center',alignItems:'center',},
                             this.state.order_status==30?{flex:1}:{width:0,}]}
-                            onPress={()=>{
+                                onPress={()=>{
                             //修改订单
                              if(this.state.order_status_name){
                              this.props.navigator.replace({
@@ -141,103 +175,102 @@ class OrderDetail extends Component {
                                                 passProps:this.state,
                                             })
                            } }}>
-                            <Text style={{color:constants.UIActiveColor,
+                                <Text style={{color:constants.UIActiveColor,
                             fontSize:17,textAlignVertical:'center',textAlign:'center',}}>修改</Text>
 
-                        </TouchableOpacity>
-                        <View
-                            style={[{height:30,backgroundColor:constants.UIInActiveColor},
+                            </TouchableOpacity>
+                            <View
+                                style={[{height:30,backgroundColor:constants.UIInActiveColor},
                             this.state.order_status==30?
                             {width:StyleSheet.hairlineWidth,}:{width:0}]}/>
-                        <TouchableOpacity
-                            style={[{justifyContent:'center',alignItems:'center',},
+                            <TouchableOpacity
+                                style={[{justifyContent:'center',alignItems:'center',},
                              (this.state.order_status==0||this.state.order_status==30)?{flex:1,}:{width:0,height:0,}]}
-                            onPress={()=>{
-                            //取消订单
-                            if(this.state.order_status_name){
-                            this._fetchData_cancel()
-                            }
-                            }}>
-                            <Text style={{color:constants.UIActiveColor,
+                                onPress={ ()=>{
+                                //弹窗取消订单
+                                this.setState({showDialog:true,})
+                                } }>
+                                <Text style={{color:constants.UIActiveColor,
                             fontSize:17,textAlignVertical:'center',textAlign:'center'}}>取消</Text>
-                        </TouchableOpacity>
-                    </View>
-                    <View style={[styles.line,{height:10}]}/>
+                            </TouchableOpacity>
+                        </View>
+                        <View style={[this.state.order_status==30||this.state.order_status==0?{height:10}:{height:0}]}/>
 
-                    <View style={styles.viewItem}>
-                        <Text style={{flex:1}}>联系方式:</Text>
-                        <Text style={{flex:3}}>{this.state.client_phone}</Text>
-                    </View>
+                        <View style={styles.viewItem}>
+                            <Text style={{flex:1}}>联系方式:</Text>
+                            <Text style={{flex:3}}>{this.state.client_phone}</Text>
+                        </View>
 
-                    <View style={styles.viewItem}>
-                        <Text style={{flex:1}}>出发国家:</Text>
-                        <Text style={{flex:3}}>{this.state.departure_name}</Text>
-                    </View>
+                        <View style={styles.viewItem}>
+                            <Text style={{flex:1}}>出发国家:</Text>
+                            <Text style={{flex:3}}>{this.state.departure_name}</Text>
+                        </View>
 
-                    <View style={styles.viewItem}>
-                        <Text style={{flex:1}}>目的国家:</Text>
-                        <Text style={{flex:3}}>{this.state.destination_name}</Text>
-                    </View>
+                        <View style={styles.viewItem}>
+                            <Text style={{flex:1}}>目的国家:</Text>
+                            <Text style={{flex:3}}>{this.state.destination_name}</Text>
+                        </View>
 
-                    <View style={[{flex:1, flexDirection: 'row',
+                        <View style={[{flex:1, flexDirection: 'row',
                                    justifyContent: 'flex-start',
                                    alignItems: 'center',
                                    paddingLeft: constants.MarginLeftRight,
                                    backgroundColor:'white',},]}>
-                        <View style={{flex:1}}>
-                        <Text style={{flex:1}}>货代服务:</Text>
+                            <View style={{flex:1}}>
+                                <Text style={{flex:1}}>货代服务:</Text>
+                            </View>
+                            <View style={{flex:3}}>
+                                <Text style={{flex:1}}>
+                                    {this.state.import_clearance == 1 ? '进口清关、' : ``}
+                                    {this.state.international_logistics == 1 ? '国际物流、' : ``}
+                                    {this.state.export_country_land == 1 ? '出口国陆运、' : ``}
+                                    {this.state.booking_service_name == 0 ? '订舱服务海运、' : ``}
+                                    {this.state.domestic_logistics == 1 ? '国内物流、' : ``}
+                                </Text>
+                            </View>
                         </View>
-                        <View style={{flex:3}}>
-                        <Text style={{flex:1}}>
-                            {this.state.import_clearance==1?'进口清关、'　:``}
-                            {this.state.international_logistics==1?'国际物流、'　:``}
-                            {this.state.export_country_land==1?'出口国陆运、'　:``}
-                            {this.state.booking_service_name==0?'订舱服务海运、'　:``}
-                            {this.state.domestic_logistics==1?'国内物流、'　:``}
-                        </Text>
+
+                        <View style={styles.viewItem}>
+                            <Text style={{flex:1}}>支付方式:</Text>
+                            <Text style={{flex:3}}>{this.state.credit_letter == 1 ? '信用证' : ``}</Text>
                         </View>
-                    </View>
 
-                    <View style={styles.viewItem}>
-                        <Text style={{flex:1}}>支付方式:</Text>
-                        <Text style={{flex:3}}>{this.state.credit_letter==1?'信用证'　:``}</Text>
-                    </View>
-
-                    <View style={[styles.viewItem,{flex:1,}]}>
-                        <Text style={{flex:1}}>委托内容:</Text>
-                        <Text style={{flex:3,}}>
-                            {this.state.commission_content}
-                        </Text>
-                    </View>
-                    <View style={this.state.order_status==30?{height:10}:{height:0}}/>
-                    <TextInput
-                        style={[{fontSize:15,textAlignVertical:'top',
+                        <View style={[styles.viewItem,{flex:1,}]}>
+                            <Text style={{flex:1}}>委托内容:</Text>
+                            <Text style={{flex:3,}}>
+                                {this.state.commission_content}
+                            </Text>
+                        </View>
+                        <View style={this.state.order_status==30?{height:10}:{height:0}}/>
+                        <TextInput
+                            style={[{fontSize:15,textAlignVertical:'top',
                               margin:3,
                               borderColor: constants.UIInActiveColor,
                               justifyContent:'flex-start',
 
                                 },this.state.order_status==30?{flex:1}:{height:0}]}
-                        clearButtonMode="while-editing"
-                        placeholder='拒绝原因'
-                        maxLength={300}
-                        underlineColorAndroid='transparent'
-                        multiline={true}//多行输入
-                        numberOfLines={8}
-                        editable={false}
-                        value={this.state.remark}/>
-                    <View style={this.state.order_status==30?{height:10}:{height:0}}/>
-                    <View style={[styles.viewItem]}>
-                        <TouchableOpacity style={{flex:1,justifyContent:'center',alignItems:'center',}}
-                                          onPress={()=>{
+                            clearButtonMode="while-editing"
+                            placeholder='拒绝原因'
+                            maxLength={300}
+                            underlineColorAndroid='transparent'
+                            multiline={true}//多行输入
+                            numberOfLines={8}
+                            editable={false}
+                            value={this.state.remark}/>
+                        <View style={this.state.order_status==30?{height:10}:{height:0}}/>
+                        <View style={[styles.viewItem]}>
+                            <TouchableOpacity style={{flex:1,justifyContent:'center',alignItems:'center',}}
+                                              onPress={()=>{
                                         //打电话
                                         return Linking.openURL(constants.Tel);
                                         }}>
-                            <Text style={{color:constants.UIActiveColor}}>联系客服</Text>
-                        </TouchableOpacity>
+                                <Text style={{color:constants.UIActiveColor}}>联系客服</Text>
+                            </TouchableOpacity>
 
-                    </View>
-                    <View style={{height:30}}/>
-                </ScrollView>
+                        </View>
+                        <View style={{height:30}}/>
+                    </ScrollView>)
+                }
                 <Toast
                     ref={ component => this._toast = component }
                     marginTop={64}>
@@ -287,6 +320,9 @@ class OrderDetail extends Component {
 
                 this.setState(
                     {
+                        showProgress: false,//显示加载
+                        showReload: false,//显示加载更多
+
                         service_no: result.result.service_no,// 委托单号
 
                         order_status_name: result.result.order_status_name,// 订单状态
@@ -307,7 +343,7 @@ class OrderDetail extends Component {
 
                         export_country_land: result.result.export_country_land,// 出口国陆运,0否，1是
 
-                        booking_service_name:result.result.booking_service_name,// 订舱服务,0海运，1空运
+                        booking_service_name: result.result.booking_service_name,// 订舱服务,0海运，1空运
 
                         domestic_logistics: result.result.domestic_logistics,// 国内物流,0否，1是
 
@@ -323,18 +359,24 @@ class OrderDetail extends Component {
                 )
 
             } else {
+
                 this._toast.show({
                     position: Toast.constants.gravity.center,
                     duration: 255,
                     children: result.msg
                 })
+
             }
 
 
         }
         catch (error) {
-            console.log(error)
-
+            console.log(`error:`,error)
+            console.log(`this:`,this)
+            this.setState({
+                showProgress: false,//显示加载
+                showReload: true,//显示加载更多
+            })
         }
         finally {
 
@@ -343,7 +385,7 @@ class OrderDetail extends Component {
         }
     }
 
-async _fetchData_cancel() {
+    async _fetchData_cancel() {
         try {
 
             let token = await getToken()
@@ -382,7 +424,7 @@ async _fetchData_cancel() {
             }
             if (result.code && result.code == 10) {
                 //统计总价
-                NativeAppEventEmitter.emit('orderDetail_hasCancel_should_resetState',this.state.id)
+                NativeAppEventEmitter.emit('orderDetail_hasCancel_should_resetState', this.state.id)
                 this.props.navigator.pop()
 
             } else {
@@ -421,7 +463,7 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-start',
         alignItems: 'center',
         paddingLeft: constants.MarginLeftRight,
-        backgroundColor:'white',
+        backgroundColor: 'white',
     },
     line: {
         //marginLeft: constants.MarginLeftRight,

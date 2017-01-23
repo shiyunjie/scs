@@ -28,6 +28,8 @@ import AppEventListenerEnhance from 'react-native-smart-app-event-listener-enhan
 import {getDeviceID,getToken} from '../lib/User'
 import XhrEnhance from '../lib/XhrEnhance' //http
 import Toast from 'react-native-smart-toast'
+import ModalProgress from '../components/modalProgress'
+import ModalDialog from '../components/modalDialog'
 
 let service_id
 class ServiceDetail extends Component {
@@ -37,6 +39,10 @@ class ServiceDetail extends Component {
 
         // 初始状态
         this.state = {
+            showProgress: true,//显示加载
+            showReload: false,//显示加载更多
+            showDialog:false,//显示确认框
+
             service_no: '',// 服务单号
 
             order_status_name: '',// 服务单状态名称
@@ -78,6 +84,8 @@ class ServiceDetail extends Component {
             ship_company_code: '',// 船公司代码
 
             ship_company_name: '',// 船公司名称
+
+            potcd:'', //申报口岸
 
             ship_name_english: '',// 英文船名
 
@@ -184,6 +192,9 @@ class ServiceDetail extends Component {
 
                 this.setState(
                     {
+                        showProgress: false,//显示加载
+                        showReload: false,//显示加载更多
+
                         service_no: result.result.service_no,// 服务单号
 
                         order_status_name: result.result.order_status_name,// 服务单状态名称
@@ -224,6 +235,7 @@ class ServiceDetail extends Component {
                         ship_company_code: result.result.ship_company_code,// 船公司代码
 
                         ship_company_name: result.result.ship_company_name,// 船公司名称
+                        potcd: result.result.potcd,// 申报口岸
 
                         ship_name_english: result.result.ship_name_english,// 英文船名
 
@@ -269,7 +281,10 @@ class ServiceDetail extends Component {
         }
         catch (error) {
             console.log(error)
-
+            this.setState({
+                showProgress: false,//显示加载
+                showReload: true,//显示加载更多
+            })
         }
         finally {
 
@@ -341,10 +356,35 @@ class ServiceDetail extends Component {
             //SplashScreen.close(SplashScreen.animationType.scale, 850, 500)
         }
     }
+    _onRequestClose(){
+        this.props.navigator.pop()
+    }
 
     render() {
         return (
             <View style={{flex:1}}>
+                <ModalProgress
+                    showProgress={this.state.showProgress}
+                    showReload={this.state.showReload}
+                    fetchData={()=>{
+                    this.setState({
+                    showProgress:true,//显示加载
+                    showReload:false,//显示加载更多
+                     })
+                    this._fetchData()
+                    }}
+                    onRequestClose={this._onRequestClose.bind(this)}/>
+                <ModalDialog
+                    showDialog={this.state.showDialog}
+                    title='确认要取消订单吗'
+                    fetchData={()=>{
+                    this.setState({
+                    showDialog:false,
+                     })
+                     //取消订单
+                        this._fetch_cancel()
+                    }}/>
+                {this.state.showProgress||this.state.showReload?null:(
                 <ScrollView style={styles.container}>
                     <View style={styles.viewItem}>
 
@@ -412,10 +452,10 @@ class ServiceDetail extends Component {
                                         title: '上传资料',
                                         component: UploadPage,
                                         passProps: {
-                                            id:this.props.id,
+                                            id:service_id,
                                         }
                                     });
-                    }}>
+                            }}>
                             <Text style={{color:constants.UIActiveColor}}>上传</Text>
 
                         </TouchableOpacity>
@@ -428,7 +468,9 @@ class ServiceDetail extends Component {
                     this.state.order_status==10||this.state.order_status==20||this.state.order_status==40||
                             this.state.order_status==70? {flex:1,}:{width:0}]}
                                           onPress={()=>{
-                                          this._fetch_cancel()
+                                           //弹窗取消订单
+                                           this.setState({showDialog:true,})
+
 
                                             }}>
                             <Text style={{color:constants.UIActiveColor}}>取消</Text>
@@ -483,6 +525,10 @@ class ServiceDetail extends Component {
                         <Text style={{flex:3}}> {this.state.commission_content}</Text>
                     </View>
 
+                    <View style={[styles.viewItem,]}>
+                        <Text style={{flex:1}}>申报口岸:</Text>
+                        <Text style={{flex:3}}>{this.state.potcd}</Text>
+                    </View>
 
                     <View style={[styles.viewItem,{flex:1,}]}>
                         <Text style={{flex:1}}>船公司:</Text>
@@ -630,7 +676,7 @@ class ServiceDetail extends Component {
                         <View style={[styles.line,{marginBottom:10}]}/>
                     </View>
                     <View style={{height:50}}/>
-                </ScrollView>
+                </ScrollView>)}
                 <Toast
                     ref={ component => this._toast = component }
                     marginTop={64}>

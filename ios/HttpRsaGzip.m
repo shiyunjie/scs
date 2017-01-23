@@ -10,6 +10,7 @@
 #import "LFCGzipUtillity.h"
 #import "RCTBridge.h"
 #import "LFCGzip+Base64Util.h"
+#import "RSASign.h"
 
 
 
@@ -25,16 +26,16 @@ RCT_EXPORT_METHOD(gzipRSA:(NSString *)data
                   rejecter:(RCTPromiseRejectBlock)reject)
 {
     NSLog(@"data------------%@",data);
-//  NSString *s = [LFCGzip_Base64Util gzipData:[data dataUsingEncoding:NSUTF8StringEncoding]];
-    NSString *s = data;
+  NSString *s = [LFCGzip_Base64Util gzipData:[data dataUsingEncoding:NSUTF8StringEncoding]];
+//    NSString *s = data;
     NSLog(@"s------------%@",s);
-    //      RSADataSigner *rsaDataSigner = [[RSADataSigner alloc] initWithPrivateKey:privateKey];
-    //      NSString *result = [rsaDataSigner signString:s withRSA2:YES];
-    //  RSASign *sign = [[RSASign alloc] init];
-    //      NSString *result = [sign signTheDataSHA1WithRSA:s pKey:privateKey];
-    //      NSLog(@"result------------%@",result);
+//          RSADataSigner *rsaDataSigner = [[RSADataSigner alloc] initWithPrivateKey:privateKey];
+//          NSString *result = [rsaDataSigner signString:s withRSA2:YES];
+      RSASign *sign = [[RSASign alloc] init];
+          NSString *result = [sign signTheDataSHA1WithRSA:s pKey:privateKey];
+          NSLog(@"result------------%@",result);
     
-    
+  
     NSDictionary *resultDic;
     resultDic=@{
                 @"s": s,
@@ -57,6 +58,14 @@ RCT_EXPORT_METHOD(gunzipRSA:(NSString *)data
     
     resolve(result);
     
+}
+
+RCT_EXPORT_METHOD(UpdateApp:(NSString *)url)
+{//更新app
+  NSLog(@"url------------%@",url);
+  [[UIApplication sharedApplication] openURL:[NSURL URLWithString:url]];
+  
+  
 }
 
 

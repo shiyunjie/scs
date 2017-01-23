@@ -31,6 +31,7 @@ import AppEventListenerEnhance from 'react-native-smart-app-event-listener-enhan
 
 
 let pageIndex = 1;//当前页码
+let pageLength=6;//每页条数
 let firstDataList = [];
 
 class OrderList extends Component {
@@ -330,6 +331,14 @@ class OrderList extends Component {
         try {
         let token = await getToken()
         let deviceID = await getDeviceID()
+            let start=0;
+            if(pageIndex==1){
+                start=0
+            }else if(pageIndex==2){
+                start=pageLength
+            }else{
+                start=(pageIndex-1)*pageLength+1
+            }
         let options = {
             method:'post',
             url: constants.api.service,
@@ -337,7 +346,9 @@ class OrderList extends Component {
                 iType: constants.iType.commissionOrderList,
                 current_page: pageIndex,
                 deviceId: deviceID,
+                length:pageLength,
                 token: token,
+                start:start,
             }
         }
 
@@ -359,6 +370,7 @@ class OrderList extends Component {
                 return
             }
             if (result.code && result.code == 10) {
+
             this.setState({
                 dataList: result.result,
                 dataSource: this._dataSource.cloneWithRows(result.result),
@@ -373,6 +385,7 @@ class OrderList extends Component {
             }
         }
         catch (error) {
+            console.log(error)
 
             //..调用toast插件, show出错误信息...
 
@@ -390,6 +403,14 @@ class OrderList extends Component {
         try {
         let token = await getToken()
         let deviceID = await getDeviceID()
+            let start=0;
+            if(pageIndex==1){
+                start=pageLength
+            }else if(pageIndex==2){
+                start=pageLength
+            }else{
+                start=(pageIndex-1)*pageLength+1
+            }
         let options = {
 
             method:'post',
@@ -398,7 +419,9 @@ class OrderList extends Component {
                 iType: constants.iType.commissionOrderList,
                 current_page: pageIndex,
                 deviceId: deviceID,
+                length:pageLength,
                 token: token,
+                start:start,
             }
         }
 

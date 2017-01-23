@@ -115,17 +115,22 @@ class ChangeInfo extends Component {
                             style={ styles.textLine}>
                             <Text>QQ</Text>
                         </View>
-                        <TextInput
-                            ref={(component) => this._QQ = component}
-                            style={styles.textInput}
-                            placeholder='请输入'
-                            clearButtonMode="while-editing"
-                            textAlign='right'
-                            maxLength={40}
-                            underlineColorAndroid='transparent'
-                            editable={true}
-                            onChangeText={(text) => this.setState({qq:text})}
-                            value={this.state.qq}/>
+                        <View
+                            style={{flex: 4,
+                                borderBottomWidth: StyleSheet.hairlineWidth,
+                                borderColor: constants.UIInActiveColor,}}>
+                            <TextInput
+                                ref={(component) => this._QQ = component}
+                                style={styles.textInput}
+                                placeholder='请输入'
+                                clearButtonMode="while-editing"
+                                textAlign='right'
+                                maxLength={40}
+                                underlineColorAndroid='transparent'
+                                editable={true}
+                                onChangeText={(text) => this.setState({qq:text})}
+                                value={this.state.qq}/>
+                        </View>
                     </View>
                     <View
                         style={styles.inputView}>
@@ -133,17 +138,22 @@ class ChangeInfo extends Component {
                             style={ styles.textLine}>
                             <Text>联系时间</Text>
                         </View>
-                        <TextInput
-                            ref={(component) => this._Contact_time = component}
-                            style={styles.textInput}
-                            placeholder='请输入'
-                            clearButtonMode="while-editing"
-                            textAlign='right'
-                            maxLength={40}
-                            underlineColorAndroid='transparent'
-                            value={this.state.contact_time}
-                            editable={true}
-                            onChangeText={(text) => this.setState({contact_time:text})}/>
+                        <View
+                            style={{flex: 4,
+                                borderBottomWidth: StyleSheet.hairlineWidth,
+                                borderColor: constants.UIInActiveColor,}}>
+                            <TextInput
+                                ref={(component) => this._Contact_time = component}
+                                style={styles.textInput}
+                                placeholder='请输入'
+                                clearButtonMode="while-editing"
+                                textAlign='right'
+                                maxLength={40}
+                                underlineColorAndroid='transparent'
+                                value={this.state.contact_time}
+                                editable={true}
+                                onChangeText={(text) => this.setState({contact_time:text})}/>
+                        </View>
                     </View>
                     <View
                         style={styles.inputView}>
@@ -151,17 +161,22 @@ class ChangeInfo extends Component {
                             style={ styles.textLine}>
                             <Text>公司名称</Text>
                         </View>
-                        <TextInput
-                            ref={(component) => this._Company_name = component}
-                            style={styles.textInput}
-                            placeholder='请输入'
-                            clearButtonMode="while-editing"
-                            textAlign='right'
-                            maxLength={40}
-                            underlineColorAndroid='transparent'
-                            value={this.state.company_name}
-                            editable={true}
-                            onChangeText={(text) => this.setState({company_name:text})}/>
+                        <View
+                            style={{flex: 4,
+                                borderBottomWidth: StyleSheet.hairlineWidth,
+                                borderColor: constants.UIInActiveColor,}}>
+                            <TextInput
+                                ref={(component) => this._Company_name = component}
+                                style={styles.textInput}
+                                placeholder='请输入'
+                                clearButtonMode="while-editing"
+                                textAlign='right'
+                                maxLength={40}
+                                underlineColorAndroid='transparent'
+                                value={this.state.company_name}
+                                editable={true}
+                                onChangeText={(text) => this.setState({company_name:text})}/>
+                        </View>
                     </View>
                     <View
                         style={styles.inputView}>
@@ -169,22 +184,27 @@ class ChangeInfo extends Component {
                             style={ styles.textLine}>
                             <Text>公司地址</Text>
                         </View>
-                        <TextInput
-                            style={styles.textInput}
-                            placeholder='请输入'
-                            clearButtonMode="while-editing"
-                            textAlign='right'
-                            maxLength={80}
-                            underlineColorAndroid='transparent'
-                            value={this.state.company_address}
-                            editable={true}
-                            onChangeText={(text) => this.setState({company_address:text})}/>
+                        <View
+                            style={{flex: 4,
+                                borderBottomWidth: StyleSheet.hairlineWidth,
+                                borderColor: constants.UIInActiveColor,}}>
+                            <TextInput
+                                style={styles.textInput}
+                                placeholder='请输入'
+                                clearButtonMode="while-editing"
+                                textAlign='right'
+                                maxLength={80}
+                                underlineColorAndroid='transparent'
+                                value={this.state.company_address}
+                                editable={true}
+                                onChangeText={(text) => this.setState({company_address:text})}/>
+                        </View>
                     </View>
                     <View
-                        style={{flex:1,backgroundColor:constants.UIActiveColor,marginLeft:constants.MarginLeftRight,}}>
+                        style={{height:150,backgroundColor:constants.UIActiveColor,marginLeft:constants.MarginLeftRight,}}>
                         <TextInput
                             style={{flex:1,fontSize:13,textAlignVertical:'top',
-                        backgroundColor:'white',}}
+                            backgroundColor:'white',}}
 
                             placeholder='请输入公司简介'
                             maxLength={300}
@@ -431,9 +451,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center', borderRadius: 30,
     },
     textInput: {
-        flex: 4,
-        borderBottomWidth: StyleSheet.hairlineWidth,
-        borderColor: constants.UIInActiveColor,
+        flex:1,
         alignSelf: 'stretch',
         marginRight: 10,
 

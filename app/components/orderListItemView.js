@@ -29,7 +29,7 @@ export default class ListItemView extends Component {
         time: PropTypes.string,
         rightText: PropTypes.string,
         logistics: PropTypes.string,
-        cost: PropTypes.num,
+        cost: PropTypes.string,
         route: PropTypes.string,
         showCost:PropTypes.bool,
 
@@ -37,6 +37,7 @@ export default class ListItemView extends Component {
     }
 
     static defaultProps = {
+        cost:'',
         orderNum: '',
         time: '',
         rightText: '状态',
@@ -47,7 +48,7 @@ export default class ListItemView extends Component {
 
 
     render() {
-console.log(` cost: PropTypes.string,`+ this.props.cost)
+
             return (
                 <View style={styles.itemView}>
                     <View style={styles.itemIcon}/>

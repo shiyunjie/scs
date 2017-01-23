@@ -229,6 +229,11 @@ class AddOrder extends Component {
                             style={ styles.textLine}>
                             <Text>委托人</Text>
                         </View>
+                        <View style={{
+                            flex: 4,
+                            borderBottomWidth: StyleSheet.hairlineWidth,
+                            borderColor: constants.UIInActiveColor,
+                        }}>
                         <TextInput
                             style={styles.textInput}
                             clearButtonMode="while-editing"
@@ -238,14 +243,30 @@ class AddOrder extends Component {
                             value={this.state.realName}
                             editable={true}
                             onChangeText={(text) => this.setState({realName:text})}/>
+                        </View>
                     </View>
-                    <TouchableOpacity style={{height:50,}}>
-                        <ItemView
-                            title='联系电话'
-                            show={false}
-                            rightText='13131313113'/>
-                    </TouchableOpacity>
-
+                    <View
+                        style={styles.inputView}>
+                        <View
+                            style={ styles.textLine}>
+                            <Text>联系电话</Text>
+                        </View>
+                        <View style={{
+                            flex: 4,
+                            borderBottomWidth: StyleSheet.hairlineWidth,
+                            borderColor: constants.UIInActiveColor,
+                        }}>
+                        <TextInput
+                            style={styles.textInput}
+                            clearButtonMode="while-editing"
+                            textAlign='right'
+                            maxLength={80}
+                            underlineColorAndroid='transparent'
+                            value={this.state.phone}
+                            editable={true}
+                            onChangeText={(text) => this.setState({phone:text})}/>
+                        </View>
+                    </View>
                     <TouchableOpacity
                         style={{height:50,}}
                         onPress={()=>{
@@ -299,7 +320,7 @@ class AddOrder extends Component {
                             title='目的国家'
                             rightText={this.state.reach}/>
                     </TouchableOpacity>
-                    <Text style={{marginLeft:constants.MarginLeftRight}}>货代服务</Text>
+                    <Text style={{marginLeft:constants.MarginLeftRight,paddingTop:5,paddingBottom:5,}}>货代服务</Text>
                     <TouchableOpacity
                         style={{height:50,}}
                         onPress={()=>{
@@ -360,13 +381,14 @@ class AddOrder extends Component {
                             title='出口国陆运'
                             rightText=''/>
                     </TouchableOpacity>
-                    <View style={[this.state.logistics==1?{height:50,}:{height:0,},{flexDirection:'row',alignItems:'stretch',borderColor: constants.UIInActiveColor,
-                            marginLeft:constants.MarginLeftRight,borderBottomWidth:StyleSheet.hairlineWidth,}]}>
-                        <View style={{flexDirection:'row',backgroundColor:'white',alignItems:'center',}}>
+                    <View style={[this.state.logistics==1?{height:50,}:{height:0,},{flexDirection:'row',alignItems:'stretch',
+                            paddingLeft:constants.MarginLeftRight,backgroundColor:'white',}]}>
+                        <View style={{flexDirection:'row',backgroundColor:'white',alignItems:'center',
+                        borderColor: constants.UIInActiveColor,borderBottomWidth:StyleSheet.hairlineWidth,}}>
                             <Text style={{textAlignVertical:'center'}}>订舱服务</Text>
                         </View>
                         <TouchableOpacity
-                            style={{flex:1,}}
+                            style={{flex:1,borderColor: constants.UIInActiveColor,borderBottomWidth:StyleSheet.hairlineWidth,}}
                             onPress={()=>{
                                  let select
                                  let airSelect
@@ -389,7 +411,7 @@ class AddOrder extends Component {
                                 rightText=''/>
                         </TouchableOpacity>
                         <TouchableOpacity
-                            style={{flex:1,}}
+                            style={{flex:1,borderColor: constants.UIInActiveColor,borderBottomWidth:StyleSheet.hairlineWidth,}}
                             onPress={()=>{
                                 /* let select
                                  if (this.state.sea_air==1) {
@@ -429,7 +451,7 @@ class AddOrder extends Component {
                             title='国内物流'
                             rightText=''/>
                     </TouchableOpacity>
-                    <Text style={{marginLeft:constants.MarginLeftRight}}>支付方式</Text>
+                    <Text style={{marginLeft:constants.MarginLeftRight,paddingTop:5,paddingBottom:5,}}>支付方式</Text>
                     <TouchableOpacity
                         style={{height:50,}}
                         onPress={()=>{
@@ -447,25 +469,27 @@ class AddOrder extends Component {
                             title='信用证'
                             rightText=''/>
                     </TouchableOpacity>
-
-                    <View style={{flex:1,backgroundColor:constants.UIBackgroundColor}}>
+                    <View style={{height:150,}}>
                         <TextInput
-                            style={{flex:1,fontSize:15,textAlignVertical:'top',
-                        margin:3,
-
-                      borderColor: constants.UIInActiveColor,
-                      justifyContent:'flex-start'
-                      }}
+                            style={{flex:1,
+                            fontSize:15,
+                            backgroundColor:'white',
+                            textAlignVertical:'top',
+                            margin:5,
+                            borderColor: constants.UIInActiveColor,
+                            justifyContent:'flex-start',
+                            }}
                             clearButtonMode="while-editing"
                             placeholder='委托内容'
                             maxLength={300}
                             underlineColorAndroid='transparent'
                             multiline={true}//多行输入
                             numberOfLines={6}
+                            editable = {true}
                             value={this.state.commission_content}
                             onChangeText={(text) => this.setState({commission_content:text})}/>
                         <Text
-                            style={{color:constants.UIInActiveColor,position:'absolute',bottom:5,right:5,}}>300字以内</Text>
+                            style={{color:constants.UIInActiveColor,position:'absolute',bottom:5,right:5,backgroundColor:'transparent'}}>300字以内</Text>
                     </View>
                     <View style={{flex:1,padding:10}}>
                         <Button
@@ -739,9 +763,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center', borderRadius: 30,
     },
     textInput: {
-        flex: 4,
-        borderBottomWidth: StyleSheet.hairlineWidth,
-        borderColor: constants.UIInActiveColor,
+       flex:1,
         alignSelf: 'stretch',
         marginRight: 10,
 

@@ -16,19 +16,18 @@ import {
 
 //import IndexPage from './pages/indexPage';
 import IndexPage from './pages/uploadPage';
-
 import UserPage from './pages/userPage';
 import OrderPage from './pages/orderPage';
 import MorePage from './pages/morePage';
 import LoginPage from './pages/loginPage';
-
+import JPushModule from 'jpush-react-native';
 import TabNavigator from 'react-native-tab-navigator';
 import Badge from 'react-native-smart-badge'
 import navigatorStyle from './styles/navigatorStyle'       //navigationBar样式
 import Icon from 'react-native-vector-icons/Ionicons';
 import AppEventListenerEnhance from 'react-native-smart-app-event-listener-enhance'
 import { getToken, } from './lib/User'
-
+import DeviceInfo from 'react-native-device-info';
 
 import constants from  './constants/constant';
 import TabView from './components/tabView'
@@ -48,9 +47,28 @@ class Root extends Component {
 
     componentWillMount() {
         if (Platform.OS === 'android') {
+            JPushModule.getInfo((map) => {
+                AsyncStorage.setItem('deviceID', map.myDeviceId)
+                AsyncStorage.setItem('version', map.myVersion)
+                //appkey: map.myAppKey,
+                //imei: map.myImei,
+                //package: map.myPackageName,
+                console.log('JPushModule:' + map.myDeviceId + `,version:` + map.myVersion)
+
+            });
+
             this.addAppEventListener(
                 BackAndroid.addEventListener('hardwareBackPress', this.onBackAndroid)
             )
+        } else {
+            let version = DeviceInfo.getVersion()
+            AsyncStorage.setItem('version', version)
+
+            let uniqueID = DeviceInfo.getUniqueID()
+            AsyncStorage.setItem('deviceID', uniqueID)
+
+            console.log('DeviceInfo:' + uniqueID + `,version:` + version)
+
         }
         //NativeAppEventEmitter.sendEvent('getMsg_202_code_need_login')
         this.addAppEventListener(

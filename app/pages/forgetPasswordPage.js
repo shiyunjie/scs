@@ -42,6 +42,8 @@ class ForgetPassword extends Component {
         nextPage = this.props.nextPageIndex;
         // 初始状态
         this.state = {
+            showProgress: false,//显示加载
+            showReload: false,//显示加载更多
             phone: '',
             code: '',
             ButtonText:'',
@@ -88,6 +90,18 @@ class ForgetPassword extends Component {
 
         return (
             <View style={{flex:1}}>
+                <ModalProgress
+                    showProgress={this.state.showProgress}
+                    showReload={this.state.showReload}
+                    fetchData={()=>{
+                    this.setState({
+                    showProgress:true,//显示加载
+                    showReload:false,//显示加载更多
+                     })
+                    this._fetchData()
+                    }}
+                    onRequestClose={this._onRequestClose.bind(this)}/>
+                {this.state.showProgress||this.state.showReload?null:(
                 <View style={styles.container}>
                     <TextInput style={[styles.textInput,{ paddingLeft:10,paddingRight:10,}]}
                                clearButtonMode="while-editing"
@@ -153,6 +167,7 @@ class ForgetPassword extends Component {
                             loading: true,
                             //disabled: true,
                         })
+
                          this._fetchData_code()
                         /*setTimeout( () => {
                            /!* this._button_3.setState({
@@ -200,17 +215,19 @@ class ForgetPassword extends Component {
                                 loading: false,
                                 //disabled: false
                             })
-
+                        this.setState({
+                        showProgress: true,//显示加载
+                        showReload: false,//显示加载更多
+                        })
 
                         this._fetchData_submit()
-
-
                     }
                     }}>
                         下一步
                     </Button>
 
                 </View>
+                )}
                 <Toast
                     ref={ component => this._toast = component }
                     marginTop={64}>
@@ -359,7 +376,7 @@ class ForgetPassword extends Component {
             if (result.code && result.code == 10) {
                 console.log('nextPage:',nextPage)
                 if(nextPage=='forget'){
-                    this.props.navigator.push({
+                    this.props.navigator.replace({
                         title: '忘记密码',
                         component: SetPassword,
                         passProps:{
@@ -368,7 +385,7 @@ class ForgetPassword extends Component {
                     });
                 }else {
                     //跳转注册
-                    this.props.navigator.push({
+                    this.props.navigator.replace({
                         title: '注册',
                         component: RegisterPage,
                         passProps: {
@@ -394,7 +411,10 @@ class ForgetPassword extends Component {
                 loading: false,
                 //disabled: false
             })
-
+            this.setState({
+                showProgress: false,//显示加载
+                showReload: false,//显示加载更多
+            })
         }
     }
 

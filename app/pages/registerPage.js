@@ -31,6 +31,7 @@ import Toast from 'react-native-smart-toast'
 import XhrEnhance from '../lib/XhrEnhance' //http
 
 import {getDeviceID,getToken} from '../lib/User'
+import {hex_md5} from '../lib/md5'
 //import { register_secondStep, errorXhrMock } from '../mock/xhr-mock'   //mock data
 
 class Register extends Component {
@@ -40,6 +41,9 @@ class Register extends Component {
         super(props);
         // 初始状态
         this.state = {
+            showProgress: false,//显示加载
+            showReload: false,//显示加载更多
+            showDialog:false,//显示确认框
             phone:this.props.phone,
             modalVisible: false,
             userName:'',
@@ -75,6 +79,28 @@ class Register extends Component {
     render() {
         return (
             <View style={{flex:1}}>
+                <ModalProgress
+                    showProgress={this.state.showProgress}
+                    showReload={this.state.showReload}
+                    fetchData={()=>{
+                    this.setState({
+                    showProgress:true,//显示加载
+                    showReload:false,//显示加载更多
+                     })
+                    }}
+                    onRequestClose={this._onRequestClose.bind(this)}/>
+                <ModalDialog
+                    showDialog={this.state.showDialog}
+                    title='确认要取消订单吗'
+                    fetchData={()=>{
+                    this.setState({
+                    showDialog:false,
+                     })
+                     //回退登录
+
+                           this.props.navigator.pop()
+
+                    }}/>
             <View style={[styles.container,{ marginTop: Platform.OS == 'ios' ? 64+10 : 56+10,}]}>
                 <Modal
                     animationType={"fade"}
@@ -230,12 +256,12 @@ class Register extends Component {
             url: constants.api.service,
             data: {
                 iType: constants.iType.register_secondStep,
-                pwd:this.state.newPass,
+                pwd:hex_md5(this.state.newPass),
                 account:this.state.userName,
                 real_name:this.state.realName,
                 phone:this.state.phone,
                 email:this.state.email,
-                sure_pwd:this.state.confPass,
+                sure_pwd:hex_md5(this.state.confPass),
                 deviceId:deviceID,
                 token:token,
             }

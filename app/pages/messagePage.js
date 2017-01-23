@@ -19,6 +19,7 @@ import {
     Platform,
     TouchableOpacity,
     NativeAppEventEmitter,
+    SwipeableRow,
 } from 'react-native';
 
 import constants from  '../constants/constant';
@@ -28,6 +29,8 @@ import HeaderView from '../components/listViewheaderView';
 import navigatorStyle from '../styles/navigatorStyle'       //navigationBar样式
 import Icon from 'react-native-vector-icons/Ionicons';
 
+import SwipeRow from '../components/SwipeRow'
+import Swipeable from '../components/swipeable'
 
 import {getDeviceID,getToken} from '../lib/User'
 import Toast from 'react-native-smart-toast'
@@ -40,7 +43,11 @@ import XhrEnhance from '../lib/XhrEnhance' //http
 
 
 let pageIndex = 1;//当前页码
-let firstDataList = [];
+let firstDataList = [{
+    title: 'ceshi消息',
+    send_time: '2017-1-11',
+    content: 'content_content',
+}];
 
 class MessageList extends Component {
     // 构造
@@ -116,26 +123,59 @@ class MessageList extends Component {
     }
 
     /*
+     <SwipeRow
+     style={{flex:1}}
+     onRowPress={ ()=>{
+     this._fetchData_read(rowData.id)
+     this.props.navigator.push({
+     title: '消息',
+     component: MessageDetail,
+     passProps: rowData,
+     });
+     } }
+     stopRightSwipe={-100}
+     rightOpenValue={-70}
+     disableRightSwipe={true}
+     tension={10}
+     preview={false}>
+     <View style={{flex:1,flexDirection:'row',alignItems:'stretch'}}>
+     <View style={{flex:1}}/>
+     <TouchableOpacity
+     onPress={()=>{this._fetchData_delete(rowData.id)}}
+     style={{width:100,justifyContent:'center',
+     alignItems:'stretch',backgroundColor:'red',}}>
+     <Text style={{color:'white',marginLeft:30,textAlign:'center'}}>删除</Text>
      </TouchableOpacity>
-     <Swipeout
-     autoClose={true}
-     right={[{
-     text:'删除',
-     color:'white',
-     backgroundColor:'red',
-     onPress:()=>{this._fetchData_delete(rowData.id)}
-     }]}>
-
-     </Swipeout>
-     */
-
+     </View>
+     <View
+     style={{flex:1}}>
+     <ItemView
+     style={[{overflow: 'hidden',}]}
+     size={constants.IconSize}
+     title={rowData.title}
+     time={rowData.send_time}
+     content={rowData.content}
+     do_ret={rowData.do_ret}/>
+     </View>
+     </SwipeRow>*/
     _renderRow = (rowData, sectionID, rowID) => {
         return (
+            <Swipeable
+                style={{flex:1}}
+                rightActionActivationDistance={50}
+                rightButtons={[
+                    <TouchableOpacity
+                        onPress={()=>{this._fetchData_delete(rowData.id)}}
+                        style={{flex:1,justifyContent:'center',flexDirection:'column',
+                        alignItems:'flex-start',backgroundColor:'red'}}>
+                        <Text style={{color:'white',textAlign:'center',
+                        textAlignVertical:'center',marginLeft:27}}>删除</Text>
+                    </TouchableOpacity>
+                    ]}>
 
-                <TouchableOpacity
-                    style={{flex:1}}
-                    onPress={ ()=>{
-                    this._fetchData_read(rowData.id)
+                <TouchableOpacity style={{flex:1}}
+                      onPress={ ()=>{
+                     this._fetchData_read(rowData.id)
                      this.props.navigator.push({
                      title: '消息',
                      component: MessageDetail,
@@ -148,9 +188,9 @@ class MessageList extends Component {
                         title={rowData.title}
                         time={rowData.send_time}
                         content={rowData.content}
-                        do_ret={rowData.do_ret}
-                    />
+                        do_ret={rowData.do_ret}/>
                 </TouchableOpacity>
+            </Swipeable>
 
 
 
@@ -282,14 +322,14 @@ class MessageList extends Component {
                     token: token,
                 }
             }
-            options.data=await this.gZip(options)
+            options.data = await this.gZip(options)
 
             let resultData = await this.fetch(options)
 
-            let result=await this.gunZip(resultData)
+            let result = await this.gunZip(resultData)
 
             result = JSON.parse(result)
-            if(result.code&&result.code==-54){
+            if (result.code && result.code == -54) {
                 /**
                  * 发送事件去登录
                  */
@@ -345,16 +385,16 @@ class MessageList extends Component {
                 }
             }
 
-            options.data=await this.gZip(options)
+            options.data = await this.gZip(options)
 
             let resultData = await this.fetch(options)
 
-            let result=await this.gunZip(resultData)
+            let result = await this.gunZip(resultData)
 
             result = JSON.parse(result)
             //console.log(`fetch result -> `, typeof result)
             //console.log(`result`, result.result)
-            if(result.code&&result.code==-54){
+            if (result.code && result.code == -54) {
                 /**
                  * 发送事件去登录
                  */
@@ -377,6 +417,7 @@ class MessageList extends Component {
                     pageIndex--;
                     if (pageIndex < 1) {
                         pageIndex = 1;
+0
                     }
 
                 }
@@ -421,19 +462,19 @@ class MessageList extends Component {
                 url: constants.api.service,
                 data: {
                     iType: constants.iType.delSysInfo,
-                    id:id,
+                    id: id,
                     deviceId: deviceID,
                     token: token,
                 }
             }
-            options.data=await this.gZip(options)
+            options.data = await this.gZip(options)
 
             let resultData = await this.fetch(options)
 
-            let result=await this.gunZip(resultData)
+            let result = await this.gunZip(resultData)
 
             result = JSON.parse(result)
-            if(result.code&&result.code==-54){
+            if (result.code && result.code == -54) {
                 /**
                  * 发送事件去登录
                  */
@@ -447,8 +488,8 @@ class MessageList extends Component {
                  * @type {*[]}
                  */
                 let dataList = this.state.dataList
-                for(let index=0;index<dataList.length;index++){
-                    if(dataList[index].id==id){
+                for (let index = 0; index < dataList.length; index++) {
+                    if (dataList[index].id == id) {
                         dataList.splice(index, 1);
                         break;
                     }
@@ -487,19 +528,19 @@ class MessageList extends Component {
                 url: constants.api.service,
                 data: {
                     iType: constants.iType.infoDetail,
-                    id:id,
+                    id: id,
                     deviceId: deviceID,
                     token: token,
                 }
             }
-            options.data=await this.gZip(options)
+            options.data = await this.gZip(options)
 
             let resultData = await this.fetch(options)
 
-            let result=await this.gunZip(resultData)
+            let result = await this.gunZip(resultData)
 
             result = JSON.parse(result)
-            if(result.code&&result.code==-54){
+            if (result.code && result.code == -54) {
                 /**
                  * 发送事件去登录
                  */
@@ -513,9 +554,9 @@ class MessageList extends Component {
                  * @type {*[]}
                  */
                 let dataList = this.state.dataList
-                for(let index=0;index<dataList.length;index++){
-                    if(dataList[index].id==id){
-                        dataList[index].do_ret=true
+                for (let index = 0; index < dataList.length; index++) {
+                    if (dataList[index].id == id) {
+                        dataList[index].do_ret = true
                         break;
                     }
 

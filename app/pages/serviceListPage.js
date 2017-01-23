@@ -31,6 +31,7 @@ import XhrEnhance from '../lib/XhrEnhance' //http
 //import { serviceOrder_serviceOrderList,errorXhrMock } from '../mock/xhr-mock'   //mock data
 
 let pageIndex = 1;//当前页码
+let pageLength=10;//每页条数
 
 class ServiceList extends Component {
     // 构造
@@ -327,15 +328,24 @@ total_cost 服务费总计
         try {
             let token = await getToken()
             let deviceID = await getDeviceID()
+            let start=0;
+            if(pageIndex==1){
+                start=0
+            }else if(pageIndex==2){
+                start=pageLength
+            }else{
+                start=(pageIndex-1)*pageLength+1
+            }
             let options = {
                 method: 'post',
                 url: constants.api.service,
-                //url: constants.api.serviceOrder_serviceOrderList,
                 data: {
                     iType: constants.iType.serviceOrderList,
                     current_page: pageIndex,
                     deviceId: deviceID,
+                    length:pageLength,
                     token: token,
+                    start:start,
                 }
             }
 
@@ -389,14 +399,24 @@ total_cost 服务费总计
         try {
             let token = await getToken()
             let deviceID = await getDeviceID()
+            let start=0;
+            if(pageIndex==1){
+                start=0
+            }else if(pageIndex==2){
+                start=pageLength
+            }else{
+                start=(pageIndex-1)*pageLength+1
+            }
             let options = {
-                //method:{'post'},
+                method:'post',
                 url: constants.api.service,
                 data: {
                     iType: constants.iType.serviceOrderList,
                     current_page: pageIndex,
                     deviceId: deviceID,
+                    length:pageLength,
                     token: token,
+                    start:start,
                 }
             }
 
@@ -469,6 +489,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: constants.UIBackgroundColor,
+        //backgroundColor: 'red',
     },
 
 });

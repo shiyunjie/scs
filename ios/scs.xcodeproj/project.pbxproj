@@ -31,11 +31,33 @@
 		67A96A1652A54079AFFD9E0F /* MaterialIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 95418E460C6A4DBBA709D43C /* MaterialIcons.ttf */; };
 		6A812932DB8A4CA8962E0032 /* libRCTJPushModule.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D581C1F908F742ACB10CCCAF /* libRCTJPushModule.a */; };
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
+		834CB46B1E2EFB540020DA36 /* libRNFS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 834CB4681E2EFB4A0020DA36 /* libRNFS.a */; };
+		835717CD1E2DD32900CFFEF9 /* AlipaySDK.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 835717CA1E2DD32900CFFEF9 /* AlipaySDK.bundle */; };
+		835717CE1E2DD32900CFFEF9 /* AlipaySDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 835717CC1E2DD32900CFFEF9 /* AlipaySDK.framework */; };
+		835717CF1E2DD38A00CFFEF9 /* libRCTAliPay.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 835717AF1E2DD2A000CFFEF9 /* libRCTAliPay.a */; };
+		835717D21E2DD3CB00CFFEF9 /* libc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 835717D11E2DD3CB00CFFEF9 /* libc++.tbd */; };
+		835717D41E2DD3E900CFFEF9 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 835717D31E2DD3E900CFFEF9 /* libz.tbd */; };
+		835717D61E2DD3FF00CFFEF9 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 835717D51E2DD3FF00CFFEF9 /* SystemConfiguration.framework */; };
+		835717D81E2DD41000CFFEF9 /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 835717D71E2DD41000CFFEF9 /* CoreTelephony.framework */; };
+		835717DA1E2DD41B00CFFEF9 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 835717D91E2DD41B00CFFEF9 /* QuartzCore.framework */; };
+		835717DC1E2DD42500CFFEF9 /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 835717DB1E2DD42500CFFEF9 /* CoreText.framework */; };
+		835717DE1E2DD42F00CFFEF9 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 835717DD1E2DD42F00CFFEF9 /* CoreGraphics.framework */; };
+		835717E01E2DD43800CFFEF9 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 835717DF1E2DD43800CFFEF9 /* UIKit.framework */; };
+		835717E21E2DD50700CFFEF9 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 835717E11E2DD50700CFFEF9 /* Foundation.framework */; };
+		835717E41E2DD51300CFFEF9 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 835717E31E2DD51300CFFEF9 /* CFNetwork.framework */; };
+		835717E61E2DD51E00CFFEF9 /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 835717E51E2DD51E00CFFEF9 /* CoreMotion.framework */; };
+		8372FFE11E31FDD9005976FD /* RSASign.m in Sources */ = {isa = PBXBuildFile; fileRef = 8372FFE01E31FDD9005976FD /* RSASign.m */; };
+		8372FFE41E32001F005976FD /* public_key.der in Resources */ = {isa = PBXBuildFile; fileRef = 8372FFE21E32001F005976FD /* public_key.der */; };
+		8372FFE51E32001F005976FD /* private_key.p12 in Resources */ = {isa = PBXBuildFile; fileRef = 8372FFE31E32001F005976FD /* private_key.p12 */; };
 		83D2531B825D45BC8426892B /* Ionicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A56CBE8EB69E4BB1B5114DEF /* Ionicons.ttf */; };
 		83DFDBD61E2B23F700DA66B8 /* GBase64.m in Sources */ = {isa = PBXBuildFile; fileRef = 83DFDBCF1E2B23F700DA66B8 /* GBase64.m */; };
 		83DFDBD71E2B23F700DA66B8 /* HttpRsaGzip.m in Sources */ = {isa = PBXBuildFile; fileRef = 83DFDBD11E2B23F700DA66B8 /* HttpRsaGzip.m */; };
 		83DFDBD81E2B23F700DA66B8 /* LFCGzip+Base64Util.m in Sources */ = {isa = PBXBuildFile; fileRef = 83DFDBD31E2B23F700DA66B8 /* LFCGzip+Base64Util.m */; };
 		83DFDBD91E2B23F700DA66B8 /* LFCGzipUtillity.m in Sources */ = {isa = PBXBuildFile; fileRef = 83DFDBD51E2B23F700DA66B8 /* LFCGzipUtillity.m */; };
+		83EA50E71E2F6F9300EF5535 /* DFPlugins.m in Sources */ = {isa = PBXBuildFile; fileRef = 83EA50E51E2F6F9300EF5535 /* DFPlugins.m */; };
+		83EA511A1E2F70DC00EF5535 /* ImageCompress.m in Sources */ = {isa = PBXBuildFile; fileRef = 83EA51191E2F70DC00EF5535 /* ImageCompress.m */; };
+		83EA66C51E2C5DD400EF4E3B /* libRNDeviceInfo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 83EA66C21E2C5DA600EF4E3B /* libRNDeviceInfo.a */; };
+		83EFF4E01E30794900687656 /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 83EFF4DF1E30794900687656 /* AssetsLibrary.framework */; };
 		9342A3AC32384637ADD01A12 /* Octicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0063527B63AD42C1A20B260E /* Octicons.ttf */; };
 		9FD4E0441E222EDD0015B6FD /* libRCTCameraRoll.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FD4E0431E222E940015B6FD /* libRCTCameraRoll.a */; };
 		A594C66395D04BB994FB93DF /* libRNSpinkit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4EDC8207CCDF4E7FBDEBABA1 /* libRNSpinkit.a */; };
@@ -137,6 +159,20 @@
 			remoteGlobalIDString = 58B5119B1A9E6C1200147676;
 			remoteInfo = RCTText;
 		};
+		834CB4671E2EFB4A0020DA36 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 834CB44A1E2EFB4A0020DA36 /* RNFS.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = F12AFB9B1ADAF8F800E0535D;
+			remoteInfo = RNFS;
+		};
+		835717AE1E2DD2A000CFFEF9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 835717A91E2DD29F00CFFEF9 /* RCTAliPay.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 9F303CF51E0B7B94002A4A05;
+			remoteInfo = RCTAliPay;
+		};
 		839896911E19498100CB0E19 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 7B33988A716D4AF5BE41E270 /* RCTBEEPickerManager.xcodeproj */;
@@ -214,6 +250,13 @@
 			remoteGlobalIDString = 5DBEB1501B18CEA900B34395;
 			remoteInfo = RNVectorIcons;
 		};
+		83EA66C11E2C5DA600EF4E3B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 83EA66A61E2C5DA600EF4E3B /* RNDeviceInfo.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = DA5891D81BA9A9FC002B4DB2;
+			remoteInfo = RNDeviceInfo;
+		};
 		83F8EA5E1E2495CD00CC78EF /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 248FD42788474F79A223B56D /* RCTJPushModule.xcodeproj */;
@@ -261,6 +304,25 @@
 		78C398B01ACF4ADC00677621 /* RCTLinking.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTLinking.xcodeproj; path = "../node_modules/react-native/Libraries/LinkingIOS/RCTLinking.xcodeproj"; sourceTree = "<group>"; };
 		7B33988A716D4AF5BE41E270 /* RCTBEEPickerManager.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RCTBEEPickerManager.xcodeproj; path = "../node_modules/react-native-picker/ios/RCTBEEPickerManager.xcodeproj"; sourceTree = "<group>"; };
 		832341B01AAA6A8300B99B32 /* RCTText.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTText.xcodeproj; path = "../node_modules/react-native/Libraries/Text/RCTText.xcodeproj"; sourceTree = "<group>"; };
+		834CB44A1E2EFB4A0020DA36 /* RNFS.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNFS.xcodeproj; path = "../node_modules/react-native-fs/RNFS.xcodeproj"; sourceTree = "<group>"; };
+		835717A91E2DD29F00CFFEF9 /* RCTAliPay.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTAliPay.xcodeproj; path = "../node_modules/react-native-smart-alipay/ios/RCTAliPay/RCTAliPay.xcodeproj"; sourceTree = "<group>"; };
+		835717CA1E2DD32900CFFEF9 /* AlipaySDK.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = AlipaySDK.bundle; sourceTree = "<group>"; };
+		835717CC1E2DD32900CFFEF9 /* AlipaySDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AlipaySDK.framework; sourceTree = "<group>"; };
+		835717D11E2DD3CB00CFFEF9 /* libc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.tbd"; path = "usr/lib/libc++.tbd"; sourceTree = SDKROOT; };
+		835717D31E2DD3E900CFFEF9 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
+		835717D51E2DD3FF00CFFEF9 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		835717D71E2DD41000CFFEF9 /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
+		835717D91E2DD41B00CFFEF9 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		835717DB1E2DD42500CFFEF9 /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = System/Library/Frameworks/CoreText.framework; sourceTree = SDKROOT; };
+		835717DD1E2DD42F00CFFEF9 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		835717DF1E2DD43800CFFEF9 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		835717E11E2DD50700CFFEF9 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		835717E31E2DD51300CFFEF9 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
+		835717E51E2DD51E00CFFEF9 /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = System/Library/Frameworks/CoreMotion.framework; sourceTree = SDKROOT; };
+		8372FFDF1E31FDD9005976FD /* RSASign.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RSASign.h; sourceTree = "<group>"; };
+		8372FFE01E31FDD9005976FD /* RSASign.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RSASign.m; sourceTree = "<group>"; };
+		8372FFE21E32001F005976FD /* public_key.der */ = {isa = PBXFileReference; lastKnownFileType = file; path = public_key.der; sourceTree = "<group>"; };
+		8372FFE31E32001F005976FD /* private_key.p12 */ = {isa = PBXFileReference; lastKnownFileType = file; path = private_key.p12; sourceTree = "<group>"; };
 		83DFDBCE1E2B23F700DA66B8 /* GBase64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GBase64.h; sourceTree = "<group>"; };
 		83DFDBCF1E2B23F700DA66B8 /* GBase64.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GBase64.m; sourceTree = "<group>"; };
 		83DFDBD01E2B23F700DA66B8 /* HttpRsaGzip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HttpRsaGzip.h; sourceTree = "<group>"; };
@@ -269,6 +331,12 @@
 		83DFDBD31E2B23F700DA66B8 /* LFCGzip+Base64Util.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "LFCGzip+Base64Util.m"; sourceTree = "<group>"; };
 		83DFDBD41E2B23F700DA66B8 /* LFCGzipUtillity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LFCGzipUtillity.h; sourceTree = "<group>"; };
 		83DFDBD51E2B23F700DA66B8 /* LFCGzipUtillity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LFCGzipUtillity.m; sourceTree = "<group>"; };
+		83EA50E51E2F6F9300EF5535 /* DFPlugins.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DFPlugins.m; path = Frameworks/DFPlugins.m; sourceTree = "<group>"; };
+		83EA50E61E2F6F9300EF5535 /* DFPlugins.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DFPlugins.h; path = Frameworks/DFPlugins.h; sourceTree = "<group>"; };
+		83EA51181E2F70DC00EF5535 /* ImageCompress.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageCompress.h; sourceTree = "<group>"; };
+		83EA51191E2F70DC00EF5535 /* ImageCompress.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageCompress.m; sourceTree = "<group>"; };
+		83EA66A61E2C5DA600EF4E3B /* RNDeviceInfo.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNDeviceInfo.xcodeproj; path = "../node_modules/react-native-device-info/RNDeviceInfo.xcodeproj"; sourceTree = "<group>"; };
+		83EFF4DF1E30794900687656 /* AssetsLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AssetsLibrary.framework; path = System/Library/Frameworks/AssetsLibrary.framework; sourceTree = SDKROOT; };
 		850590DA1F8447C989941C44 /* RNSpinkit.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNSpinkit.xcodeproj; path = "../node_modules/react-native-spinkit/ios/RNSpinkit.xcodeproj"; sourceTree = "<group>"; };
 		88F10F25BA764F37B974101E /* SimpleLineIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = SimpleLineIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/SimpleLineIcons.ttf"; sourceTree = "<group>"; };
 		8E39FE77E2E34B2990E77475 /* EvilIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = EvilIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/EvilIcons.ttf"; sourceTree = "<group>"; };
@@ -296,6 +364,21 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				83EFF4E01E30794900687656 /* AssetsLibrary.framework in Frameworks */,
+				835717E61E2DD51E00CFFEF9 /* CoreMotion.framework in Frameworks */,
+				835717E41E2DD51300CFFEF9 /* CFNetwork.framework in Frameworks */,
+				835717E21E2DD50700CFFEF9 /* Foundation.framework in Frameworks */,
+				835717E01E2DD43800CFFEF9 /* UIKit.framework in Frameworks */,
+				835717DE1E2DD42F00CFFEF9 /* CoreGraphics.framework in Frameworks */,
+				835717DC1E2DD42500CFFEF9 /* CoreText.framework in Frameworks */,
+				835717DA1E2DD41B00CFFEF9 /* QuartzCore.framework in Frameworks */,
+				835717D81E2DD41000CFFEF9 /* CoreTelephony.framework in Frameworks */,
+				835717D61E2DD3FF00CFFEF9 /* SystemConfiguration.framework in Frameworks */,
+				834CB46B1E2EFB540020DA36 /* libRNFS.a in Frameworks */,
+				835717D41E2DD3E900CFFEF9 /* libz.tbd in Frameworks */,
+				835717D21E2DD3CB00CFFEF9 /* libc++.tbd in Frameworks */,
+				835717CF1E2DD38A00CFFEF9 /* libRCTAliPay.a in Frameworks */,
+				83EA66C51E2C5DD400EF4E3B /* libRNDeviceInfo.a in Frameworks */,
 				9FD4E0441E222EDD0015B6FD /* libRCTCameraRoll.a in Frameworks */,
 				5E9157361DD0AC6A00FF2AA8 /* libRCTAnimation.a in Frameworks */,
 				146834051AC3E58100842450 /* libReact.a in Frameworks */,
@@ -308,6 +391,7 @@
 				832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */,
 				00C302EA1ABCBA2D00DB3ED1 /* libRCTVibration.a in Frameworks */,
 				139FDEF61B0652A700C62182 /* libRCTWebSocket.a in Frameworks */,
+				835717CE1E2DD32900CFFEF9 /* AlipaySDK.framework in Frameworks */,
 				19A43C5260AC480A950B16E3 /* libRCTSplashScreen.a in Frameworks */,
 				24A64755902F404BA3C85495 /* libRNVectorIcons.a in Frameworks */,
 				A594C66395D04BB994FB93DF /* libRNSpinkit.a in Frameworks */,
@@ -399,6 +483,14 @@
 		13B07FAE1A68108700A75B9A /* scs */ = {
 			isa = PBXGroup;
 			children = (
+				8372FFE21E32001F005976FD /* public_key.der */,
+				8372FFE31E32001F005976FD /* private_key.p12 */,
+				83EA51181E2F70DC00EF5535 /* ImageCompress.h */,
+				83EA51191E2F70DC00EF5535 /* ImageCompress.m */,
+				83EA50E51E2F6F9300EF5535 /* DFPlugins.m */,
+				83EA50E61E2F6F9300EF5535 /* DFPlugins.h */,
+				835717C91E2DD32900CFFEF9 /* AliPayResouces */,
+				835717CB1E2DD32900CFFEF9 /* Frameworks */,
 				83DFDBCE1E2B23F700DA66B8 /* GBase64.h */,
 				83DFDBCF1E2B23F700DA66B8 /* GBase64.m */,
 				83DFDBD01E2B23F700DA66B8 /* HttpRsaGzip.h */,
@@ -414,6 +506,8 @@
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				13B07FB11A68108700A75B9A /* LaunchScreen.xib */,
 				13B07FB71A68108700A75B9A /* main.m */,
+				8372FFDF1E31FDD9005976FD /* RSASign.h */,
+				8372FFE01E31FDD9005976FD /* RSASign.m */,
 			);
 			name = scs;
 			sourceTree = "<group>";
@@ -448,6 +542,9 @@
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				834CB44A1E2EFB4A0020DA36 /* RNFS.xcodeproj */,
+				835717A91E2DD29F00CFFEF9 /* RCTAliPay.xcodeproj */,
+				83EA66A61E2C5DA600EF4E3B /* RNDeviceInfo.xcodeproj */,
 				9FD4E03E1E222E940015B6FD /* RCTCameraRoll.xcodeproj */,
 				5E91572D1DD0AC6500FF2AA8 /* RCTAnimation.xcodeproj */,
 				146833FF1AC3E56700842450 /* React.xcodeproj */,
@@ -476,6 +573,57 @@
 				839896AA1E19498100CB0E19 /* libRCTText-tvOS.a */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		834CB44B1E2EFB4A0020DA36 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				834CB4681E2EFB4A0020DA36 /* libRNFS.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		835717AA1E2DD29F00CFFEF9 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				835717AF1E2DD2A000CFFEF9 /* libRCTAliPay.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		835717C91E2DD32900CFFEF9 /* AliPayResouces */ = {
+			isa = PBXGroup;
+			children = (
+				835717CA1E2DD32900CFFEF9 /* AlipaySDK.bundle */,
+			);
+			path = AliPayResouces;
+			sourceTree = "<group>";
+		};
+		835717CB1E2DD32900CFFEF9 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				835717CC1E2DD32900CFFEF9 /* AlipaySDK.framework */,
+			);
+			path = Frameworks;
+			sourceTree = "<group>";
+		};
+		835717D01E2DD3CB00CFFEF9 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				83EFF4DF1E30794900687656 /* AssetsLibrary.framework */,
+				835717E51E2DD51E00CFFEF9 /* CoreMotion.framework */,
+				835717E31E2DD51300CFFEF9 /* CFNetwork.framework */,
+				835717E11E2DD50700CFFEF9 /* Foundation.framework */,
+				835717DF1E2DD43800CFFEF9 /* UIKit.framework */,
+				835717DD1E2DD42F00CFFEF9 /* CoreGraphics.framework */,
+				835717DB1E2DD42500CFFEF9 /* CoreText.framework */,
+				835717D91E2DD41B00CFFEF9 /* QuartzCore.framework */,
+				835717D71E2DD41000CFFEF9 /* CoreTelephony.framework */,
+				835717D51E2DD3FF00CFFEF9 /* SystemConfiguration.framework */,
+				835717D31E2DD3E900CFFEF9 /* libz.tbd */,
+				835717D11E2DD3CB00CFFEF9 /* libc++.tbd */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		839896851E19498100CB0E19 /* Products */ = {
@@ -518,6 +666,7 @@
 				00E356EF1AD99517003FC87E /* scsTests */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				D662EEE6346541079D78A2E5 /* Resources */,
+				835717D01E2DD3CB00CFFEF9 /* Frameworks */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -528,6 +677,14 @@
 			children = (
 				13B07F961A680F5B00A75B9A /* scs.app */,
 				00E356EE1AD99517003FC87E /* scsTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		83EA66A71E2C5DA600EF4E3B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				83EA66C21E2C5DA600EF4E3B /* libRNDeviceInfo.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -614,12 +771,12 @@
 				TargetAttributes = {
 					00E356ED1AD99517003FC87E = {
 						CreatedOnToolsVersion = 6.2;
-						DevelopmentTeam = L75P3RZGQ2;
+						DevelopmentTeam = 687DYWZRKU;
 						ProvisioningStyle = Automatic;
 						TestTargetID = 13B07F861A680F5B00A75B9A;
 					};
 					13B07F861A680F5B00A75B9A = {
-						DevelopmentTeam = L75P3RZGQ2;
+						DevelopmentTeam = 687DYWZRKU;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -639,6 +796,10 @@
 				{
 					ProductGroup = 00C302A81ABCB8CE00DB3ED1 /* Products */;
 					ProjectRef = 00C302A71ABCB8CE00DB3ED1 /* RCTActionSheet.xcodeproj */;
+				},
+				{
+					ProductGroup = 835717AA1E2DD29F00CFFEF9 /* Products */;
+					ProjectRef = 835717A91E2DD29F00CFFEF9 /* RCTAliPay.xcodeproj */;
 				},
 				{
 					ProductGroup = 5E91572E1DD0AC6500FF2AA8 /* Products */;
@@ -695,6 +856,14 @@
 				{
 					ProductGroup = 146834001AC3E56700842450 /* Products */;
 					ProjectRef = 146833FF1AC3E56700842450 /* React.xcodeproj */;
+				},
+				{
+					ProductGroup = 83EA66A71E2C5DA600EF4E3B /* Products */;
+					ProjectRef = 83EA66A61E2C5DA600EF4E3B /* RNDeviceInfo.xcodeproj */;
+				},
+				{
+					ProductGroup = 834CB44B1E2EFB4A0020DA36 /* Products */;
+					ProjectRef = 834CB44A1E2EFB4A0020DA36 /* RNFS.xcodeproj */;
 				},
 				{
 					ProductGroup = 839896891E19498100CB0E19 /* Products */;
@@ -798,6 +967,20 @@
 			remoteRef = 832341B41AAA6A8300B99B32 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		834CB4681E2EFB4A0020DA36 /* libRNFS.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRNFS.a;
+			remoteRef = 834CB4671E2EFB4A0020DA36 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		835717AF1E2DD2A000CFFEF9 /* libRCTAliPay.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRCTAliPay.a;
+			remoteRef = 835717AE1E2DD2A000CFFEF9 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		839896921E19498100CB0E19 /* libRCTBEEPickerManager.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -875,6 +1058,13 @@
 			remoteRef = 839896B81E19498100CB0E19 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		83EA66C21E2C5DA600EF4E3B /* libRNDeviceInfo.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRNDeviceInfo.a;
+			remoteRef = 83EA66C11E2C5DA600EF4E3B /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		83F8EA5F1E2495CD00CC78EF /* libRCTJPushModule.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -905,13 +1095,16 @@
 			files = (
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
+				8372FFE41E32001F005976FD /* public_key.der in Resources */,
 				BEE5B3F8FA61436D8A47E379 /* Entypo.ttf in Resources */,
 				417621E67E1C4A3A8453AF48 /* EvilIcons.ttf in Resources */,
 				DE20D4F2E36C453FB4687DFB /* FontAwesome.ttf in Resources */,
 				079CDB81045F42FB830E1030 /* Foundation.ttf in Resources */,
+				835717CD1E2DD32900CFFEF9 /* AlipaySDK.bundle in Resources */,
 				83D2531B825D45BC8426892B /* Ionicons.ttf in Resources */,
 				67A96A1652A54079AFFD9E0F /* MaterialIcons.ttf in Resources */,
 				9342A3AC32384637ADD01A12 /* Octicons.ttf in Resources */,
+				8372FFE51E32001F005976FD /* private_key.p12 in Resources */,
 				D1DCE31FC3794153840F9424 /* SimpleLineIcons.ttf in Resources */,
 				16B6A3CB28174817B1A25F1E /* Zocial.ttf in Resources */,
 			);
@@ -950,11 +1143,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				83DFDBD81E2B23F700DA66B8 /* LFCGzip+Base64Util.m in Sources */,
+				83EA511A1E2F70DC00EF5535 /* ImageCompress.m in Sources */,
 				83DFDBD91E2B23F700DA66B8 /* LFCGzipUtillity.m in Sources */,
 				83DFDBD71E2B23F700DA66B8 /* HttpRsaGzip.m in Sources */,
+				83EA50E71E2F6F9300EF5535 /* DFPlugins.m in Sources */,
 				83DFDBD61E2B23F700DA66B8 /* GBase64.m in Sources */,
 				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
+				8372FFE11E31FDD9005976FD /* RSASign.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -986,7 +1182,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				DEVELOPMENT_TEAM = L75P3RZGQ2;
+				DEVELOPMENT_TEAM = 687DYWZRKU;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -1013,7 +1209,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
-				DEVELOPMENT_TEAM = L75P3RZGQ2;
+				DEVELOPMENT_TEAM = 687DYWZRKU;
 				INFOPLIST_FILE = scsTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
@@ -1038,7 +1234,22 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = NO;
-				DEVELOPMENT_TEAM = L75P3RZGQ2;
+				DEVELOPMENT_TEAM = 687DYWZRKU;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Frameworks",
+				);
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/../node_modules/react-native/React/**",
+					"$(SRCROOT)/../node_modules/react-native/ReactCommon/**",
+					"$(SRCROOT)/../node_modules/react-native-smart-splash-screen/ios/RCTSplashScreen/RCTSplashScreen",
+					"$(SRCROOT)/../node_modules/react-native-vector-icons/RNVectorIconsManager",
+					"$(SRCROOT)/../node_modules/react-native-spinkit/ios/**",
+					"$(SRCROOT)/../node_modules/react-native-picker/ios/RCTBEEPickerManager",
+					"$(SRCROOT)/../node_modules/jpush-react-native/ios/RCTJPushModule/RCTJPushModule",
+					"$(SRCROOT)/../node_modules/react-native-smart-alipay/ios/RCTAliPay/RCTAliPay/**",
+				);
 				INFOPLIST_FILE = scs/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -1102,7 +1313,22 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer: yiqin.chen@sh-defan.net (W25WQNYGHN)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = L75P3RZGQ2;
+				DEVELOPMENT_TEAM = 687DYWZRKU;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Frameworks",
+				);
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/../node_modules/react-native/React/**",
+					"$(SRCROOT)/../node_modules/react-native/ReactCommon/**",
+					"$(SRCROOT)/../node_modules/react-native-smart-splash-screen/ios/RCTSplashScreen/RCTSplashScreen",
+					"$(SRCROOT)/../node_modules/react-native-vector-icons/RNVectorIconsManager",
+					"$(SRCROOT)/../node_modules/react-native-spinkit/ios/**",
+					"$(SRCROOT)/../node_modules/react-native-picker/ios/RCTBEEPickerManager",
+					"$(SRCROOT)/../node_modules/jpush-react-native/ios/RCTJPushModule/RCTJPushModule",
+					"$(SRCROOT)/../node_modules/react-native-smart-alipay/ios/RCTAliPay/RCTAliPay/**",
+				);
 				INFOPLIST_FILE = scs/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";

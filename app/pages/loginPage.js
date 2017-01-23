@@ -29,6 +29,7 @@ import navigatorStyle from '../styles/navigatorStyle'       //navigationBaræ ·å¼
 
 
 import {getDeviceID,getToken,getAccount} from '../lib/User'
+import {hex_md5} from '../lib/md5'
 import XhrEnhance from '../lib/XhrEnhance' //http
 import Toast from 'react-native-smart-toast'
 import AppEventListenerEnhance from 'react-native-smart-app-event-listener-enhance'
@@ -165,13 +166,15 @@ class Login extends Component {
         try {
             let token= await getToken()
             let deviceID= await getDeviceID()
+            let pwd=hex_md5(this.state.password)
+            console.log(`md5_pwd`,pwd)
             let options = {
                 method:'post',
                 url: constants.api.service,
                 data: {
                     iType: constants.iType.login,
                     member_name:this.state.phone,
-                    pwd:this.state.password,
+                    pwd:pwd,
                     deviceId:deviceID,
                     token:token,
                 }

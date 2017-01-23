@@ -17,6 +17,7 @@ import {
 } from 'react-native';
 
 import {getDeviceID,getToken} from '../lib/User'
+import {hex_md5} from '../lib/md5'
 import Button from 'react-native-smart-button';
 import constants from  '../constants/constant';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -111,8 +112,8 @@ class SetPassword extends Component {
                 data: {
                     iType: constants.iType.SavePwd,
                     phone:this.state.phone,
-                    pwd:this.state.password,
-                    surePwd:this.state.confPwd,
+                    pwd:hex_md5(this.state.password),
+                    surePwd:hex_md5(this.state.confPwd),
                     deviceId:deviceID,
                     token:token,
 

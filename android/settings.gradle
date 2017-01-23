@@ -1,5 +1,5 @@
 rootProject.name = 'scs'
-include ':react-native-picker', ':jpush-react-native'
+include ':react-native-picker', ':jpush-react-native', ':rctcompressedimage'
 project(':jpush-react-native').projectDir = new File(rootProject.projectDir, '../node_modules/jpush-react-native/android')
 
 project(':react-native-picker').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-picker/android')
@@ -14,6 +14,10 @@ include ':react-native-smart-swipe-refresh-layout'
 project(':react-native-smart-swipe-refresh-layout').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-smart-pull-to-refresh-listview/android')
 include ':react-native-smart-image-loader'
 project(':react-native-smart-image-loader').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-smart-image-loader/android')
+include ':react-native-smart-alipay'
+project(':react-native-smart-alipay').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-smart-alipay/android')
+include ':react-native-fs'
+project(':react-native-fs').projectDir = new File(settingsDir, '../node_modules/react-native-fs/android')
 include ':http-rsa-gzip'
 //project(':http-rsa-gzip').projectDir = new File(rootProject.projectDir, '../node_modules/http-rsa-gzip')
 project(':http-rsa-gzip').projectDir = new File(rootProject.projectDir, '../app/plugins/android/HttpRsaGzip')

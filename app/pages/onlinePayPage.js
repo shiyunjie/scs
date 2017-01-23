@@ -7,6 +7,7 @@ import {
     Text,
     View,
     TextInput,
+    Image,
     ActivityIndicator,
     ActivityIndicatorIOS,
     ProgressBarAndroid,
@@ -27,6 +28,13 @@ import XhrEnhance from '../lib/XhrEnhance' //http
 import {getDeviceID,getToken} from '../lib/User'
 import Toast from 'react-native-smart-toast'
 import AppEventListenerEnhance from 'react-native-smart-app-event-listener-enhance'
+import AliPay from 'react-native-smart-alipay'
+
+
+
+import image_alipay from '../images/alipay.png'
+import image_tencent from  '../images/tencentlogo.png'
+import image_union from '../images/unionPay.png'
 
 class OnLinePay extends Component {
     // 构造
@@ -34,11 +42,14 @@ class OnLinePay extends Component {
         super(props);
         // 初始状态
         this.state = {
-            id:this.props.service_id,
-            payList:this.props.payList,
-            hasPayList:this.props.hasPayList,
-            total:this.props.total,
+            id: this.props.service_id,
+            payList: this.props.payList,
+            hasPayList: this.props.hasPayList,
+            total: this.props.total,
+
         };
+        this._payType = 'alipay'
+
     }
 
     componentWillMount() {
@@ -58,6 +69,24 @@ class OnLinePay extends Component {
                 //
             })
         )
+        this.addAppEventListener(
+            NativeAppEventEmitter.addListener('alipay.mobile.securitypay.pay.onPaymentResult', this._onPaymentResult) //alipay
+        )
+    }
+
+    _onPaymentResult = (result) => {
+        //console.log(`result -> `)
+        //console.log(result)
+        console.log(`result.resultStatus = ${result.resultStatus}`)
+        console.log(`result.memo = ${result.memo}`)
+        console.log(`result.result = ${result.result}`)
+        this._button_alipay.setState({
+            loading: false,
+        })
+        Alert.alert(
+            '',
+            `${result.resultStatus == 9000 ? '支付成功' : '支付失败'} `
+        )
     }
 
 
@@ -66,18 +95,70 @@ class OnLinePay extends Component {
             <View
                 style={styles.container}>
                 <View
-                    style={{flex:1,flexDirection:'column',justifyContent:'flex-start',alignItems:'stretch'}}>
-                    <View>
-                        <Text>银联</Text>
-                    </View>
-                    <View>
-                        <Text>微信</Text>
-                    </View>
-                    <View>
-                        <Text>支付宝</Text>
-                    </View>
+                    style={{flex:1,flexDirection:'column',justifyContent:'flex-start',
+                    alignItems:'stretch'}}>
+                    <TouchableOpacity style={styles.textTitle}
+                                      onPress={()=>{
+                                        //this._payType = 'union'
+                                       }}>
+                        <Image style={{height:35,width:45}}
+                               source={image_union} />
+                        <View style={styles.textContent}>
+                            <Text style={{color:constants.UIInActiveColor,
+                            marginLeft:constants.MarginLeftRight}}>银联支付</Text>
+                        </View>
+                        <View
+                            style={[styles.textIcon]}>
+                            <Icon
+                                name={this._payType=='union'?
+                                'md-checkmark-circle':'ios-close-circle-outline'}  // 图标
+                                size={constants.IconSize}
+                                color={this._payType=='union'?
+                                constants.UIActiveColor:constants.UIInActiveColor}/>
+                        </View>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.textTitle}
+                                          onPress={()=>{
+                                            this._payType = 'alipay'
+                                          }}>
+                            <Image style={{height:35,width:45}}
+                                   source={image_alipay} />
+                            <View style={styles.textContent}>
+                                <Text style={{color:constants.UIInActiveColor,
+                                marginLeft:constants.MarginLeftRight}}>支付宝</Text>
+                            </View>
+                            <View
+                                style={[styles.textIcon]}>
+                                <Icon
+                                    name={this._payType=='alipay'?
+                                    'md-checkmark-circle':'ios-close-circle-outline'}  // 图标
+                                    size={constants.IconSize}
+                                    color={this._payType=='alipay'?
+                                    constants.UIActiveColor:constants.UIInActiveColor}/>
+                            </View>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.textTitle}
+                                      onPress={()=>{
+                                            //this._payType = 'tencent'
+                                          }}>
+                        <Image style={{height:35,width:45}}
+                               source={image_tencent} />
+                        <View style={styles.textContent}>
+                            <Text style={{color:constants.UIInActiveColor,
+                                marginLeft:constants.MarginLeftRight}}>微信支付</Text>
+                        </View>
+                        <View
+                            style={[styles.textIcon]}>
+                            <Icon
+                                name={this._payType=='tencent'?
+                                    'md-checkmark-circle':'ios-close-circle-outline'}  // 图标
+                                size={constants.IconSize}
+                                color={this._payType=='tencent'?
+                                    constants.UIActiveColor:constants.UIInActiveColor}/>
+                        </View>
+                    </TouchableOpacity>
                     <Button
-                        ref={ component => this.button2 = component }
+                        ref={ component => this._button_alipay = component }
                         touchableType={Button.constants.touchableTypes.fadeContent}
                         style={styles.button}
                         textStyle={{fontSize: 17, color: 'white'}}
@@ -89,20 +170,20 @@ class OnLinePay extends Component {
                             </View>
                     }
                         onPress={ () => {
-                        this.button2.setState({
+                        this._button_alipay.setState({
 
                             loading: true,
                             //disabled: true,
                         });
                         this._fetch_edit()
                        /* setTimeout( () => {
-                            this.button2.setState({
+                            this._button_alipay.setState({
                             loading: false,
                             //disabled: false
                             })
                             }, 3000)*/
                     }}>
-                        确认
+                        确认支付{this.props.total}
                     </Button>
                 </View>
                 <Toast
@@ -118,12 +199,16 @@ class OnLinePay extends Component {
         try {
             let token = await getToken()
             let deviceID = await getDeviceID()
+
+
             let options = {
                 method: 'post',
                 url: constants.api.service,
                 data: {
-                    iType: constants.iType.feedBack,
-
+                    iType: constants.iType.serviceCost_payCost,
+                    ids: this.props.ids, //(String 账单ids),
+                    total: this.props.total,//(String 支付的金额),
+                    payType: this._payType,//(支付方式 微信,支付宝)
                     deviceId: deviceID,
                     token: token,
                 }
@@ -147,21 +232,24 @@ class OnLinePay extends Component {
                 return
             }
             if (result.code && result.code == 10) {
-                /* Alert.alert('提示', '注册成功', () => {
-                 this.props.navigator.popToTop()
-                 })*/
-                this._toast.show({
-                    position: Toast.constants.gravity.center,
-                    duration: 255,
-                    children: '提交成功'
-                })
-
-                this.props.navigator.pop()
+                //正式支付
+                console.log(`获取支付宝参数成功, decodeURIComponent -> orderText = ${result.result}`);
+                //let appScheme = 'ios对应URL Types中的URL Schemes的值, 会影响支付成功后是否能正确的返回app'
+                let appScheme = 'scs'
+                let orderText = result.result
+                AliPay.payOrder({
+                    orderText,
+                    appScheme,
+                });
             } else {
                 this._toast.show({
                     position: Toast.constants.gravity.center,
                     duration: 255,
                     children: result.msg
+                })
+                this._button_alipay.setState({
+                    loading: false,
+                    //disabled: false
                 })
             }
 
@@ -172,14 +260,7 @@ class OnLinePay extends Component {
 
 
         }
-        finally {
-            this.button2.setState({
-                loading: false,
-                //disabled: false
-            })
-            //console.log(`SplashScreen.close(SplashScreen.animationType.scale, 850, 500)`)
-            //SplashScreen.close(SplashScreen.animationType.scale, 850, 500)
-        }
+
     }
 
 
@@ -222,7 +303,35 @@ const styles = StyleSheet.create({
         backgroundColor: constants.UIActiveColor,
         borderRadius: 3, borderWidth: StyleSheet.hairlineWidth,
         borderColor: constants.UIActiveColor,
-        justifyContent: 'center', borderRadius: 30,
+        justifyContent: 'center',
+        borderRadius: 30,
+        margin:constants.MarginLeftRight,
+    },
+    textTitle: {
+        height:50,
+        paddingTop: 10,
+        paddingBottom: 10,
+        flexDirection: 'row',
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+        //borderBottomWidth: StyleSheet.hairlineWidth,
+        backgroundColor: 'white',
+        paddingLeft: constants.MarginLeftRight,
+        borderBottomWidth: StyleSheet.hairlineWidth,
+        borderColor: constants.UIInActiveColor,
+    },
+    textContent: {
+        flex:1,flexDirection:'column',
+        alignItems:'stretch',
+        justifyContent:'center',
+
+    },
+    textIcon: {
+        flexDirection: 'row',
+        justifyContent:'center',
+        alignItems:'center',
+        width:30,
+
     },
 
 });

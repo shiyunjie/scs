@@ -31,54 +31,54 @@ import AppEventListenerEnhance from 'react-native-smart-app-event-listener-enhan
 import {getDeviceID,getToken} from '../lib/User'
 import XhrEnhance from '../lib/XhrEnhance' //http
 import Toast from 'react-native-smart-toast'
-let firstDataList=[]
+let firstDataList = []
 /*let firstDataList = [[{
-    first_cost_name: '一级费用名称',
+ first_cost_name: '一级费用名称',
 
-    cost_name: '二级费用名称',
+ cost_name: '二级费用名称',
 
-    estimate_cost: 800,
+ estimate_cost: 800,
 
-    cost: 900,
+ cost: 900,
 
-    id: '998773',
+ id: '998773',
 
-    is_cal: 0,
+ is_cal: 0,
 
-    is_pay: 0,
-},{
-    first_cost_name: '一级费用名称',
+ is_pay: 0,
+ },{
+ first_cost_name: '一级费用名称',
 
-    cost_name: '二级费用名称2',
+ cost_name: '二级费用名称2',
 
-    estimate_cost: 801,
+ estimate_cost: 801,
 
-    cost: 902,
+ cost: 902,
 
-    id: '998779',
+ id: '998779',
 
-    is_cal: 0,
+ is_cal: 0,
 
-    is_pay: 0,
-}],
-    [{
-        first_cost_name: '一级费用名称2',
+ is_pay: 0,
+ }],
+ [{
+ first_cost_name: '一级费用名称2',
 
-        cost_name: '二级费用名称22',
+ cost_name: '二级费用名称22',
 
-        estimate_cost: 1600,
+ estimate_cost: 1600,
 
-        cost: 9000,
+ cost: 9000,
 
-        id: '998776',
+ id: '998776',
 
-        is_cal: 0,
+ is_cal: 0,
 
-        is_pay: 1,
-    }]]*/
+ is_pay: 1,
+ }]]*/
 
-let payList=[];
-let hasPayList=[];
+let payList = [];
+let hasPayList = [];
 let pageType
 
 class PayPage extends Component {
@@ -87,24 +87,26 @@ class PayPage extends Component {
         super(props);
         // 初始状态
         this.state = {
+            showProgress: true,//显示加载
+            showReload: false,//显示加载更多
             pageType: this.props.pageType,//判断显示 还是支付
             service_id: this.props.id,//服务单 id
             dataList: firstDataList,
-            payList:payList,
-            total:0,
-            serviceTotal:0,
-            fax:0,
-            serviceTotalAndFax:0,
-            selectedAll:false,
-            order_status:this.props.order_status// 确认按钮是否显示
+            payList: payList,
+            total: 0,
+            serviceTotal: 0,
+            fax: 0,
+            serviceTotalAndFax: 0,
+            selectedAll: false,
+            order_status: this.props.order_status// 确认按钮是否显示
         }
 
-        pageType=this.props.pageType
-        console.log(`pageType:`,pageType)
+        pageType = this.props.pageType
+        console.log(`pageType:`, pageType)
     }
 
-    _selectAllTab(event){
-        this.setState({selectedAll:event})
+    _selectAllTab(event) {
+        this.setState({selectedAll: event})
     }
 
     componentWillMount() {
@@ -126,13 +128,13 @@ class PayPage extends Component {
         )
 
         this.addAppEventListener(
-            NativeAppEventEmitter.addListener('in_payPage_need_set_total',(event)=>{
-                if(pageType=='show'){
+            NativeAppEventEmitter.addListener('in_payPage_need_set_total', (event)=> {
+                if (pageType == 'show') {
                     return
                 }
 
-                let total=0
-                if(event) {
+                let total = 0
+                if (event) {
                     //全选
                     for (let data of firstDataList) {
                         for (let item of data) {
@@ -151,9 +153,9 @@ class PayPage extends Component {
                             }
                         }
                     }
-                    this.setState({total:total,payList:payList})
+                    this.setState({total: total, payList: payList})
 
-                }else{
+                } else {
                     //计算总价
                     for (let data of firstDataList) {
                         for (let item of data) {
@@ -162,7 +164,7 @@ class PayPage extends Component {
                             }
                         }
                     }
-                    this.setState({total:total})
+                    this.setState({total: total})
                 }
 
 
@@ -172,14 +174,13 @@ class PayPage extends Component {
     }
 
     componentDidMount() {
-        firstDataList=[]
-/*        payList=[]
-        hasPayList=[]
-        this.setState({payList:payList})*/
+        firstDataList = []
+        /*        payList=[]
+         hasPayList=[]
+         this.setState({payList:payList})*/
         //if (firstDataList.length == 0) {
-            this._fetchData()
+        this._fetchData()
         //}
-
 
 
     }
@@ -222,58 +223,58 @@ class PayPage extends Component {
             }
             if (result.code && result.code == 10) {
 
-               let dataList= result.result
-                let serviceTotal=0
-                 let fax=0
-                  let serviceTotalAndFax=0
-                    let total=0
+                let dataList = result.result
+                let serviceTotal = 0
+                let fax = 0
+                let serviceTotalAndFax = 0
+                let total = 0
                 //开始循环收到数据
-                for(let data of dataList){
-                    if(data.first_cost_name=='服务费总金额'){
-                        serviceTotal=pageType=='pay'?data.cost:data.estimate_cost
+                for (let data of dataList) {
+                    if (data.first_cost_name == '服务费总金额') {
+                        serviceTotal = pageType == 'pay' ? data.cost : data.estimate_cost
                         break
-                    }else if(data.first_cost_name=='服务费税额'){
-                        fax=pageType=='pay'?data.cost:data.estimate_cost
+                    } else if (data.first_cost_name == '服务费税额') {
+                        fax = pageType == 'pay' ? data.cost : data.estimate_cost
                         break
-                    }else if(data.first_cost_name=='服务费价税合计'){
-                        serviceTotalAndFax=pageType=='pay'?data.cost:data.estimate_cost
+                    } else if (data.first_cost_name == '服务费价税合计') {
+                        serviceTotalAndFax = pageType == 'pay' ? data.cost : data.estimate_cost
                         break
                     }
 
-                   if(data.is_pay==1&&payList.indexOf(data.id)==-1){
-                       //已经支付到加入已支付集合
-                       payList.push(data.id)
-                       hasPayList.push(data.id)
-                   }
+                    if (data.is_pay == 1 && payList.indexOf(data.id) == -1) {
+                        //已经支付到加入已支付集合
+                        payList.push(data.id)
+                        hasPayList.push(data.id)
+                    }
 
-                    if(firstDataList.length>0) {
-                        let flag=true;
-                        for (let index= firstDataList.length-1;index>=0;index--){
-                            let content =firstDataList[index]
+                    if (firstDataList.length > 0) {
+                        let flag = true;
+                        for (let index = firstDataList.length - 1; index >= 0; index--) {
+                            let content = firstDataList[index]
                             //属于已经存在的集合项目
-                            let item=content[0]
-                            if(item.first_cost_name==data.first_cost_name){
+                            let item = content[0]
+                            if (item.first_cost_name == data.first_cost_name) {
                                 content.push(data)
-                                flag=false;
+                                flag = false;
                                 break
                             }
 
                         }
-                        if(flag) {
+                        if (flag) {
                             //到这里说明数据源不包含
                             let content = []
                             content.push(data)
                             firstDataList.push(content)
                         }
-                    }else{
+                    } else {
                         //数据源为空
-                        let content=[]
+                        let content = []
                         content.push(data)
                         firstDataList.push(content)
                     }
                 }
                 //console.log(`firstData:`, firstDataList)
-                console.log(`payList:`,payList.length)
+                console.log(`payList:`, payList.length)
 
                 //计算总价
                 for (let data of firstDataList) {
@@ -283,14 +284,16 @@ class PayPage extends Component {
                         }
                     }
                 }
-                this.setState({total:total})
+                //this.setState({total:total})
                 this.setState({
-                    payList:payList,
+                    showProgress: false,//显示加载
+                    showReload: false,//显示加载更多
+                    payList: payList,
                     dataList: firstDataList,
-                    serviceTotal:serviceTotal,
-                    fax:fax,
-                    serviceTotalAndFax:serviceTotalAndFax,
-                    total:total,
+                    serviceTotal: serviceTotal,
+                    fax: fax,
+                    serviceTotalAndFax: serviceTotalAndFax,
+                    total: total,
 
                 })
 
@@ -307,9 +310,16 @@ class PayPage extends Component {
         }
         catch (error) {
             console.log(error)
-
+            this.setState({
+                showProgress: false,//显示加载
+                showReload: true,//显示加载更多
+            })
         }
 
+    }
+
+    _onRequestClose(){
+        this.props.navigator.pop()
     }
 
     /**
@@ -331,73 +341,88 @@ class PayPage extends Component {
      */
     render() {
         return (
-            <View style={{flex:1,flexDirection:'column'}}>
-                <ScrollView
-                    style={styles.container}>
-                    {this.state.dataList.map((data, index) => {
-                        let select=false
-                        for(let cost of data){
-                            if(this.state.payList.indexOf(cost.id)!=-1){
-                                select=true
-                                break
+            <View style={{flex:1}}>
+                <ModalProgress
+                    showProgress={this.state.showProgress}
+                    showReload={this.state.showReload}
+                    fetchData={()=>{
+                    this.setState({
+                    showProgress:true,//显示加载
+                    showReload:false,//显示加载更多
+                     })
+                    this._fetchData()
+                    }}
+                    onRequestClose={this._onRequestClose.bind(this)}/>
+                {this.state.showProgress || this.state.showReload ? null : (
+                    <View style={{flex:1,flexDirection:'column'}}>
+                        <ScrollView
+                            style={styles.container}>
+                            {this.state.dataList.map((data, index) => {
+                                let select = false
+                                for (let cost of data) {
+                                    if (this.state.payList.indexOf(cost.id) != -1) {
+                                        select = true
+                                        break
+                                    }
+                                }
+                                return (
+                                    <PayItem
+                                        key={`key${index}`}
+                                        child={data}
+                                        payList={this.state.payList}
+                                        //showIcon={true}
+                                        showChild={false}
+                                        selected={select}
+                                        pageType={pageType}
+                                        selectedAll={this.state.selectedAll}/>
+                                )
+                            })
                             }
-                        }
-                            return (
-                                <PayItem
-                                    key={`key${index}`}
-                                    child={data}
-                                    payList={this.state.payList}
-                                    //showIcon={true}
-                                    showChild={false}
-                                    selected={select}
-                                    pageType={pageType}
-                                    selectedAll={this.state.selectedAll}/>
-                            )
-                        })
-                    }
-                </ScrollView>
-                <View style={styles.viewItem}>
-                    <View style={{flex:1,marginLeft:15,flexDirection:'row'}}>
-                        <Text >服务费总金额</Text>
-                        <View style={{flex:1,flexDirection:'row',justifyContent:'flex-end',marginRight:5,}}>
-                            <Text style={{color:constants.UIActiveColor,marginRight:5}}>￥{this.state.serviceTotal}</Text>
+                        </ScrollView>
+                        <View style={styles.viewItem}>
+                            <View style={{flex:1,marginLeft:15,flexDirection:'row'}}>
+                                <Text >服务费总金额</Text>
+                                <View style={{flex:1,flexDirection:'row',justifyContent:'flex-end',marginRight:5,}}>
+                                    <Text
+                                        style={{color:constants.UIActiveColor,marginRight:5}}>￥{this.state.serviceTotal}</Text>
+                                </View>
+                            </View>
                         </View>
-                    </View>
-                </View>
-                <View style={styles.viewItem}>
-                    <View style={{flex:1,marginLeft:15,flexDirection:'row'}}>
-                        <Text >服务费税额</Text>
-                        <View style={{flex:1,flexDirection:'row',justifyContent:'flex-end',marginRight:5,}}>
-                            <Text style={{color:constants.UIActiveColor,marginRight:5}}>￥{this.state.fax}</Text>
+                        <View style={styles.viewItem}>
+                            <View style={{flex:1,marginLeft:15,flexDirection:'row'}}>
+                                <Text >服务费税额</Text>
+                                <View style={{flex:1,flexDirection:'row',justifyContent:'flex-end',marginRight:5,}}>
+                                    <Text style={{color:constants.UIActiveColor,marginRight:5}}>￥{this.state.fax}</Text>
+                                </View>
+                            </View>
                         </View>
-                    </View>
-                </View>
-                <View style={styles.viewItem}>
-                    <View style={{flex:1,marginLeft:15,flexDirection:'row'}}>
-                        <Text >服务费价税合计</Text>
-                        <View style={{flex:1,flexDirection:'row',justifyContent:'flex-end',marginRight:5,}}>
-                            <Text style={{color:constants.UIActiveColor,marginRight:5}}>￥{this.state.serviceTotalAndFax}</Text>
+                        <View style={styles.viewItem}>
+                            <View style={{flex:1,marginLeft:15,flexDirection:'row'}}>
+                                <Text >服务费价税合计</Text>
+                                <View style={{flex:1,flexDirection:'row',justifyContent:'flex-end',marginRight:5,}}>
+                                    <Text
+                                        style={{color:constants.UIActiveColor,marginRight:5}}>￥{this.state.serviceTotalAndFax}</Text>
+                                </View>
+                            </View>
                         </View>
-                    </View>
-                </View>
-                <View style={{height:50,justifyContent:'center',alignItems:'center',
+                        <View style={{height:50,justifyContent:'center',alignItems:'center',
                 marginLeft:constants.MarginLeftRight,marginRight:constants.MarginLeftRight,}}>
-                    <Text>由于不可估计因素,预估和实际价格可能略有出入,具体账单请以实际价格为准</Text>
-                </View>
-                <Button
-                    ref={ component => this.button2 = component }
-                    touchableType={Button.constants.touchableTypes.fadeContent}
-                    style={[styles.button,this.state.order_status==10||this.state.order_status==30
+                            <Text>由于不可估计因素,预估和实际价格可能略有出入,具体账单请以实际价格为准</Text>
+                        </View>
+                        <Button
+                            ref={ component => this.button2 = component }
+                            touchableType={Button.constants.touchableTypes.fadeContent}
+                            style={[styles.button,this.state.order_status==10||this.state.order_status==30
                     ||this.state.order_status==70||this.state.order_status==100?{height:0}:{height:40}]}
-                    textStyle={{fontSize: 17, color: 'white'}}
-                    loadingComponent={
+                            textStyle={{fontSize: 17, color: 'white'}}
+                            loadingComponent={
                             <View style={{flexDirection: 'row', alignItems: 'center'}}>
                                 {this._renderActivityIndicator()}
                                 <Text style={{fontSize: 17, color: 'white', fontWeight: 'bold',
                                 fontFamily: '.HelveticaNeueInterface-MediumP4',}}>确认中...</Text>
                             </View>
                     }
-                    onPress={ () => {
+                            onPress={ () => {
                         this.button2.setState({
 
                             loading: true,
@@ -432,8 +457,10 @@ class PayPage extends Component {
                             })
                         }, 3000)*/
                     }}>
-                    {pageType=='show'?`确认报价`:`确认支付￥${this.state.total}`}
-                </Button>
+                            {pageType == 'show' ? `确认报价` : `确认支付￥${this.state.total}`}
+                        </Button>
+                    </View>
+                )}
 
                 <Toast
                     ref={ component => this._toast = component }
@@ -507,7 +534,7 @@ class PayPage extends Component {
             }
             if (result.code && result.code == 10) {
                 //确认账单
-                NativeAppEventEmitter.emit('bill_has_be_conform_should_refresh',this.state.service_id)
+                NativeAppEventEmitter.emit('bill_has_be_conform_should_refresh', this.state.service_id)
                 this.props.navigator.pop()
 
             } else {
@@ -566,8 +593,8 @@ const styles = StyleSheet.create({
         borderRadius: 3, borderWidth: StyleSheet.hairlineWidth,
         borderColor: constants.UIActiveColor,
         justifyContent: 'center', borderRadius: 30,
-        marginLeft:constants.MarginLeftRight,
-        marginRight:constants.MarginLeftRight,
+        marginLeft: constants.MarginLeftRight,
+        marginRight: constants.MarginLeftRight,
     },
     viewItem: {
         height: 40,
@@ -609,8 +636,8 @@ const navigationBarRouteMapper = {
     },
 
     RightButton: function (route, navigator, index, navState) {
-        if(pageType=='pay'){
-            return(
+        if (pageType == 'pay') {
+            return (
                 <TouchableOpacity
                     onPress={() => {
                     //全选逻辑

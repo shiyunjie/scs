@@ -29,7 +29,7 @@ import navigatorStyle from '../styles/navigatorStyle'       //navigationBar样�
 import XhrEnhance from '../lib/XhrEnhance'
 import Icon from 'react-native-vector-icons/Ionicons';
 import Toast from 'react-native-smart-toast'
-import ModalProgress from '../components/modalProgress'
+
 import AppEventListenerEnhance from 'react-native-smart-app-event-listener-enhance'
 
 
@@ -42,9 +42,8 @@ import {getDeviceID,getToken} from '../lib/User'
 //import { index_showPicture, } from '../mock/xhr-mock'   //mock data
 
 
-
-const { width: deviceWidth } = Dimensions.get('window');
-let refreshedDataSource =[{
+const { width: deviceWidth,height:deviceHeight} = Dimensions.get('window');
+let refreshedDataSource = [{
     file_url: 'http://www.doorto.cn/images/banner-02.jpg',
     big_url: 'http://www.doorto.cn/images/banner-02.jpg',
     id: '2',
@@ -54,7 +53,6 @@ let refreshedDataSource =[{
     id: '1',
 }]
 let advertisementDataSource = [
-    image_banner,
     image_banner,
     image_banner,
     image_banner,
@@ -73,7 +71,7 @@ class Index extends Component {
 
         let dataList = [
             refreshedDataSource,
-            { buttonImage: image_button, buttonText: "发起委托单" },
+            {buttonImage: image_button, buttonText: "发起委托单"},
             advertisementDataSource,
         ]
 
@@ -81,8 +79,7 @@ class Index extends Component {
             count: 0,
             dataList: dataList,
             dataSource: this._dataSource.cloneWithRows(dataList),
-            showProgress:false,
-            showReload:false,
+
         }
     }
 
@@ -90,26 +87,26 @@ class Index extends Component {
         NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
         let currentRoute = this.props.navigator.navigationContext.currentRoute
         this.addAppEventListener(
-        this.props.navigator.navigationContext.addListener('willfocus', (event) => {
-            console.log(`indexPage willfocus...`)
-            console.log(`currentRoute`, currentRoute)
-            console.log(`event.data.route`, event.data.route)
-            if (currentRoute === event.data.route) {
-                console.log("indexPage willAppear")
-                //this._pullToRefreshListView.beginRefresh()
-                let { refreshBackAnimating, loadMoreBackAnimating, _scrollView, _scrollY, } = this._pullToRefreshListView
-                if(!refreshBackAnimating && !loadMoreBackAnimating) {
-                    _scrollView.scrollTo({ y: _scrollY - 5, animated: true, })
-                    _scrollView.scrollTo({ y: _scrollY + 5, animated: true, })
-                    console.log(`_scrollY + StyleSheet.hairlineWidth`, _scrollY + StyleSheet.hairlineWidth)
-                }
-                NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
+            this.props.navigator.navigationContext.addListener('willfocus', (event) => {
+                console.log(`indexPage willfocus...`)
+                console.log(`currentRoute`, currentRoute)
+                console.log(`event.data.route`, event.data.route)
+                if (currentRoute === event.data.route) {
+                    console.log("indexPage willAppear")
+                    //this._pullToRefreshListView.beginRefresh()
+                    let { refreshBackAnimating, loadMoreBackAnimating, _scrollView, _scrollY, } = this._pullToRefreshListView
+                    if (!refreshBackAnimating && !loadMoreBackAnimating) {
+                        _scrollView.scrollTo({y: _scrollY - 5, animated: true,})
+                        _scrollView.scrollTo({y: _scrollY + 5, animated: true,})
+                        console.log(`_scrollY + StyleSheet.hairlineWidth`, _scrollY + StyleSheet.hairlineWidth)
+                    }
+                    NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
 
-            } else {
-                console.log("indexPage willDisappear, other willAppear")
-            }
-            //
-        })
+                } else {
+                    console.log("indexPage willDisappear, other willAppear")
+                }
+                //
+            })
         )
 
     }
@@ -124,61 +121,58 @@ class Index extends Component {
     render() {
 
         return (
-        <View style={{flex:1}}>
-            <ModalProgress
-                showProgress={this.state.showProgress}
-                showReload={this.state.showReload}/>
-            <PullToRefreshListView
-                style={styles.container}
-                ref={ (component) => this._pullToRefreshListView = component }
-                viewType={PullToRefreshListView.constants.viewType.listView}
-                contentContainerStyle={{backgroundColor: 'transparent', }}
-                initialListSize={3}
-                pageSize={3}
-                dataSource={this.state.dataSource}
-                renderHeader={this._renderHeader}
-                renderFooter={this._renderFooter}
-                enabledPullUp={false}
-                renderRow={this._renderRow}
-                onRefresh={this._onRefresh}
-                //pullUpDistance={70}
-                //pullUpStayDistance={100}
-                pullDownDistance={100}
-                pullDownStayDistance={constants.pullDownStayDistance}>
+            <View style={{flex:1}}>
+                <PullToRefreshListView
+                    style={styles.container}
+                    ref={ (component) => this._pullToRefreshListView = component }
+                    viewType={PullToRefreshListView.constants.viewType.listView}
+                    contentContainerStyle={{backgroundColor: 'transparent', }}
+                    initialListSize={3}
+                    pageSize={3}
+                    dataSource={this.state.dataSource}
+                    renderHeader={this._renderHeader}
+                    renderFooter={this._renderFooter}
+                    enabledPullUp={false}
+                    renderRow={this._renderRow}
+                    onRefresh={this._onRefresh}
+                    //pullUpDistance={70}
+                    //pullUpStayDistance={100}
+                    pullDownDistance={100}
+                    pullDownStayDistance={constants.pullDownStayDistance}>
 
-            </PullToRefreshListView>
-            <Toast
-                ref={ component => this._toast = component }
-                marginTop={64}>
+                </PullToRefreshListView>
+                <Toast
+                    ref={ component => this._toast = component }
+                    marginTop={64}>
 
-            </Toast>
+                </Toast>
 
-        </View>
+            </View>
         );
     }
-    _addOrder=()=>{
+
+    _addOrder = ()=> {
         this.props.navigator.push({
             title: '发起委托',
             component: addOrderPage,
             passProps: {
-                action:'add'
+                action: 'add'
             }
         });
     }
 
 
-
-    async _fetchData () {
-        let token= await getToken()
-        let deviceID= await getDeviceID()
+    async _fetchData() {
+        let token = await getToken()
+        let deviceID = await getDeviceID()
         let options = {
             method: 'post',
             url: constants.api.service,
             //url: constants.api.indexShowPicture,
             data: {
                 iType: constants.iType.indexShowPicture,
-                deviceId:deviceID,
-                token:token,
+                deviceId: deviceID,
+                token: token,
             }
         }
         options.data = await this.gZip(options)
@@ -192,9 +186,9 @@ class Index extends Component {
             result = JSON.parse(result)
 
 
-            if(result.code && result.code==10) {
+            if (result.code && result.code == 10) {
                 let dataList = [
-                    result.result == null||result.result.length==0 ? refreshedDataSource : result.result,
+                    result.result == null || result.result.length == 0 ? refreshedDataSource : result.result,
                     {buttonImage: image_button, buttonText: "发起委托单"},
                     advertisementDataSource,
                 ]
@@ -202,7 +196,7 @@ class Index extends Component {
                     dataList: dataList,
                     dataSource: this._dataSource.cloneWithRows(dataList),
                 })
-            }else{
+            } else {
                 this._toast.show({
                     position: Toast.constants.gravity.center,
                     duration: 255,
@@ -211,7 +205,7 @@ class Index extends Component {
                 //..调用toast插件, show出错误信息...
             }
         }
-        catch(error) {
+        catch (error) {
             console.log(error)
 
             //..调用toast插件, show出错误信息...
@@ -219,7 +213,7 @@ class Index extends Component {
         }
         finally {
             this._pullToRefreshListView.endRefresh()
-            this.setState({showProgress:false,})
+            this.setState({showProgress: false,})
             //console.log(`SplashScreen.close(SplashScreen.animationType.scale, 850, 500)`)
             //SplashScreen.close(SplashScreen.animationType.scale, 850, 500)
         }
@@ -227,12 +221,11 @@ class Index extends Component {
     }
 
 
-    
     _renderHeader = (viewState) => {
         let {pullState, pullDistancePercent} = viewState
         let {refresh_none, refresh_idle, will_refresh, refreshing,} = PullToRefreshListView.constants.viewState
         //pullDistancePercent = Math.round(pullDistancePercent * 100)
-        if(pullDistancePercent > 1) {
+        if (pullDistancePercent > 1) {
             pullDistancePercent = 1
         }
         let degree = 180 * pullDistancePercent
@@ -266,9 +259,9 @@ class Index extends Component {
                 indeterminate = true;
                 return (
                     <HeaderView name='Circle' // spinkit
-                                    size={constants.IconSize}
-                                    title='刷新中...'
-                                    isRefresh={true}/>
+                                size={constants.IconSize}
+                                title='刷新中...'
+                                isRefresh={true}/>
                 )
         }
     }
@@ -286,16 +279,16 @@ class Index extends Component {
     _renderRow = (rowData, sectionID, rowID) => {
         console.log(`rowData`, rowData)
         //console.log(`rowID`, rowID)
-        if(rowID == 0) {
+        if (rowID == 0) {
             return (
-                    <Swiper
-                            autoplay={true}
-                            width={deviceWidth}
-                            dataSource={rowData}/>
+                <Swiper
+                    autoplay={true}
+                    width={deviceWidth}
+                    dataSource={rowData}/>
 
             )
         }
-        else if(rowID == 1) {
+        else if (rowID == 1) {
             return (
                 <View style={styles.swiper}>
                     <TouchableOpacity onPress={this._addOrder}>
@@ -307,7 +300,7 @@ class Index extends Component {
                 </View>
             )
         }
-        else if(rowID == 2) {
+        else if (rowID == 2) {
             return (
                 <View>
                     {
@@ -315,7 +308,7 @@ class Index extends Component {
                             return (
                                 <View key={`item-${index}`}
                                       style={{overflow: 'hidden',borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: '#ccc',marginBottom:10,}}>
-                                    <Image source={item} style={{height:100}}/>
+                                    <Image source={item} style={{height:400,width:400}}/>
                                 </View>
                             )
                         })
@@ -331,8 +324,8 @@ class Index extends Component {
     _onRefresh = () => {
 
         //setTimeout(() => {
-        this.setState({showProgress:true,})
-            this._fetchData()
+        this.setState({showProgress: true,})
+        this._fetchData()
 
         //}, 1000)
 
@@ -344,7 +337,7 @@ export default AppEventListenerEnhance(XhrEnhance(Index))
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        paddingTop: Platform.OS == 'ios' ? 64 : 56,
+        marginTop: Platform.OS == 'ios' ? 64 : 56,
         backgroundColor: constants.UIBackgroundColor,
     },
     progress: {
@@ -386,7 +379,7 @@ const navigationBarRouteMapper = {
             return null;
         }
 
-        var previousRoute = navState.routeStack[ index - 1 ];
+        var previousRoute = navState.routeStack[index - 1];
         return (
             <TouchableOpacity
                 onPress={() => navigator.pop()}

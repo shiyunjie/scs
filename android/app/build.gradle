@@ -153,6 +153,9 @@ dependencies {
     compile project(':react-native-smart-swipe-refresh-layout')// From node_modules
     compile project(':react-native-smart-image-loader')// From node_modules
     compile project(':http-rsa-gzip')// From node_modules
+    compile project(':react-native-smart-alipay')
+    compile project(':react-native-fs')
+    compile project(':rctcompressedimage')
 
 }
 

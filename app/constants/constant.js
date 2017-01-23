@@ -25,7 +25,12 @@ export const constant = {
 
 
     api: {
-        service:'http://192.168.1.200:8080/app/gateway',
+        //service:'http://192.168.1.200:8080/app/gateway/',
+
+        service:'http://192.168.1.177:3000/app/gateway/',
+        //service:'http://192.168.1.248:8080/spboot/upload',
+        //service:'http://192.168.1.111:8080/app/gateway/',
+        //service:'http://posttestserver.com/post.php',
         //service:'http://f154876m19.imwork.net:16374/app/gateway',
             /*indexShowPicture: '/index/showPicture',
             commissionOrder_commissionOrderList:'/commissionOrder/commissionOrderList',
@@ -42,9 +47,7 @@ export const constant = {
     },
 
     iType: {
-        //upload:95,
-        upload:29,
-
+        upload:95,
 
         login:100,
         register_firstStep:101,
@@ -76,8 +79,12 @@ export const constant = {
         serviceOrder_cancelServiceOrder:335,
         LogisticsLog:334,
         serviceOrder_confirmServiceOrder:336,
+        serviceCost_payCost:337,
+        uploadFinish:338,
+        uploadImageList:632,
 
         feedBack:431,
+
         sysInfo_helpCenter:432,
 
         findSysInfoShow:531,

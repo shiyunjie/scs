@@ -69,7 +69,7 @@ class Edit extends Component {
                       fontSize:16,
                       backgroundColor:'white',
                       textAlignVertical:'top',
-                      margin:3,
+                      margin:5,
                       borderTopWidth: StyleSheet.hairlineWidth,
                       borderBottomWidth: StyleSheet.hairlineWidth,
                       borderColor: constants.UIInActiveColor,
@@ -85,7 +85,7 @@ class Edit extends Component {
                       value={this.state.text}
                       onChangeText={(text) => this.setState({text:text})}/>
                   <Text style={{color:constants.UIInActiveColor,position:'absolute',
-                  bottom:5,right:5,}}>300字以内</Text>
+                  bottom:5,right:5,backgroundColor:'transparent',}}>300字以内</Text>
               </View>
                 <View  style={{flex:1,padding:10}}>
                     <Button

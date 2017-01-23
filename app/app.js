@@ -12,53 +12,49 @@ import {
     View,
     NativeAppEventEmitter,
     AsyncStorage,
+    NativeModules,
 } from 'react-native';
 
 import Index from './root';
 import constants from  './constants/constant'
 import AppEventListenerEnhance from 'react-native-smart-app-event-listener-enhance'
-import JPushModule from 'jpush-react-native';
+
+const HttpRSAModule = NativeModules.HttpRSAModule;
 
 
 class Root extends Component {
-    constructor (props, context) {
+    constructor(props, context) {
         super(props);
-        this.state={
-            navigationBar:NavigationBarRouteMapper,
+        this.state = {
+            navigationBar: NavigationBarRouteMapper,
         }
     }
 
     componentWillMount() {
-        if (Platform.OS === 'android') {
-            JPushModule.getInfo((map) => {
-                AsyncStorage.setItem('deviceID', map.myDeviceId)
-                AsyncStorage.setItem('version', map.myVersion)
-                //appkey: map.myAppKey,
-                //imei: map.myImei,
-                //package: map.myPackageName,
-                console.log('JPushModule:' + map.myDeviceId + `,version:` + map.myVersion)
+        //检查版本更新
+        /* if(Platform.OS=='android'){
+         //检查更新app
+         HttpRSAModule.UpdateApp('http://o2o.doorto.cn/upload/app/o2o/onlineshop.apk')
+         }else{
+         HttpRSAModule.UpdateApp('https://itunes.apple.com/cn/app/dao-tu-sheng-huo-chao-shi/id1037683195?mt=8')
+         }*/
 
-            });
-        }else{
-            //ios获取deviceID
-        }
 
     }
 
-    componentDidMount () {
+    componentDidMount() {
         this.addAppEventListener(
             NativeAppEventEmitter.addListener('setNavigationBar.index', (navigationBar) => {
                 this.setState({
                     navigationBar: navigationBar,
                 })
             })
-
         )
 
     }
 
 
-    render () {
+    render() {
         return (
             <Navigator style={styles.container}
                        initialRoute={{
@@ -74,6 +70,14 @@ class Root extends Component {
                       {...route.passProps}
                     />
               )}}
+                /**
+                * 禁用navigator手势回退
+                */
+                       configureScene={(route) => {
+                          let conf = Navigator.SceneConfigs.HorizontalSwipeJump;
+                          conf.gestures = null;
+                          return conf;
+                        }}
                        navigationBar={
                 <Navigator.NavigationBar
                     ref={(navigationBar) => {
@@ -93,7 +97,7 @@ let NavigationBarRouteMapper = {
             return null;
         }
 
-        var previousRoute = navState.routeStack[ index - 1 ];
+        var previousRoute = navState.routeStack[index - 1];
         return (
             <TouchableOpacity
                 onPress={() => navigator.pop()}
@@ -115,10 +119,10 @@ let NavigationBarRouteMapper = {
                 <Text style={[styles.navBarText, styles.navBarTitleText]}>
                     {route.title}
                 </Text> : <View style={{alignSelf: 'center', position: 'relative', left: -35,}}>
-                            <Text style={[styles.navBarText, styles.navBarTitleText]}>
-                                {route.title}
-                            </Text>
-                        </View>
+                <Text style={[styles.navBarText, styles.navBarTitleText]}>
+                    {route.title}
+                </Text>
+            </View>
         )
     },
 
@@ -134,11 +138,11 @@ const styles = StyleSheet.create({
         backgroundColor: constants.UIActiveColor,
     },
     navBarText: {
-        flex:1,
+        flex: 1,
         fontSize: 16,
         color: 'white',
-        textAlign:'center',
-        textAlignVertical:'center',
+        textAlign: 'center',
+        textAlignVertical: 'center',
 
     },
     navBarTitleText: {

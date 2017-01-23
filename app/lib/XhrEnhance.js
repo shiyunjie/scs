@@ -7,6 +7,7 @@ import {NativeModules,} from 'react-native'
 
 const HttpRSAModule = NativeModules.HttpRSAModule;
 import constants from '../constants/constant'
+import {doSign} from './utils'
 
 let _key = 'XhrEnhance_xhrs'
 
@@ -69,6 +70,15 @@ export default XhrEnhance = (ComposedComponent) => {
                 xhr.onload = handleSuccess
 
                 let { method, url, requestHeaders, timeout, data, formData, } = options
+                /**
+                 * 这里处理sign
+                 */
+                data.sign=this._doRSASign(data.s)
+                console.log(`data:`,data)
+                /**
+                 * 处理sign结束
+                 */
+
                 if (!method) {
                     method = constants.requestMethod
                 }
@@ -88,6 +98,8 @@ export default XhrEnhance = (ComposedComponent) => {
                 let sendData = null
                 if(method.toLowerCase() != 'get') {
                     if (formData) {
+
+
                         sendData = formData
                     }
                     else if (data) {
@@ -96,6 +108,10 @@ export default XhrEnhance = (ComposedComponent) => {
                 }
                 xhr.send(sendData);
             })
+        }
+
+         _doRSASign(data){
+            return doSign(data)
         }
 
         _formatUrlParams (data) {
@@ -137,9 +153,10 @@ export default XhrEnhance = (ComposedComponent) => {
                         console.log('data_sendData:',sendData);
 
                         let result = HttpRSAModule.gzipRSA(JSON.stringify(sendData))
-                        //let result = JSON.stringify(sendData)
-                        resolve(result)
-                        //resolve(JSON.stringify(options))
+
+
+                    resolve(result)
+
                     } catch (error) {
                     reject(error)
                     }
@@ -153,9 +170,9 @@ export default XhrEnhance = (ComposedComponent) => {
         gunZip = (data) => {
             return new Promise((resolve, reject) => {
                 try {
-                    //let responseData = HttpRSAModule.gunzipRSA(data)
-                    //resolve(responseData)
-                    resolve(data)
+                    let responseData = HttpRSAModule.gunzipRSA(data)
+                    resolve(responseData)
+                    //resolve(data)
                     } catch (error) {
                     reject(error)
                     }

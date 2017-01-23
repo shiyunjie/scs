@@ -27,6 +27,7 @@ import navigatorStyle from '../styles/navigatorStyle'       //navigationBaræ ·å¼
 import XhrEnhance from '../lib/XhrEnhance' //http
 import LoginPage from './loginPage'
 import {getDeviceID,getToken,getRealName} from '../lib/User'
+import {hex_md5} from '../lib/md5'
 import Toast from 'react-native-smart-toast'
 import AppEventListenerEnhance from 'react-native-smart-app-event-listener-enhance'
 //import { member_changePwd,errorXhrMock } from '../mock/xhr-mock'   //mock data
@@ -172,9 +173,9 @@ class SetPassword extends Component {
                 url: constants.api.service,
                 data: {
                     iType: constants.iType.changePwd,
-                    old_pwd: this.state.oldPass,
-                    new_pwd: this.state.newPass,
-                    sure_pwd: this.state.confPass,
+                    old_pwd: hex_md5(this.state.oldPass),
+                    new_pwd: hex_md5(this.state.newPass),
+                    sure_pwd: hex_md5(this.state.confPass),
                     deviceId: deviceID,
                     token: token,
 

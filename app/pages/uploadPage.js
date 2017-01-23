@@ -16,6 +16,8 @@ import {
     Alert,
     NativeAppEventEmitter,
     ActivityIndicator,
+    Modal,
+    NativeModules,
 } from 'react-native'
 
 import constants from  '../constants/constant';
@@ -28,20 +30,28 @@ import PicturePicker from './picturePicker'
 import navigatorStyle from '../styles/navigatorStyle'       //navigationBar样式
 import Button from 'react-native-smart-button'
 import {getDeviceID,getToken} from '../lib/User'
+import Toast from 'react-native-smart-toast'
+import RNFS from 'react-native-fs'
 
-const { width: deviceWidth } = Dimensions.get('window')
-const columnCount = 3;
-const photoList = [
-    {
-    filename: "IMG_0003.JPG",
-    height: 2500,
-    isStored: true,
-    uploaded:true,
-    uploading:false,
-    uri: "assets-library://asset/asset.JPG?id=9F983DBA-EC35-42B8-8773-B597CF782EDD&ext=JPG",
-    width: 1668
-    }
-];
+import {doSign} from '../lib/utils'
+
+import ImageZoom from 'react-native-image-pan-zoom';
+
+const NativeCompressedModule = NativeModules.NativeCompressedModule;
+
+const { width: deviceWidth ,height: deviceHeight} = Dimensions.get('window')
+
+/*{
+ filename: "IMG_0003.JPG",
+ height: 2500,
+ isStored: true,
+ uploaded:true,
+ uploading:false,
+ uri: "assets-library://asset/asset.JPG?id=9F983DBA-EC35-42B8-8773-B597CF782EDD&ext=JPG",
+ width: 1668
+ }*/
+const photoList = [];
+
 
 const maxiumUploadImagesCount = 30 //最多上传图片总数
 const maxiumXhrNums = 5 //最多同时上传数量
@@ -59,7 +69,7 @@ class UploadPage extends Component {
      this._waitForUploadQuene = []       //待上传队列, 用uri做唯一性
      }*/
     // 构造
-    constructor (props) {
+    constructor(props) {
         super(props);
         // 初始状态
         this._dataSource = new ListView.DataSource({
@@ -68,19 +78,29 @@ class UploadPage extends Component {
         });
 
         this.state = {
-            service_id: this.props.service_id,//服务单id
+            service_id: this.props.id,//服务单id
             photoList,
             dataSource: this._dataSource.cloneWithRows(photoList),
+            showUrl: '',
+            modalVisible: false,
         }
         this._uploadingXhrCacheList = []    //正在上传中的(包含上传失败的)xhr缓存列表, 用uri做唯一性, 该列表长度会影响当前可用的上传线程数
         this._waitForUploadQuene = []       //待上传队列, 用uri做唯一性
         this._waitForAddPhotos = null
-
+        this._ids = [];
+        this.ImgTemp = '';
         this._initCustomData()
 
     }
 
-    componentWillMount () {
+    componentWillMount() {
+        this.ImgTemp = `${RNFS.DocumentDirectoryPath}/ImgTemp`
+        //console.log(`RNFS.DocumentDirectoryPath = ${RNFS.DocumentDirectoryPath}`)
+        RNFS.readDir(RNFS.DocumentDirectoryPath)
+            .then((readDirItems) => {
+                console.log(`readDirItems -> `)
+                console.log(readDirItems)
+            })
         NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
         let currentRoute = this.props.navigator.navigationContext.currentRoute
         this.addAppEventListener(
@@ -91,11 +111,16 @@ class UploadPage extends Component {
                 if (event && currentRoute === event.data.route) {
                     console.log("orderPage willAppear")
                     NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
-                    if(this._waitForAddPhotos && this._waitForAddPhotos.length > 0) {
-                        this.setTimeout( () => {
-                            //@todo async this._getCompressedPhotos 返回photos数组, 遍历this._waitForAddPhotos {let compressedUri = await NativeCompressedModule.compress(...); 遍历的photo对象uri赋值compressedUri }
+                    if (this._waitForAddPhotos && this._waitForAddPhotos.length > 0) {
+                        this.setTimeout(() => {
+                            /*
+                             //@todo async this._getCompressedPhotos 返回photos数组, 遍历this._waitForAddPhotos {let compressedUri = await NativeCompressedModule.compress(...); 遍历的photo对象uri赋值compressedUri }
+                             this._getCompressedPhotos().then((photos)=>{
+                             this._addToUploadQuene(photos)
+                             })*/
                             this._addToUploadQuene(this._waitForAddPhotos)
                             this._waitForAddPhotos = null
+
                         }, 300)
 
                     }
@@ -105,21 +130,92 @@ class UploadPage extends Component {
                 //
             })
         )
+        this.addAppEventListener(
+            NativeAppEventEmitter.addListener('PicturePicker.finish.saveIds', () => {
+                this._fetch_finish()
+            })
+        )
+        this._fetchData()
     }
 
-    async _initCustomData () {
+
+    componentWillUnmount() {
+        console.log(' componentWillUnmount');
+        //删除缓存目录
+        RNFS.unlink(this.ImgTemp)
+            .then(() => {
+                console.log('componentWillUnmount', 'FILE DELETED');
+            })
+            // `unlink` will throw an error, if the item to unlink does not exist
+            .catch((err) => {
+                console.log(`componentWillUnmount`, err.message);
+            });
+    }
+
+    /**
+     * let compressedUri = await NativeCompressedModule.compress(...); 遍历的photo对象uri赋值compressedUri
+     * @param AddPhotos
+     * @private
+     */
+    async _getCompressedPhotos() {
+        let photos = this._waitForAddPhotos
+        for (let data of photos) {
+            let compressedUri = ''
+            if (Platform.OS == 'android') {
+                //    uri: `file://${RNFS.ExternalDirectoryPath}/1.jpg`,   //for android, test ok
+                compressedUri = await NativeCompressedModule.compress(data.big_uri, this.ImgTemp, data.width / 2, data.height / 2)
+                compressedUri = `file://` + compressedUri
+                console.log(`compressedUri:`, compressedUri)
+            } else {
+                //    uri: RNFS.DocumentDirectoryPath + '/1.jpg',   //for ios, test ok
+                compressedUri = await NativeCompressedModule.compress(data.big_uri, this.ImgTemp, data.width / 2, data.height / 2)
+
+            }
+            //重设uri
+            data.uri = compressedUri
+        }
+        return photos
+
+    }
+
+
+    async _initCustomData() {
         this._token = await getToken()
         this._deviceID = await getDeviceID()
-        this._data = await this.gZip({data:  {
-            iType: constants.iType.upload,
-            deviceId: this._deviceID,
-            token: this._token,
-        }})
+        this._data = await this.gZip({
+            data: {
+                iType: constants.iType.upload,
+                deviceId: this._deviceID,
+                token: this._token,
+            }
+        })
     }
 
-    render () {
+    /*<Image
+     source={{uri: this.state.showUrl}}
+     style={{flex: 1, position: 'relative',margin: 5, }}/>*/
+
+    render() {
         return (
             <View style={styles.container}>
+                <Modal
+                    animationType={"slide"}
+                    transparent={true}
+                    visible={this.state.modalVisible}
+                    onRequestClose={() => {this.setState({modalVisible:false})}}>
+                    <View style={{flex:1,justifyContent:'center',alignItems:'center',
+                    backgroundColor:'rgba(0, 0, 0, 0.5)'}}>
+                        <ImageZoom cropWidth={500}
+                                   cropHeight={500}
+                                   imageWidth={400}
+                                   imageHeight={400}>
+                            <Image
+                                source={{uri: this.state.showUrl}}
+                                style={{width:400,height:400, position: 'relative',margin: 5, }}/>
+                        </ImageZoom>
+                    </View>
+
+                </Modal>
                 <ListView
                     dataSource={this.state.dataSource}
                     renderRow={this._renderRow}
@@ -138,7 +234,8 @@ class UploadPage extends Component {
                         passProps: {
                             maxiumUploadImagesCount,
                             currentUploadImagesCount: this.state.photoList.length,
-                            waitForAddToUploadQuene: this._waitForAddToUploadQuene
+                            waitForAddToUploadQuene: this._waitForAddToUploadQuene,
+                            ids:this._ids,
                             //addToUploadQuene: this._addToUploadQuene
                         }
                     })
@@ -149,8 +246,17 @@ class UploadPage extends Component {
                         color={'#ffffff'}/>
                     上传图片
                 </Button>
+                <Toast
+                    ref={ component => this._toast = component }
+                    marginTop={64}>
+                </Toast>
             </View>
         );
+    }
+
+    _showBigUrl(url) {
+        this.setState({showUrl: url, modalVisible: true})
+
     }
 
     _renderRow = (rowData, sectionID, rowID) => {
@@ -159,36 +265,48 @@ class UploadPage extends Component {
             <View
                 key={`key${rowID}img`}
                 style={[styles.itemViewStyle,{width, height,}]}>
-                <Image
-                    source={{uri: rowData.uri}}
-                    style={{flex: 1, position: 'relative', }}>
-                    {
-                        rowData.uploading ? <View
-                            style={{flex: 1, backgroundColor: 'rgba(160, 160, 160, 0.5)', justifyContent: 'center', alignItems: 'center',}}>
-                            <ActivityIndicator
-                                animating={true}
-                                color={'#fff'}
-                                size={'small'}/>
-                            <Text
-                                style={{color: '#fff', padding: 5, fontSize: 14,}}>{rowData.uploadProgress ? Math.floor(rowData.uploadProgress * 100) : 0}%</Text>
-                        </View> : null
-                    }
-                    <TouchableOpacity
-                        style={{position:'absolute',top:2,right:2, backgroundColor: 'transparent',}}
-                        onPress={this._removeFromUploadQuene.bind(this, rowData.uri)}>
-                        <Icon
-                            name='md-close-circle'  // 图标
-                            size={constants.IconSize}
-                            color={constants.UIActiveColor}/>
-                    </TouchableOpacity>
-                </Image>
+                <TouchableOpacity
+                    onPress={this._showBigUrl.bind(this,rowData.big_uri)}
+                    style={{flex: 1,}}>
+                    <Image
+                        source={{uri: rowData.big_uri}}
+                        style={{flex: 1, position: 'relative',margin: 5, }}>
 
+                        {
+                            rowData.uploading ? <View
+                                style={{flex: 1, backgroundColor: 'rgba(160, 160, 160, 0.5)', justifyContent: 'center', alignItems: 'center',}}>
+                                <ActivityIndicator
+                                    animating={true}
+                                    color={'#fff'}
+                                    size={'small'}/>
+                                <Text
+                                    style={{color: '#fff', padding: 5, fontSize: 14,}}>{rowData.uploadProgress ? Math.floor(rowData.uploadProgress * 100) : 0}%</Text>
+                            </View> : null
+                        }
+                        {
+                            rowData.uploadError ? <View
+                                style={{flex: 1, backgroundColor: 'rgba(160, 160, 160, 0.7)', justifyContent: 'center', alignItems: 'center',}}>
+
+                                <Text
+                                    style={{color: '#fff', padding: 5, fontSize: 14,}}>上传失败</Text>
+                            </View> : null
+                        }
+                        <TouchableOpacity
+                            style={{position:'absolute',top:0,right:0, backgroundColor: 'transparent',}}
+                            onPress={this._removeFromUploadQuene.bind(this, rowData.uri)}>
+                            <Icon
+                                name='md-close-circle'  // 图标
+                                size={constants.IconSize}
+                                color={constants.UIActiveColor}/>
+                        </TouchableOpacity>
+                    </Image>
+                </TouchableOpacity>
 
             </View>
         )
     }
 
-    componentWillUnmount () {
+    componentWillUnmount() {
         //结束正在上传中的线程
         this._uploadingXhrCacheList.forEach(xhrCache => {
             let { xhr, } = xhrCache
@@ -203,9 +321,10 @@ class UploadPage extends Component {
     }
 
     _addToUploadQuene = (photos) => {
+        console.log(`_addToUploadQuene`, photos)
         for (let photo of photos) {
             let uploadTask = {
-                uri: photo.uri,                 //用uri来做唯一性
+                uri: photo.big_uri,                 //用uri来做唯一性
                 init: this._upload.bind(this, photo), //将上传方法对象赋值给上传任务
             }
             this._waitForUploadQuene.push(uploadTask)   //将上传任务加入待上传队列
@@ -236,6 +355,16 @@ class UploadPage extends Component {
         if (xhr && (xhr.status != 200 || xhr.readyState != 4)) {
             xhr.abort()
         }
+        //遍历ids如果包含,删除id
+        for (let data of this._ids) {
+
+            if (data.uri == uri) {
+                console.log(`ids_delete${data.uri}:`, data.id)
+                this._ids.splice(this._ids.indexOf(data), 1)
+                break
+            }
+        }
+
 
         //根据photoIndex, 删除photoList, 并更新state
         let { photoList, } = this.state
@@ -249,7 +378,7 @@ class UploadPage extends Component {
         });
     }
 
-    _startUploadQuene () {
+    _startUploadQuene() {
         //启动上传队列, 会计算可用线程数, 并根据线程数执行对应的上传任务, 并将各个上传任务的xhr对象缓存
         let restUploadNum = maxiumXhrNums - this._uploadingXhrCacheList.length
         if (restUploadNum <= 0) {
@@ -261,15 +390,15 @@ class UploadPage extends Component {
             //console.log(`i = ${i}, shiftNum = ${shiftNum}`)
             let uploadTask = this._waitForUploadQuene.shift()   //将待上传队列当前第一项任务对象从队列中取出
             let xhrCache = uploadTask.init()                    //执行上传任务
-            console.log(`_startUploadQuene xhrCache -> `, xhrCache)
+            //console.log(`_startUploadQuene xhrCache -> `, xhrCache)
             this._uploadingXhrCacheList.push(xhrCache)          //缓存该上传任务的xhr对象
         }
-        console.log('end this.state.photoList', this.state.photoList)
-        console.log('end this.state.dataSource', this.state.dataSource)
+        //console.log('end this.state.photoList', this.state.photoList)
+        //console.log('end this.state.dataSource', this.state.dataSource)
     }
 
-    _upload (uploadPhoto) {
-        console.log(`_upload uploadPhoto.uri = `, uploadPhoto.uri)
+    _upload(uploadPhoto) {
+        //console.log(`_upload uploadPhoto.uri = `, uploadPhoto.uri)
         /**
          * 处理 S  sign
          */
@@ -302,7 +431,7 @@ class UploadPage extends Component {
             console.log('Status ', xhr.status);
             console.log('Error ', xhr.responseText);
 
-            let photoList = this._handlePhotoList({ uploadPhoto, eventName: 'onerror' })
+            let photoList = this._handlePhotoList({uploadPhoto, eventName: 'onerror'})
             this.setState({
                 photoList,
                 dataSource: this._dataSource.cloneWithRows(photoList),
@@ -332,7 +461,7 @@ class UploadPage extends Component {
             console.log('Status ', xhr.status);
             console.log('Response ', xhr.responseText);
 
-            let photoList = this._handlePhotoList({ uploadPhoto, eventName: 'ontimeout' })
+            let photoList = this._handlePhotoList({uploadPhoto, eventName: 'ontimeout'})
             this.setState({
                 photoList,
                 dataSource: this._dataSource.cloneWithRows(photoList),
@@ -362,8 +491,28 @@ class UploadPage extends Component {
         xhr.onload = () => {
             if (xhr.status == 200 && xhr.readyState == 4) {
                 console.log(`xhr.responseText = ${xhr.responseText}`)
+                //处理获取的id
+                let eventName = 'onload'
+                this.gunZip(xhr.responseText).then((response)=> {
 
-                let photoList = this._handlePhotoList({ uploadPhoto, eventName: 'onload' })
+                    let result = JSON.parse(response)
+                    if (result.code == '10' && result.result) {
+                        console.log(`response.result:`, result.result)
+                        //id加入集合
+                        let file = {uri: uploadPhoto.big_uri, id: result.result.id}
+                        if (this._ids.indexOf(file) == -1) {
+                            this._ids.push(file)
+                            console.log(`ids:`, this._ids);
+                        }
+                    } else {
+                        //id出错
+                        console.log(`error`, result)
+                        eventName = 'onerror'
+                    }
+                }, (error)=>console.log(`responseText:`, error))
+
+
+                let photoList = this._handlePhotoList({uploadPhoto, eventName: eventName})
                 this.setState({
                     photoList,
                     dataSource: this._dataSource.cloneWithRows(photoList),
@@ -391,11 +540,30 @@ class UploadPage extends Component {
         };
         var formdata = new FormData();
 
+
         //formdata.append('image', { ...uploadPhoto, type: 'image/jpg', name: uploadPhoto.filename }); //for android, must set type:'...'
-        formdata.append('file', { ...uploadPhoto, type: 'image/jpg', name: uploadPhoto.filename }); //for android, must set type:'...'
+        //formdata.append('file', { ...uploadPhoto, type: 'image/jpg', name: uploadPhoto.filename }); //for android, must set type:'...'
+        let name = uploadPhoto.filename
+        if (Platform.OS == 'android') {
+            /* let names=uploadPhoto.uri.split('/')
+             name=names[names.length-1]+'.jpg'*/
+            name = 'android.jpg'
+        }
+        console.log(` uploadPhoto`, uploadPhoto)
+        formdata.append('file', {...uploadPhoto, type: 'image/jpg', name: name}); //for android, must set type:'...'
 
         //这里增加其他参数, 比如: itype
+        console.log(`options.data.s`, options.data.s)
         formdata.append('s', options.data.s);
+        //formdata.append("text", options.data.s);
+        /**
+         * 这里处理sign
+         */
+        options.data.sign = this._doRSASign(options.data.s)
+        console.log(` options.data.sign:`, options.data.sign)
+        /**
+         * 处理sign结束
+         */
         formdata.append('sign', options.data.sign);
 
         xhr.upload.onprogress = (event) => {
@@ -427,9 +595,10 @@ class UploadPage extends Component {
 
         xhr.timeout = 600000 //超时60秒
 
+        console.log(`formdata:`, formdata)
         xhr.send(formdata);
 
-        let photoList = this._handlePhotoList({ uploadPhoto, })
+        let photoList = this._handlePhotoList({uploadPhoto,})
         this.setState({
             photoList,
             dataSource: this._dataSource.cloneWithRows(photoList),
@@ -446,18 +615,23 @@ class UploadPage extends Component {
         //    dataSource: this._dataSource.cloneWithRows(photoList),
         //});
 
-        let xhrCache = { xhr, uri: uploadPhoto.uri }    //用uri来做唯一性
+        let xhrCache = {xhr, uri: uploadPhoto.uri}    //用uri来做唯一性
         return xhrCache
     }
 
-    _handlePhotoList ({uploadPhoto, eventName, loaded, total,}) {
+    _doRSASign(data) {
+        return doSign(data)
+    }
+
+    _handlePhotoList({uploadPhoto, eventName, loaded, total,}) {
         let uploadingXhrCacheIndex = this._uploadingXhrCacheList.findIndex((xhrCache) => {
             return uploadPhoto.uri == xhrCache.uri
         })
         let photoIndex = this.state.photoList.findIndex((photo) => {
             return uploadPhoto.uri == photo.uri
         })
-        let photo = this.state.photoList[ photoIndex ]
+        let photo = this.state.photoList[photoIndex]
+
         switch (eventName) {
             case 'onerror':
             case 'ontimeout':
@@ -471,7 +645,7 @@ class UploadPage extends Component {
                 photo.uploadProgress = loaded / total
 
                 break;
-            case 'onload':
+            case 'onload'://这里要传code进来判断是否成功  才设置photo.uploaded = true
                 this._uploadingXhrCacheList.splice(uploadingXhrCacheIndex, 1)
                 photo.uploading = false
                 photo.uploaded = true
@@ -482,23 +656,153 @@ class UploadPage extends Component {
 
                 break;
         }
-        return [ ...this.state.photoList.slice(0, photoIndex), photo, ...this.state.photoList.slice(photoIndex + 1, this.state.photoList.length) ];
+        return [...this.state.photoList.slice(0, photoIndex), photo, ...this.state.photoList.slice(photoIndex + 1, this.state.photoList.length)];
     }
 
-    /*
-     _renderGridCell = (data, index, list) => {
-     //console.log(`_renderGridCell data.uri`, data.uri)
-     return (
-     <TouchableOpacity underlayColor={'#eee'} style={{backgroundColor: 'red'}}>
-     <View style={{ overflow: 'hidden',
-     justifyContent: 'center', alignItems: 'center', height: 150,
-     borderWidth: StyleSheet.hairlineWidth, borderColor:constants.UIInActiveColor,
-     borderRightWidth: (index + 1) % columnCount ? StyleSheet.hairlineWidth: 0, }}>
-     <Image source={{uri: data.uri}} style={{width: 100, height: 100, }}/>
-     </View>
-     </TouchableOpacity>
-     )
-     }*/
+
+    async _fetch_finish() {
+        try {
+            let token = await getToken()
+            let deviceID = await getDeviceID()
+            let fileIds = '';
+            for (let data of this._ids) {
+                fileIds += data.id + ','
+            }
+            let options = {
+                method: 'post',
+                url: constants.api.service,
+                data: {
+                    iType: constants.iType.uploadFinish,
+                    id: this.state.service_id,
+                    file_ids: fileIds,
+                    deviceId: deviceID,
+                    token: token,
+                }
+            }
+
+            options.data = await this.gZip(options)
+
+            console.log(`_fetch_sendCode options:`, options)
+
+            let resultData = await this.fetch(options)
+
+            let result = await this.gunZip(resultData)
+
+            result = JSON.parse(result)
+            console.log('gunZip:', result)
+            if (result.code && result.code == 10) {
+
+                console.log('token', result.result)
+
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: '上传成功'
+                })
+                this.props.navigator.pop()
+
+            } else {
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: result.msg
+                })
+            }
+
+
+        }
+        catch (error) {
+            console.log(error)
+
+
+        }
+        finally {
+            //console.log(`SplashScreen.close(SplashScreen.animationType.scale, 850, 500)`)
+            //SplashScreen.close(SplashScreen.animationType.scale, 850, 500)
+        }
+    }
+
+    async _fetchData() {
+        console.log(`upload_fetchData`)
+        try {
+            let token = await getToken()
+            let deviceID = await getDeviceID()
+
+            let options = {
+                method: 'post',
+                url: constants.api.service,
+                data: {
+                    iType: constants.iType.uploadImageList,
+                    id: this.state.service_id,
+                    deviceId: deviceID,
+                    token: token,
+                }
+            }
+
+            options.data = await this.gZip(options)
+
+            console.log(`_fetch_sendCode options:`, options)
+
+            let resultData = await this.fetch(options)
+
+            let result = await this.gunZip(resultData)
+
+            result = JSON.parse(result)
+            console.log('gunZip:', result)
+            if (result.code && result.code == 10) {
+
+                console.log('token', result.result)
+
+                let photos = []
+                for (let data of result.result) {
+                    console.log('data', data)
+                    let file = {uri: data.file_url, id: data.id}
+                    if (this._ids.indexOf(file) == -1) {
+                        this._ids.push(file)
+                        console.log(`ids:`, this._ids);
+                    }
+
+                    photos.push(
+                        {
+                            filename: data.filename,
+                            height: data.height,
+                            isStored: true,
+                            uploaded: true,
+                            uploading: false,
+                            uri: data.file_url,
+                            big_uri: data.big_url,
+                            width: data.width,
+                        }
+                    )
+                }
+                //很明显, 这里UI要更新
+                let photoList = this.state.photoList
+                photoList = photoList.concat(photos)
+                this.setState({
+                    photoList,
+                    dataSource: this._dataSource.cloneWithRows(photoList),
+                })
+
+            } else {
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: result.msg
+                })
+            }
+
+
+        }
+        catch (error) {
+            console.log(error)
+
+
+        }
+        finally {
+            //console.log(`SplashScreen.close(SplashScreen.animationType.scale, 850, 500)`)
+            //SplashScreen.close(SplashScreen.animationType.scale, 850, 500)
+        }
+    }
 }
 
 export default TimerEnhance(AppEventListenerEnhance(XhrEnhance(UploadPage)))
@@ -506,7 +810,7 @@ export default TimerEnhance(AppEventListenerEnhance(XhrEnhance(UploadPage)))
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        marginTop: Platform.OS == 'ios' ? 64 : 56,
+        paddingTop: Platform.OS == 'ios' ? 64 : 56,
         backgroundColor: constants.UIBackgroundColor,
         flexDirection: 'column',
     },
@@ -520,9 +824,10 @@ const styles = StyleSheet.create({
 
         //height:150,
         overflow: 'hidden',
-        borderBottomWidth: StyleSheet.hairlineWidth,
-        borderLeftWidth: StyleSheet.hairlineWidth,
+        //borderBottomWidth: StyleSheet.hairlineWidth,
+        //borderLeftWidth: StyleSheet.hairlineWidth,
         borderColor: constants.UIInActiveColor,
+
     },
     buttonStyle: {
         position: 'absolute',
@@ -561,7 +866,7 @@ const navigationBarRouteMapper = {
             return null;
         }
 
-        var previousRoute = navState.routeStack[ index - 1 ];
+        var previousRoute = navState.routeStack[index - 1];
         return (
             <TouchableOpacity
                 onPress={() => navigator.pop()}
@@ -581,7 +886,9 @@ const navigationBarRouteMapper = {
     RightButton: function (route, navigator, index, navState) {
         return (
             <TouchableOpacity
-                onPress={() =>  Alert.alert(`完成`)}
+                onPress={() => {
+                NativeAppEventEmitter.emit('PicturePicker.finish.saveIds')
+                }}
                 style={navigatorStyle.navBarRightButton}>
                 <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText]}>
                     完成

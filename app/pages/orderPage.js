@@ -41,7 +41,7 @@ class Order extends Component {
     componentWillMount() {
         NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
         let currentRoute = this.props.navigator.navigationContext.currentRoute
-
+        this.addAppEventListener(
         this.props.navigator.navigationContext.addListener('willfocus', (event) => {
             console.log(`orderPage willfocus...`)
             console.log(`currentRoute`, currentRoute)
@@ -54,6 +54,7 @@ class Order extends Component {
             }
             //
         })
+        )
 
     }
 

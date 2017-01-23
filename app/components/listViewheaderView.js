@@ -12,7 +12,7 @@ import {
     Text,
     View,
     PixelRatio,
-
+    ActivityIndicator,
 
 
 } from 'react-native';
@@ -87,13 +87,10 @@ export default class ListItemView extends Component{
             return (
                 <View
                     style={styles.HeaderView}>
-                    <Spinner
-                        style={styles.spinner}
-                        isVisible={true}
-                        size={this.props.size}
-                        type={this.props.name}
+                    <ActivityIndicator
+                        animating={true}
                         color={this.props.color}
-                    /><Text style={{marginLeft:5}}>{this.props.title}</Text>
+                        size={'large'}/><Text style={{marginLeft:5}}>{this.props.title}</Text>
                 </View>
 
             )
