@@ -42,8 +42,7 @@ class ForgetPassword extends Component {
         nextPage = this.props.nextPageIndex;
         // 初始状态
         this.state = {
-            showProgress: false,//显示加载
-            showReload: false,//显示加载更多
+
             phone: '',
             code: '',
             ButtonText:'',
@@ -90,18 +89,6 @@ class ForgetPassword extends Component {
 
         return (
             <View style={{flex:1}}>
-                <ModalProgress
-                    showProgress={this.state.showProgress}
-                    showReload={this.state.showReload}
-                    fetchData={()=>{
-                    this.setState({
-                    showProgress:true,//显示加载
-                    showReload:false,//显示加载更多
-                     })
-                    this._fetchData()
-                    }}
-                    onRequestClose={this._onRequestClose.bind(this)}/>
-                {this.state.showProgress||this.state.showReload?null:(
                 <View style={styles.container}>
                     <TextInput style={[styles.textInput,{ paddingLeft:10,paddingRight:10,}]}
                                clearButtonMode="while-editing"
@@ -215,10 +202,7 @@ class ForgetPassword extends Component {
                                 loading: false,
                                 //disabled: false
                             })
-                        this.setState({
-                        showProgress: true,//显示加载
-                        showReload: false,//显示加载更多
-                        })
+
 
                         this._fetchData_submit()
                     }
@@ -227,7 +211,7 @@ class ForgetPassword extends Component {
                     </Button>
 
                 </View>
-                )}
+
                 <Toast
                     ref={ component => this._toast = component }
                     marginTop={64}>
@@ -411,10 +395,7 @@ class ForgetPassword extends Component {
                 loading: false,
                 //disabled: false
             })
-            this.setState({
-                showProgress: false,//显示加载
-                showReload: false,//显示加载更多
-            })
+
         }
     }
 
