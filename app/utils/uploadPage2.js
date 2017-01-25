@@ -20,11 +20,11 @@ import {
 
 import constants from  '../constants/constant';
 import SudokuGrid from 'react-native-smart-sudoku-grid'
-import Icon from 'react-native-vector-icons/Ionicons'
+import Icon from '../../node_modules/react-native-vector-icons/Ionicons'
 import XhrEnhance from '../lib/XhrEnhance'
 import AppEventListenerEnhance from 'react-native-smart-app-event-listener-enhance'
 import TimerEnhance from 'react-native-smart-timer-enhance'
-import PicturePicker from './picturePicker'
+import PicturePicker from './../pages/picturePicker'
 import navigatorStyle from '../styles/navigatorStyle'       //navigationBar样式
 import Button from 'react-native-smart-button'
 import {getDeviceID,getToken} from '../lib/User'

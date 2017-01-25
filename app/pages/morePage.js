@@ -36,7 +36,7 @@ class More extends Component {
       }
 
     componentWillMount() {
-        NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
+        //NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
         let currentRoute = this.props.navigator.navigationContext.currentRoute
         this.addAppEventListener(
         this.props.navigator.navigationContext.addListener('willfocus', (event) => {
@@ -45,7 +45,8 @@ class More extends Component {
             console.log(`event.data.route`, event.data.route)
             if (currentRoute === event.data.route) {
                 console.log("orderPage willAppear")
-                NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
+                //NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
+                NativeAppEventEmitter.emit('setRootPageNavigationBar.index')
             } else {
                 console.log("orderPage willDisappear, other willAppear")
             }

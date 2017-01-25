@@ -64,16 +64,14 @@ RCT_EXPORT_METHOD(compress:(NSString *)filePath saveUri:(NSString *)saveUri
      newImage = [self reduceImage:newImage percent:0.5];
      //
      //    //UIImage *newImage = [self imageCompressForSize:img targetSize:size];
-     //
      // Create file manager
-    
-     
      //    //delete old Image
      //    BOOL bRet = [fileMgr fileExistsAtPath:filePath];
      //    if (bRet) {
      //        NSError *err;
      //        [fileMgr removeItemAtPath:filePath error:&err];
      //    }
+     
      NSString *result=saveUri;
      
      UInt64 recordTime = [[NSDate date] timeIntervalSince1970]*1000;

@@ -84,7 +84,7 @@ class Index extends Component {
     }
 
     componentWillMount() {
-        NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
+        //NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
         let currentRoute = this.props.navigator.navigationContext.currentRoute
         this.addAppEventListener(
             this.props.navigator.navigationContext.addListener('willfocus', (event) => {
@@ -100,8 +100,8 @@ class Index extends Component {
                         _scrollView.scrollTo({y: _scrollY + 5, animated: true,})
                         console.log(`_scrollY + StyleSheet.hairlineWidth`, _scrollY + StyleSheet.hairlineWidth)
                     }
-                    NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
-
+                    //NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
+                    NativeAppEventEmitter.emit('setRootPageNavigationBar.index')
                 } else {
                     console.log("indexPage willDisappear, other willAppear")
                 }

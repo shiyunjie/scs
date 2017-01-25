@@ -24,6 +24,7 @@ import constants from  '../constants/constant';
 import Icon from 'react-native-vector-icons/Ionicons';
 import navigatorStyle from '../styles/navigatorStyle'       //navigationBar样式
 import XhrEnhance from '../lib/XhrEnhance' //http
+
 //import { register_firstStep, check_msg_code, errorXhrMock } from '../mock/xhr-mock'   //mock data
 
 import {getDeviceID,getToken,getRegMsgSerial,getForMsgSerial} from '../lib/User'
@@ -31,6 +32,7 @@ import RegisterPage from './registerPage';
 import SetPassword from './setPasswordPage';
 import Toast from 'react-native-smart-toast'
 import AppEventListenerEnhance from 'react-native-smart-app-event-listener-enhance'
+import ValidateTextInput from '../components/validateTextInput'
 
 let nextPage;
 let secondNum
@@ -42,13 +44,13 @@ class ForgetPassword extends Component {
         nextPage = this.props.nextPageIndex;
         // 初始状态
         this.state = {
-
             phone: '',
             code: '',
             ButtonText:'',
-
         };
         secondNum=60
+       this._phoneValidate=false;
+        this._phoneReg = /^1[34578]\d{9}$/;
     }
 
     componentWillMount() {
@@ -70,9 +72,6 @@ class ForgetPassword extends Component {
         )
     }
 
-    componentDidMount() {
-        //获取设备号
-    }
 
 
     componentWillUnmount() {
@@ -90,15 +89,19 @@ class ForgetPassword extends Component {
         return (
             <View style={{flex:1}}>
                 <View style={styles.container}>
-                    <TextInput style={[styles.textInput,{ paddingLeft:10,paddingRight:10,}]}
-                               clearButtonMode="while-editing"
-                               placeholder='请输入您的手机号'
-                               maxLength={20}
-                               keyboardType='numeric'
-                               underlineColorAndroid='transparent'
-                               editable={true}
-                               value={this.state.phone}
-                               onChangeText={(text) => this.setState({phone:text})}/>
+                    <ValidateTextInput
+                        ref={ component => this._input_phone = component }
+                        style={[styles.textInput,{ paddingLeft:10,paddingRight:10,}]}
+                        clearButtonMode="while-editing"
+                        placeholder='请输入您的手机号'
+                        maxLength={20}
+                        keyboardType='numeric'
+                        underlineColorAndroid='transparent'
+                        editable={true}
+                        value={this.state.phone}
+                        onChangeText={(text) => this.setState({phone:text})}
+                        validate={this._phoneValidate}
+                        reg={this._phoneReg}/>
                     <View style={[styles.textInput,{
                         flexDirection: 'row',
                         justifyContent: 'flex-start',
@@ -120,16 +123,19 @@ class ForgetPassword extends Component {
                             textStyle={{fontSize: 15, color: 'white'}}
                             loadingComponent={
                             <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                                {this._renderActivityIndicator()}
+                                { /*this._renderActivityIndicator()*/}
                                 <Text style={{fontSize: 15, color: 'white', fontWeight: 'bold', fontFamily: '.HelveticaNeueInterface-MediumP4',}}>{this.state.ButtonText}</Text>
                             </View>
                             }
                             onPress={ () => {
-                        if(this.state.phone==''){
+                        if(!this._phoneValidate){
+                        this._input_phone.setState({
+                        backgroundColor:'#ffb5b5',
+                        })
                          this._toast.show({
                             position: Toast.constants.gravity.center,
                             duration: 255,
-                            children: '请填写电话号码'
+                            children: '手机号码错误'
                         })
 
                         }else{

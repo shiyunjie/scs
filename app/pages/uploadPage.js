@@ -833,14 +833,15 @@ const styles = StyleSheet.create({
         position: 'absolute',
         bottom: 10,
         margin: 10,
-        justifyContent: 'center',
-        height: 40,
         width: deviceWidth - 20,
         backgroundColor: constants.UIActiveColor,
-        borderRadius: 3,
         //borderWidth: StyleSheet.hairlineWidth,
         //borderColor:constants.UIActiveColor,
+
+        height: 40,
+        borderColor: constants.UIActiveColor,
         justifyContent: 'center',
+        borderRadius: 30,
 
     },
     viewItem: {

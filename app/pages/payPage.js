@@ -31,6 +31,7 @@ import AppEventListenerEnhance from 'react-native-smart-app-event-listener-enhan
 import {getDeviceID,getToken} from '../lib/User'
 import XhrEnhance from '../lib/XhrEnhance' //http
 import Toast from 'react-native-smart-toast'
+import ModalProgress from '../components/modalProgress'
 let firstDataList = []
 /*let firstDataList = [[{
  first_cost_name: '一级费用名称',
@@ -102,7 +103,7 @@ class PayPage extends Component {
         }
 
         pageType = this.props.pageType
-        console.log(`pageType:`, pageType)
+
     }
 
     _selectAllTab(event) {

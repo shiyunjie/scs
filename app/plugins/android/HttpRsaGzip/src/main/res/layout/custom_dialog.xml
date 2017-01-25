@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content">
+    
+    <com.reactnativecomponet.http.view.CircleProgressView
+        android:id="@+id/circle_progress"
+        android:layout_width="90pt"
+        android:layout_height="120pt"
+        android:layout_centerInParent="true"/>
+
+</RelativeLayout>

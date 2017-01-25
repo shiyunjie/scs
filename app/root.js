@@ -14,8 +14,8 @@ import {
     AsyncStorage,
 } from 'react-native';
 
-//import IndexPage from './pages/indexPage';
-import IndexPage from './pages/uploadPage';
+import IndexPage from './pages/indexPage';
+//import IndexPage from './pages/uploadPage';
 import UserPage from './pages/userPage';
 import OrderPage from './pages/orderPage';
 import MorePage from './pages/morePage';
@@ -80,6 +80,20 @@ class Root extends Component {
             })
         )
 
+        this.addAppEventListener(
+            NativeAppEventEmitter.addListener('setRootPageNavigationBar.index', () => {
+                if(this.state.selectedTab === '首页'){
+                 NativeAppEventEmitter.emit('setNavigationBar.index', NavigationBarRouteMapperList[0])
+                }else if(this.state.selectedTab === '订单'){
+                 NativeAppEventEmitter.emit('setNavigationBar.index', NavigationBarRouteMapperList[1])
+                }else if(this.state.selectedTab === '我的'){
+                 NativeAppEventEmitter.emit('setNavigationBar.index', NavigationBarRouteMapperList[2])
+                }else if(this.state.selectedTab === '更多'){
+                    NativeAppEventEmitter.emit('setNavigationBar.index', NavigationBarRouteMapperList[3])
+                }
+            })
+        )
+
     }
 
 
@@ -123,7 +137,8 @@ class Root extends Component {
                     onPress={ () => {
 
                         this.setState({selectedTab: '首页',})
-                         NativeAppEventEmitter.emit('setNavigationBar.index', NavigationBarRouteMapperList[0])
+                         //NativeAppEventEmitter.emit('setNavigationBar.index', NavigationBarRouteMapperList[0])
+                         NativeAppEventEmitter.emit('setRootPageNavigationBar.index')
                     } }>
                     <IndexPage navigator={this.props.navigator}/>
                 </TabNavigator.Item>
@@ -174,7 +189,8 @@ class Root extends Component {
         console.log('token', token)
         if (token && token != '') {
             this.setState({selectedTab: '我的',})
-            NativeAppEventEmitter.emit('setNavigationBar.index', NavigationBarRouteMapperList[2])
+            //NativeAppEventEmitter.emit('setNavigationBar.index', NavigationBarRouteMapperList[2])
+            NativeAppEventEmitter.emit('setRootPageNavigationBar.index')
         }
         else {
 
@@ -189,7 +205,8 @@ class Root extends Component {
         console.log('token', token)
         if (token && token != '') {
             this.setState({selectedTab: '更多',})
-            NativeAppEventEmitter.emit('setNavigationBar.index', NavigationBarRouteMapperList[3])
+            //NativeAppEventEmitter.emit('setNavigationBar.index', NavigationBarRouteMapperList[3])
+            NativeAppEventEmitter.emit('setRootPageNavigationBar.index')
         }
         else {
 
@@ -205,7 +222,8 @@ class Root extends Component {
         console.log('token', token)
         if (token && token != '') {
             this.setState({selectedTab: '订单',})
-            NativeAppEventEmitter.emit('setNavigationBar.index', NavigationBarRouteMapperList[1])
+            //NativeAppEventEmitter.emit('setNavigationBar.index', NavigationBarRouteMapperList[1])
+            NativeAppEventEmitter.emit('setRootPageNavigationBar.index')
         }
         else {
 
