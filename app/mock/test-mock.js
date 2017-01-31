@@ -412,7 +412,7 @@ export const testMock = fetchMock.mock(/\/app\/gateway/, (url, opts) => {
 
                                 order_status_name: '已报价',// 服务单状态名称
 
-                                order_status: 30,// 服务单状态
+                                order_status: 50,// 服务单状态
 
                                 remark: '服务单演示',// 备注
 
