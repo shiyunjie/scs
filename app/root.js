@@ -15,7 +15,7 @@ import {
 } from 'react-native';
 
 import IndexPage from './pages/indexPage';
-//import IndexPage from './pages/uploadPage';
+//import IndexPage from './pages/setPasswordPage';
 import UserPage from './pages/userPage';
 import OrderPage from './pages/orderPage';
 import MorePage from './pages/morePage';

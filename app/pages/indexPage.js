@@ -27,6 +27,10 @@ import HeaderView from '../components/listViewheaderView'
 import addOrderPage from './addOrderPage'
 import navigatorStyle from '../styles/navigatorStyle'       //navigationBar样式
 import XhrEnhance from '../lib/XhrEnhance'
+
+
+
+
 import Icon from 'react-native-vector-icons/Ionicons';
 import Toast from 'react-native-smart-toast'
 
@@ -44,14 +48,15 @@ import {getDeviceID,getToken} from '../lib/User'
 
 const { width: deviceWidth,height:deviceHeight} = Dimensions.get('window');
 let refreshedDataSource = [{
-    file_url: 'http://www.doorto.cn/images/banner-02.jpg',
-    big_url: 'http://www.doorto.cn/images/banner-02.jpg',
+    file_url: 'http://www.doorto.cn/images/banner-03.jpg',
+    big_url: 'http://www.doorto.cn/images/banner-03.jpg',
     id: '2',
 }, {
     file_url: 'http://www.doorto.cn/images/banner-01.jpg',
     big_url: 'http://www.doorto.cn/images/banner-01.jpg',
     id: '1',
 }]
+
 let advertisementDataSource = [
     image_banner,
     image_banner,
@@ -79,6 +84,9 @@ class Index extends Component {
             count: 0,
             dataList: dataList,
             dataSource: this._dataSource.cloneWithRows(dataList),
+
+        }
+        if(constants.development){
 
         }
     }
@@ -114,7 +122,7 @@ class Index extends Component {
     componentDidMount() {
 
         console.log(`this._pullToRefreshListView.beginRefresh()`)
-        this._pullToRefreshListView.beginRefresh()
+        //this._pullToRefreshListView.beginRefresh()
 
     }
 
@@ -308,7 +316,7 @@ class Index extends Component {
                             return (
                                 <View key={`item-${index}`}
                                       style={{overflow: 'hidden',borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: '#ccc',marginBottom:10,}}>
-                                    <Image source={item} style={{height:400,width:400}}/>
+                                    <Image source={item} style={{height:200,width:deviceWidth}}/>
                                 </View>
                             )
                         })

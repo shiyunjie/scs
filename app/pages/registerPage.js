@@ -79,28 +79,7 @@ class Register extends Component {
     render() {
         return (
             <View style={{flex:1}}>
-                <ModalProgress
-                    showProgress={this.state.showProgress}
-                    showReload={this.state.showReload}
-                    fetchData={()=>{
-                    this.setState({
-                    showProgress:true,//显示加载
-                    showReload:false,//显示加载更多
-                     })
-                    }}
-                    onRequestClose={this._onRequestClose.bind(this)}/>
-                <ModalDialog
-                    showDialog={this.state.showDialog}
-                    title='确认要取消订单吗'
-                    fetchData={()=>{
-                    this.setState({
-                    showDialog:false,
-                     })
-                     //回退登录
 
-                           this.props.navigator.pop()
-
-                    }}/>
             <View style={[styles.container,{ marginTop: Platform.OS == 'ios' ? 64+10 : 56+10,}]}>
                 <Modal
                     animationType={"fade"}

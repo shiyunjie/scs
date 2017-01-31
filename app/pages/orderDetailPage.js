@@ -244,6 +244,7 @@ class OrderDetail extends Component {
                         <View style={this.state.order_status==30?{height:10}:{height:0}}/>
                         <TextInput
                             style={[{fontSize:15,textAlignVertical:'top',
+                            backgroundColor:'white',
                               margin:3,
                               borderColor: constants.UIInActiveColor,
                               justifyContent:'flex-start',

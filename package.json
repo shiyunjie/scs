@@ -40,8 +40,10 @@
   "devDependencies": {
     "babel-jest": "18.0.0",
     "babel-preset-react-native": "1.9.1",
+    "fetch-mock": "^5.9.3",
     "jest": "18.0.0",
-    "react-test-renderer": "15.4.1"
+    "react-test-renderer": "15.4.1",
+    "url": "^0.11.0"
   },
   "jest": {
     "preset": "react-native"

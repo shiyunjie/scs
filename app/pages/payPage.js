@@ -407,14 +407,14 @@ class PayPage extends Component {
                             </View>
                         </View>
                         <View style={{height:50,justifyContent:'center',alignItems:'center',
-                marginLeft:constants.MarginLeftRight,marginRight:constants.MarginLeftRight,}}>
+                            marginLeft:constants.MarginLeftRight,marginRight:constants.MarginLeftRight,}}>
                             <Text>由于不可估计因素,预估和实际价格可能略有出入,具体账单请以实际价格为准</Text>
                         </View>
                         <Button
                             ref={ component => this.button2 = component }
                             touchableType={Button.constants.touchableTypes.fadeContent}
                             style={[styles.button,this.state.order_status==10||this.state.order_status==30
-                    ||this.state.order_status==70||this.state.order_status==100?{height:0}:{height:40}]}
+                            ||this.state.order_status==70||this.state.order_status==100?{height:0}:{height:40}]}
                             textStyle={{fontSize: 17, color: 'white'}}
                             loadingComponent={
                             <View style={{flexDirection: 'row', alignItems: 'center'}}>

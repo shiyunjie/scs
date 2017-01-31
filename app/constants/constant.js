@@ -2,9 +2,10 @@
  * Created by shiyunjie on 16/12/6.
  */
 export const constant = {
-    UIActiveColor:"#FB687D",
-    UIInActiveColor:"#ADADAD",
-    UIBackgroundColor:"#F1F2F4",
+    UIActiveColor:'#FB687D',
+    UIInActiveColor:'#ADADAD',
+    UIBackgroundColor:'#F1F2F4',
+    UIInputErrorColor:'#ffb5b5',
     IconSize:25,
     MarginLeftRight:15,
     Tel:'tel:10086',
@@ -18,7 +19,7 @@ export const constant = {
 
 
 
-
+    development:true,//开发模式
 
     requestTimeout: 30000,  //默认请求超时30秒
     requestMethod: 'GET',   //默认请求方法为GET

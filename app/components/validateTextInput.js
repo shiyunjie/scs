@@ -54,7 +54,8 @@ export default class InputView extends Component {
         placeholderTextColor: constants.UIInActiveColor,
         iconColor: 'green',
         iconSize: constants.IconSize,
-        iconName: 'md-checkmark-circle'
+        iconName: 'md-checkmark-circle',
+        validate:false,
 
     }
 
@@ -76,18 +77,19 @@ export default class InputView extends Component {
 
             if (newValue == '') {
                 this.setState({
-
                     showIcon: false,
                 });
             } else if (this.props.reg.test(newValue)) {
-                this.props.validate = true
+
+                this.validate = true
                 this.setState({
                     iconColor: 'green',
                     iconName: 'md-checkmark-circle',
                     showIcon: true,
                 });
+                console.log(`validate:`,this.validate)
             } else {
-                this.props.validate = false
+                this.validate = false
                 this.setState({
                     iconColor: 'red',
                     iconName: 'ios-close-circle',
@@ -110,7 +112,6 @@ export default class InputView extends Component {
                     {flex:1,paddingLeft:0,paddingRight:0,margin:0},]}>
                     <TextInput
                         style={[{flex:1,paddingLeft:0,paddingRight:0,margin:0},]}
-                        ref="input"
                         clearButtonMode={this.props.clearButtonMode}
                         placeholder={this.props.placeholder}
                         maxLength={this.props.maxLength}
@@ -118,14 +119,14 @@ export default class InputView extends Component {
                         underlineColorAndroid={this.props.underlineColorAndroid}
                         editable={this.props.editable}
                         value={this.props.value}
+                        secureTextEntry={this.props.secureTextEntry}
                         onChangeText={this.props.onChangeText}/>
                     {this.state.showIcon ?
                         <View style={[styles.icon,{height:this.state.height,width:40,}]}>
                             <Icon
                                 name={this.state.iconName}  // 图标
                                 size={this.props.iconSize}
-                                color={this.state.iconColor}
-                            />
+                                color={this.state.iconColor}/>
                         </View> : null}
                 </View>
             </View>
@@ -134,7 +135,7 @@ export default class InputView extends Component {
     }
 }
 
-var styles = StyleSheet.create({
+let styles = StyleSheet.create({
     groupView: {
         flex: 1,
         flexDirection: 'row',

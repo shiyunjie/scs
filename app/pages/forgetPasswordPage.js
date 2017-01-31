@@ -49,8 +49,8 @@ class ForgetPassword extends Component {
             ButtonText:'',
         };
         secondNum=60
-       this._phoneValidate=false;
-        this._phoneReg = /^1[34578]\d{9}$/;
+        this._phoneReg = /^1[34578]\d{9}$/;//手机号码
+        this._codeReg = /^\d{4,}$/;//至少4位数字
     }
 
     componentWillMount() {
@@ -92,7 +92,7 @@ class ForgetPassword extends Component {
                     <ValidateTextInput
                         ref={ component => this._input_phone = component }
                         style={[styles.textInput,{ paddingLeft:10,paddingRight:10,}]}
-                        clearButtonMode="while-editing"
+
                         placeholder='请输入您的手机号'
                         maxLength={20}
                         keyboardType='numeric'
@@ -100,22 +100,23 @@ class ForgetPassword extends Component {
                         editable={true}
                         value={this.state.phone}
                         onChangeText={(text) => this.setState({phone:text})}
-                        validate={this._phoneValidate}
                         reg={this._phoneReg}/>
                     <View style={[styles.textInput,{
                         flexDirection: 'row',
                         justifyContent: 'flex-start',
                         alignItems: 'stretch',
                        }]}>
-                        <TextInput style={[{flex:2, paddingLeft:10,paddingRight:10,}]}
-                                   clearButtonMode="while-editing"
-                                   placeholder='请输入验证码'
-                                   keyboardType='numeric'
-                                   maxLength={20}
-                                   underlineColorAndroid='transparent'
-                                   editable={true}
-                                   value={this.state.code}
-                                   onChangeText={(text) => this.setState({code:text})}/>
+                        <ValidateTextInput
+                            ref={ component => this._input_code = component }
+                            style={[{flex:2, paddingLeft:10,paddingRight:10,}]}
+                            placeholder='请输入验证码'
+                            keyboardType='numeric'
+                            maxLength={20}
+                            underlineColorAndroid='transparent'
+                            editable={true}
+                            value={this.state.code}
+                            onChangeText={(text) => this.setState({code:text})}
+                            reg={this._codeReg}/>
                         <Button
                             ref={ component => this._button_3 = component }
                             touchableType={Button.constants.touchableTypes.fadeContent}
@@ -128,9 +129,9 @@ class ForgetPassword extends Component {
                             </View>
                             }
                             onPress={ () => {
-                        if(!this._phoneValidate){
+                        if(!this._input_phone.validate){
                         this._input_phone.setState({
-                        backgroundColor:'#ffb5b5',
+                        backgroundColor:constants.UIInputErrorColor,
                         })
                          this._toast.show({
                             position: Toast.constants.gravity.center,
@@ -156,6 +157,7 @@ class ForgetPassword extends Component {
                            },
                           1000
                         );
+                        this._input_phone.editable=false
                          this._button_3.setState({
                             loading: true,
                             //disabled: true,
@@ -181,8 +183,8 @@ class ForgetPassword extends Component {
                         ref={ component => this._button_2 = component }
                         touchableType={Button.constants.touchableTypes.fadeContent}
                         style={[styles.button,{ marginLeft: constants.MarginLeftRight,
-                    marginRight: constants.MarginLeftRight,
-                    marginTop: 20,}]}
+                        marginRight: constants.MarginLeftRight,
+                        marginTop: 20,}]}
                         textStyle={{fontSize: 17, color: 'white'}}
                         loadingComponent={
                             <View style={{flexDirection: 'row', alignItems: 'center'}}>
@@ -192,22 +194,34 @@ class ForgetPassword extends Component {
                             </View>
                     }
                         onPress={ () => {
-                    if(this.state.phone==''||this.state.code==''){
+                    if(!this._input_phone.validate||!this._input_code.validate){
+                    if(!this._input_phone.validate){
+                        this._input_phone.setState({
+                        backgroundColor:constants.UIInputErrorColor,
+                        })
+                        }
+
+                        if(!this._input_code.validate){
+                        this._input_code.setState({
+                        backgroundColor:constants.UIInputErrorColor,
+                        })
+                        }
                      this._toast.show({
                             position: Toast.constants.gravity.center,
                             duration: 255,
-                            children: '请填写验证码'
+                            children: '请填写完整的手机号与验证码'
                         })
                     }else{
                         this._button_2.setState({
                             loading: true,
                             //disabled: true,
                         })
-
-                            this._button_2.setState({
+                        this._input_phone.editable=false
+                        this._input_code.editable=false
+                          /*  this._button_2.setState({
                                 loading: false,
                                 //disabled: false
-                            })
+                            })*/
 
 
                         this._fetchData_submit()
@@ -319,6 +333,7 @@ class ForgetPassword extends Component {
                 loading: false,
                 //disabled: false
             })*/
+            this._input_phone.editable=true
             //console.log(`SplashScreen.close(SplashScreen.animationType.scale, 850, 500)`)
             //SplashScreen.close(SplashScreen.animationType.scale, 850, 500)
         }
@@ -397,7 +412,9 @@ class ForgetPassword extends Component {
 
 
         } finally {
-            this._button_3.setState({
+            this._input_phone.editable=true
+            this._input_code.editable=true
+            this._button_2.setState({
                 loading: false,
                 //disabled: false
             })

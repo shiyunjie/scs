@@ -72,6 +72,7 @@ export default class HelpItem extends Component {
                                     style={[{flexDirection: 'column',
                                 justifyContent: 'flex-start',
                                 alignItems: 'stretch',
+                                marginLeft:constants.MarginLeftRight*2,
                                },this.state.show?{flex:1}:{height:0}]}>
                                     <Text>{item.Q}</Text>
                                     <Text>{item.detail}</Text>

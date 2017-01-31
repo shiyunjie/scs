@@ -41,65 +41,78 @@ export default class IndexSwiper extends Component {
     }
 
     /*
+     {
+     Platform.OS == 'android' ?
+     <Carousel
+     width={deviceWidth}
+     delay={3000}
+     indicatorColor={'#FB687D'}
+     indicatorSize={25}
+     indicatorSpace={10}
+     indicatorOffset={0}
+     inactiveIndicatorColor={'#fff'}
+     inactiveIndicatorText='•'>
+     {
+     this.props.dataSource.map((item, index) => {
+     return (
+     <Image
+     key={index}
+     style={{width: this.props.width, height: 150}}
+     //defaultSource={image_default_banner}
+     source={{uri: `${item.big_url}`}}/>
+     )
+     })
+     }
+     </Carousel> :
      <Swiper style={styles.swiperStyle}
      autoplay={this.props.autoplay}
      height={150}
      width={this.props.width}
      autoplayTimeout={3}
      loop={true}>
+
+     {
+     this.props.dataSource.map((item, index) => {
+     return (
+     <View style={{width: this.props.width, height: 150}}>
      <Image
      key={index}
-     style={[{width: this.props.width, height: 150}]}
+     style={{width: this.props.width, height: 150}}
      //defaultSource={image_default_banner}
-     source={{uri: `${item.big_url}`}}/>*/
+     source={{uri: `${item.big_url}`}}/>
+     </View>
+     )
+     })
+     }
+     </Swiper>
+
+     }*/
 
 
     render() {
         return (
             <View style={{height: 150,width:deviceWidth}}>
-                {()=> {
-                    return Platform.OS == 'android' ?
-                        <Carousel
-                            width={deviceWidth}
-                            delay={3000}
-                            indicatorColor={'#FB687D'}
-                            indicatorSize={25}
-                            indicatorSpace={10}
-                            indicatorOffset={0}
-                            inactiveIndicatorColor={'#fff'}
-                            inactiveIndicatorText='•'>
-                            {
-                                this.props.dataSource.map((item, index) => {
-                                    return (
-                                        <Image
-                                            key={index}
-                                            style={{width: this.props.width, height: 150}}
-                                            //defaultSource={image_default_banner}
-                                            source={{uri: `${item.big_url}`}}/>
-                                    )
-                                })
-                            }
-                        </Carousel> :
-                        <Swiper style={styles.swiperStyle}
-                                autoplay={this.props.autoplay}
-                                height={150}
-                                width={this.props.width}
-                                autoplayTimeout={3}
-                                loop={true}>
-                            {
-                                this.props.dataSource.map((item, index) => {
-                                    return (
-                                        <Image
-                                            key={index}
-                                            style={{width: this.props.width, height: 150}}
-                                            //defaultSource={image_default_banner}
-                                            source={{uri: `${item.big_url}`}}/>
-                                    )
-                                })
-                            }
-                        </Swiper>
-                            }
-                   }
+                <Carousel
+                    width={deviceWidth}
+                    delay={3000}
+                    indicatorColor={'#FB687D'}
+                    indicatorSize={25}
+                    indicatorSpace={10}
+                    indicatorOffset={0}
+                    inactiveIndicatorColor={'#fff'}
+                    inactiveIndicatorText='•'>
+                    {
+                        this.props.dataSource.map((item, index) => {
+                            return (
+                                <Image
+                                    key={index}
+                                    style={{width: this.props.width, height: 150}}
+                                    //defaultSource={image_default_banner}
+                                    source={{uri: `${item.big_url}`}}/>
+                            )
+                        })
+                    }
+                </Carousel>
             </View>
 
         )

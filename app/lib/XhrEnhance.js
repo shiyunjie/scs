@@ -9,7 +9,13 @@ const HttpRSAModule = NativeModules.HttpRSAModule;
 import constants from '../constants/constant'
 import {doSign} from './utils'
 
+import fetchMock from './react-native-fetch'
+
 let _key = 'XhrEnhance_xhrs'
+
+if (constants.development) {
+    require('../mock/test-mock')
+}
 
 
 export default XhrEnhance = (ComposedComponent) => {
@@ -40,6 +46,18 @@ export default XhrEnhance = (ComposedComponent) => {
          * @returns {Promise}
          */
         fetch = (options) => {
+
+
+            if (constants.development) {
+                console.log(`httpMock—————— `)
+
+
+                        let result = fetchMock(options)
+                        console.log(`resultMock = `, result)
+                        return result
+
+
+            }
 
 
             let xhr = new XMLHttpRequest()
@@ -73,8 +91,8 @@ export default XhrEnhance = (ComposedComponent) => {
                 /**
                  * 这里处理sign
                  */
-                data.sign=this._doRSASign(data.s)
-                console.log(`data:`,data)
+                data.sign = this._doRSASign(data.s)
+                console.log(`data:`, data)
                 /**
                  * 处理sign结束
                  */
@@ -83,7 +101,7 @@ export default XhrEnhance = (ComposedComponent) => {
                     method = constants.requestMethod
                 }
 
-                if(method.toLowerCase() == 'get') {
+                if (method.toLowerCase() == 'get') {
                     url += this._formatUrlParams(data)
                 }
 
@@ -96,7 +114,7 @@ export default XhrEnhance = (ComposedComponent) => {
                 xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
                 xhr.timeout = timeout || constants.requestTimeout
                 let sendData = null
-                if(method.toLowerCase() != 'get') {
+                if (method.toLowerCase() != 'get') {
                     if (formData) {
 
 
@@ -110,14 +128,15 @@ export default XhrEnhance = (ComposedComponent) => {
             })
         }
 
-         _doRSASign(data){
+
+        _doRSASign(data) {
             return doSign(data)
         }
 
-        _formatUrlParams (data) {
+        _formatUrlParams(data) {
             let urlParams = ''
-            Object.keys(data).forEach( (key, index) => {
-                if(index) {
+            Object.keys(data).forEach((key, index) => {
+                if (index) {
                     urlParams += `&${key}=${data[key]}`
                 }
                 else {
@@ -138,28 +157,28 @@ export default XhrEnhance = (ComposedComponent) => {
 
                 let { data,} = options
                 try {
-                   let sendData = {
+                    let sendData = {
                         itype: data.iType,
                         deviceId: data.deviceId,
-                        data:data,
+                        data: data,
                         token: data.token,
-                        }
+                    }
 
-                        delete(sendData.data['iType'])
-                        delete(sendData.data['deviceId'])
-                        delete(sendData.data['token'])
-                        console.log('data_deviceId:',sendData.deviceId);
+                    delete(sendData.data['iType'])
+                    delete(sendData.data['deviceId'])
+                    delete(sendData.data['token'])
+                    console.log('data_deviceId:', sendData.deviceId);
 
-                        console.log('data_sendData:',sendData);
+                    console.log('data_sendData:', sendData);
 
-                        let result = HttpRSAModule.gzipRSA(JSON.stringify(sendData))
+                    let result = HttpRSAModule.gzipRSA(JSON.stringify(sendData))
 
 
                     resolve(result)
 
-                    } catch (error) {
+                } catch (error) {
                     reject(error)
-                    }
+                }
             })
         }
         /**
@@ -170,12 +189,15 @@ export default XhrEnhance = (ComposedComponent) => {
         gunZip = (data) => {
             return new Promise((resolve, reject) => {
                 try {
-                    let responseData = HttpRSAModule.gunzipRSA(data)
-                    resolve(responseData)
-                    //resolve(data)
-                    } catch (error) {
-                    reject(error)
+                    if(constants.development){
+                        resolve(data)
+                    }else{
+                        let responseData = HttpRSAModule.gunzipRSA(data)
+                        resolve(responseData)
                     }
+                } catch (error) {
+                    reject(error)
+                }
             })
         }
     }
