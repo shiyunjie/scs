@@ -87,6 +87,7 @@ class OrderList extends Component {
                 contentContainerStyle={{backgroundColor: 'transparent', }}
                 initialListSize={10}
                 pageSize={10}
+                enableEmptySections={true}
                 dataSource={this.state.dataSource}
                 renderHeader={this._renderHeader}
                 renderFooter={this._renderFooter}
@@ -142,9 +143,7 @@ class OrderList extends Component {
                     logistics={''}
                     cost={''}
                     route={`${rowData.departure_name} -- -- ${rowData.destination_name}`}
-                    style={[{overflow: 'hidden'}]}
-
-                />
+                    style={[{overflow: 'hidden'}]}/>
             </TouchableOpacity>
 
         )

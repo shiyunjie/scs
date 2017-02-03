@@ -19,15 +19,15 @@ export const constant = {
 
 
 
-    development:true,//开发模式
+    development:true,//开发模式mock
 
     requestTimeout: 30000,  //默认请求超时30秒
     requestMethod: 'GET',   //默认请求方法为GET
 
 
     api: {
-        service:'http://192.168.1.200:8080/app/gateway/',
-        //service:'http://192.168.1.177:3000/app/gateway/',
+        //service:'http://192.168.1.200:8080/app/gateway/',
+        service:'http://192.168.1.177:3000/app/gateway/',
         //service:'http://192.168.1.248:8080/spboot/upload',
         //service:'http://192.168.1.111:8080/app/gateway/',
         //service:'http://posttestserver.com/post.php',
@@ -48,12 +48,10 @@ export const constant = {
 
     iType: {
         upload:95,
-
         login:100,
         register_firstStep:101,
         checkMsgCode:102,
         register_secondStep:103,
-
         forgetPwdCode:104,
         checkForgetCode:105,
         SavePwd:106,
@@ -81,6 +79,7 @@ export const constant = {
         serviceOrder_confirmServiceOrder:336,
         serviceCost_payCost:337,
         uploadFinish:338,
+
         uploadImageList:632,
 
         feedBack:431,

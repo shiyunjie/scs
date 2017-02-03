@@ -196,7 +196,8 @@ class AddOrder extends Component {
     render() {
         return (
             <View style={{flex:1}}>
-                <ScrollView style={styles.container}>
+                <ScrollView style={styles.container}
+                            showsVerticalScrollIndicator={false}>
                     <TouchableOpacity
                         style={[{height:50,},{marginTop:10}]}
                         onPress={()=>{
@@ -318,7 +319,8 @@ class AddOrder extends Component {
                         <ItemView
                             name='ios-arrow-forward'
                             title='目的国家'
-                            rightText={this.state.reach}/>
+                            rightText={this.state.reach}
+                            hasLine={false}/>
                     </TouchableOpacity>
                     <Text style={{marginLeft:constants.MarginLeftRight,paddingTop:5,paddingBottom:5,}}>货代服务</Text>
                     <TouchableOpacity
@@ -449,7 +451,8 @@ class AddOrder extends Component {
                             color={this.state.internal==1?constants.UIActiveColor:constants.UIInActiveColor}
                             name={this.state.internal==1?'md-checkmark-circle':'ios-close-circle-outline'}
                             title='国内物流'
-                            rightText=''/>
+                            rightText=''
+                            hasLine={false}/>
                     </TouchableOpacity>
                     <Text style={{marginLeft:constants.MarginLeftRight,paddingTop:5,paddingBottom:5,}}>支付方式</Text>
                     <TouchableOpacity
@@ -467,15 +470,16 @@ class AddOrder extends Component {
                             color={this.state.pay==1?constants.UIActiveColor:constants.UIInActiveColor}
                             name={this.state.pay==1?'md-checkmark-circle':'ios-close-circle-outline'}
                             title='信用证'
-                            rightText=''/>
+                            rightText=''
+                            hasLine={false}/>
                     </TouchableOpacity>
-                    <View style={{height:150,}}>
+                    <View style={{height:150,marginTop:5,}}>
                         <TextInput
                             style={{flex:1,
                             fontSize:15,
                             backgroundColor:'white',
                             textAlignVertical:'top',
-                            margin:5,
+                            padding:constants.MarginLeftRight,
                             borderColor: constants.UIInActiveColor,
                             justifyContent:'flex-start',
                             }}

@@ -66,7 +66,7 @@ class Order extends Component {
         return (
             <ScrollableTabView
             locked={true}
-            renderTabBar={()=><MyDefaultTabBar tabNames={tabNames} tabIconNames={tabIconNames} tabNums={tabNums}/>}>
+            renderTabBar={ ()=><MyDefaultTabBar textStyle={{fontSize:17}} tabNames={tabNames} tabIconNames={tabIconNames} tabNums={tabNums}/> }>
             <OrderListPage navigator={this.props.navigator} tabLabel="委托单" />
             <ServiceListPage navigator={this.props.navigator} tabLabel="服务单" />
             </ScrollableTabView>);

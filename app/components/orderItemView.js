@@ -73,7 +73,7 @@ export default class ListItemView extends Component {
                         <Text style={styles.TabText}>{this.props.title}</Text>
                     </View>
                     <View style={styles.itemButton}>
-                        <Text style={styles.TabText}>{this.props.rightText}</Text>
+                        <Text style={[styles.TabText,{textAlign:'right'},]}>{this.props.rightText}</Text>
 
                     </View>
 
@@ -101,7 +101,7 @@ var styles = StyleSheet.create({
         alignItems: 'center',
     },
     itemText: {
-        flex: 4,
+        flex: 2,
         flexDirection: 'row',
         alignItems: 'center',
         borderBottomWidth:StyleSheet.hairlineWidth,
@@ -117,9 +117,9 @@ var styles = StyleSheet.create({
         paddingRight:10,
     },
     TabText: {
+        flex:1,
         margin: 0,
         fontSize: 15,
-
         marginRight:10,
     },
 

@@ -357,11 +357,12 @@ class PayPage extends Component {
                 {this.state.showProgress || this.state.showReload ? null : (
                     <View style={{flex:1,flexDirection:'column'}}>
                         <ScrollView
-                            style={styles.container}>
+                            style={styles.container}
+                            showsVerticalScrollIndicator={false}>
                             {this.state.dataList.map((data, index) => {
                                 let select = false
                                 for (let cost of data) {
-                                    if (this.state.payList.indexOf(cost.id) != -1) {
+                                    if (this.state.payList.indexOf(cost.id) != -1&&!cost.is_pay) {
                                         select = true
                                         break
                                     }
@@ -380,6 +381,7 @@ class PayPage extends Component {
                             })
                             }
                         </ScrollView>
+                        <View style={styles.line}/>
                         <View style={styles.viewItem}>
                             <View style={{flex:1,marginLeft:15,flexDirection:'row'}}>
                                 <Text >服务费总金额</Text>

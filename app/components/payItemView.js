@@ -28,20 +28,20 @@ export default class PayTabView extends Component {
             showCost_2: this.props.showCost_2,
             selected: this.props.selected,
             payList: this.props.payList,
-            selectedAll:this.props.selectedAll,
-            pageType:this.props.pageType,
+            selectedAll: this.props.selectedAll,
+            pageType: this.props.pageType,
 
         };
     }
 
 
-    componentWillReceiveProps (nextProps) {
+    componentWillReceiveProps(nextProps) {
 
         let selectedAll = nextProps.selectedAll
-        if(selectedAll) {
-            console.log(`_selectTab:`+selectedAll)
+        if (selectedAll) {
+            console.log(`_selectTab:` + selectedAll)
             this.setState({
-                selected:true,
+                selected: true,
             })
         }
     }
@@ -65,9 +65,8 @@ export default class PayTabView extends Component {
         //showIcon: false,
         showCost_2: false,
         showChild: false,
-        selectedAll:false,
+        selectedAll: false,
     }
-
 
 
     /**
@@ -96,20 +95,20 @@ export default class PayTabView extends Component {
             if (this.props.pageType == 'pay') {
 
                 total += data.cost
+
             } else {
                 total += data.estimate_cost
             }
         }
         let allSelected = false;
         for (data of this.props.child) {
-            allSelected = true
+
             if (data.is_pay == 0) {
                 //未支付了
-                allSelected = false
+                allSelected = true
                 break
             }
-
-
+            allSelected = false
         }
         return (
             <View
@@ -121,7 +120,7 @@ export default class PayTabView extends Component {
                             this.state.pageType=='pay'?{width:30,}:{width:0}]}
                         onPress={()=>{
                          console.log(`child.length:`+this.props.child.length)
-                            if(allSelected){
+                            if(!allSelected){
                             // 已经全选了
                             return
                             }
@@ -169,18 +168,23 @@ export default class PayTabView extends Component {
                                  //统计总价
                                  NativeAppEventEmitter.emit('in_payPage_need_set_total',false)
                               }}>
-                        <Icon
-                            name={this.state.selected?'md-checkmark-circle':'ios-close-circle-outline'}  // 图标
-                            size={constants.IconSize}
-                            color={this.state.selected?constants.UIActiveColor:constants.UIInActiveColor}/>
+                        {   allSelected ?
+                            <Icon
+                                name={this.state.selected?'ios-radio-button-on':'ios-radio-button-off'}  // 图标
+                                size={constants.IconSize-5}
+                                color={this.state.selected?constants.UIActiveColor:constants.UIInActiveColor}/> : null
+                        }
                     </TouchableOpacity>
-                    <TouchableOpacity style={{flex:1,marginLeft:5,flexDirection:'row'}}
+                    <TouchableOpacity style={{flex:1,marginLeft:5,flexDirection:'row',alignItems:'stretch',}}
                                       onPress={()=>{
                                 this.setState({
                                 showChild:!this.state.showChild,})
                               }}>
-                        <Text >{this.props.child[0].first_cost_name}</Text>
-                        <View style={{flex:1,flexDirection:'row',justifyContent:'flex-end',marginRight:5,}}>
+                        <View style={{flexDirection:'column',justifyContent:'center'}}>
+                            <Text style={{textAlign:'center',}}>{this.props.child[0].first_cost_name}</Text>
+                        </View>
+                        <View
+                            style={{flex:1,flexDirection:'row',justifyContent:'flex-end',marginRight:5,alignItems:'center'}}>
                             <Text style={{color:constants.UIActiveColor,marginRight:5}}>￥{total}</Text>
                             <Icon
                                 name={this.state.showChild?'ios-arrow-down':'ios-arrow-up'}  //上下
@@ -217,12 +221,13 @@ export default class PayTabView extends Component {
                                         }
                                         //判断所有项是否有选中
                                          for(data of this.props.child){
-                                                if(this.props.payList.indexOf(data.id)==-1){
-                                                //不包含
-                                                }else{
-                                                 //包含
-                                                 flag=true
+                                                if(this.props.payList.indexOf(data.id)!=-1&&!data.is_pay){
+                                                //包含
+                                                flag=false
                                                  break
+                                                }else {
+                                                 //不包含
+                                                flag=true
                                                 }
                                               }
 
@@ -250,8 +255,8 @@ export default class PayTabView extends Component {
                                         this.state.pageType=='pay'&&item.is_pay == 0?{width:30,}:{width:0}]}>
                                     <Icon
                                         name={this.state.payList.indexOf(item.id)==-1?
-                                            'ios-close-circle-outline':'md-checkmark-circle'}  // 图标
-                                        size={constants.IconSize}
+                                            'ios-radio-button-off':'ios-radio-button-on'}  // 图标
+                                        size={constants.IconSize-5}
                                         color={this.state.payList.indexOf(item.id)==-1?
                                             constants.UIInActiveColor:constants.UIActiveColor}/>
                                 </View>

@@ -52,6 +52,7 @@ class ChangeInfo extends Component {
             company_address: '',
             company_introduction: '',
         }
+        this._qqValidate=/^[0-9]*$/
     }
 
     componentWillMount() {
@@ -78,7 +79,8 @@ class ChangeInfo extends Component {
         return (
             <View style={{flex:1}}>
                 <ScrollView
-                    style={styles.container}>
+                    style={styles.container}
+                    showsVerticalScrollIndicator={false}>
                     <View
                         style={[{height:50,},{marginTop:10}]}>
                         <ItemView
@@ -123,13 +125,13 @@ class ChangeInfo extends Component {
                                 ref={(component) => this._QQ = component}
                                 style={styles.textInput}
                                 placeholder='请输入'
-                                clearButtonMode="while-editing"
                                 textAlign='right'
                                 maxLength={40}
                                 underlineColorAndroid='transparent'
                                 editable={true}
                                 onChangeText={(text) => this.setState({qq:text})}
-                                value={this.state.qq}/>
+                                value={this.state.qq}
+                                reg={this._qqValidate}/>
                         </View>
                     </View>
                     <View
@@ -147,6 +149,7 @@ class ChangeInfo extends Component {
                                 style={styles.textInput}
                                 placeholder='请输入'
                                 clearButtonMode="while-editing"
+
                                 textAlign='right'
                                 maxLength={40}
                                 underlineColorAndroid='transparent'
@@ -201,10 +204,12 @@ class ChangeInfo extends Component {
                         </View>
                     </View>
                     <View
-                        style={{height:150,backgroundColor:constants.UIActiveColor,marginLeft:constants.MarginLeftRight,}}>
+                        style={{height:150,}}>
                         <TextInput
-                            style={{flex:1,fontSize:13,textAlignVertical:'top',
-                            backgroundColor:'white',}}
+                            style={{flex:1,fontSize:15,
+                            textAlignVertical:'top',
+                            backgroundColor:'white',
+                            padding:constants.MarginLeftRight}}
 
                             placeholder='请输入公司简介'
                             maxLength={300}
@@ -216,15 +221,14 @@ class ChangeInfo extends Component {
                             onChangeText={(text) => this.setState({company_introduction:text})}/>
 
                     </View>
-                </ScrollView>
-                <View
-                    style={{flex:1,padding:10,position:'absolute',bottom:5,left:constants.MarginLeftRight,right:constants.MarginLeftRight}}>
-                    <Button
-                        ref={ component => this.button2 = component }
-                        touchableType={Button.constants.touchableTypes.fadeContent}
-                        style={styles.button}
-                        textStyle={{fontSize: 17, color: 'white'}}
-                        loadingComponent={
+                    <View
+                        style={{flex:1,padding:10,marginLeft:constants.MarginLeftRight,marginRight:constants.MarginLeftRight}}>
+                        <Button
+                            ref={ component => this.button2 = component }
+                            touchableType={Button.constants.touchableTypes.fadeContent}
+                            style={styles.button}
+                            textStyle={{fontSize: 17, color: 'white'}}
+                            loadingComponent={
                             <View
                             style={{flexDirection: 'row', alignItems: 'center'}}>
                                 {this._renderActivityIndicator()}
@@ -233,7 +237,16 @@ class ChangeInfo extends Component {
                                  fontWeight: 'bold', fontFamily: '.HelveticaNeueInterface-MediumP4',}}>保存中...</Text>
                             </View>
                         }
-                        onPress={ () => {
+                            onPress={ () => {
+                             if(!this._qqValidate.test(this.state.qq)){
+
+                             this._toast.show({
+                                position: Toast.constants.gravity.center,
+                                duration: 255,
+                                children: 'QQ格式错误'
+                            })
+                            return
+                        }
                         this.button2.setState({
 
                             loading: true,
@@ -251,9 +264,11 @@ class ChangeInfo extends Component {
                                 this.props.navigator.pop();
                             }, 3000)*/
                         }}>
-                        保存
-                    </Button>
-                </View>
+                            保存
+                        </Button>
+                    </View>
+                </ScrollView>
+
                 <Toast
                     ref={ component => this._toast = component }
                     marginTop={64}>
@@ -453,7 +468,7 @@ const styles = StyleSheet.create({
     textInput: {
         flex:1,
         alignSelf: 'stretch',
-        marginRight: 10,
+        marginRight:constants.MarginLeftRight
 
     },
     textLine: {

@@ -130,10 +130,10 @@ class UserPage extends Component {
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                    style={{height:50,marginTop:10,backgroundColor:'white',justifyContent:'center',alignItems:'center',}}
+                    style={{height:40,marginTop:10,backgroundColor:'white',justifyContent:'center',alignItems:'center',}}
                     onPress={this._onSingOut}>
                     <Text
-                        style={{color:constants.UIActiveColor}}>
+                        style={{color:constants.UIActiveColor,fontSize:17}}>
                         退出
                     </Text>
                 </TouchableOpacity>

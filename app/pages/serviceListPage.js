@@ -104,6 +104,7 @@ class ServiceList extends Component {
                     contentContainerStyle={{backgroundColor: 'transparent', }}
                     initialListSize={10}
                     pageSize={10}
+                    enableEmptySections={true}
                     dataSource={this.state.dataSource}
                     renderHeader={this._renderHeader}
                     renderFooter={this._renderFooter}

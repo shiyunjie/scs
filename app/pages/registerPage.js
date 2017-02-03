@@ -19,6 +19,7 @@ import {
     Modal,
     NativeAppEventEmitter,
     Alert,
+    AsyncStorage,
 } from 'react-native';
 
 import AppEventListenerEnhance from 'react-native-smart-app-event-listener-enhance'
@@ -32,6 +33,7 @@ import XhrEnhance from '../lib/XhrEnhance' //http
 
 import {getDeviceID,getToken} from '../lib/User'
 import {hex_md5} from '../lib/md5'
+import ValidateTextInput from '../components/validateTextInput'
 //import { register_secondStep, errorXhrMock } from '../mock/xhr-mock'   //mock data
 
 class Register extends Component {
@@ -52,9 +54,13 @@ class Register extends Component {
             newPass:'',
             confPass:'',
             editable:true,
-
-
         };
+          this._userName=/^[A-Za-z0-9]{2,20}$|^[\u4E00-\u9FA50-9]{2,10}$/
+          this._realName=/^[A-Za-z]{2,20}$|^[\u4E00-\u9FA5]{2,8}$/
+          this._email=/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
+          this._newPassword=/^[a-zA-Z0-9]{6,}$/
+          this._conformPassword=/^[a-zA-Z0-9]{6,}$/
+
       }
 
     componentWillMount() {
@@ -98,54 +104,68 @@ class Register extends Component {
                   </View>
                 </Modal>
 
-                <TextInput style={styles.textInput}
-                           autoCorrect={false}
-                           placeholder='请输入会员名'
-                           maxLength={20}
-                           underlineColorAndroid='transparent'
-                           editable = {this.state.editable}
-                           value={this.state.userName}
-                           onChangeText={(text) => this.setState({userName:text})}/>
+                <ValidateTextInput
+                    ref={ component => this._input_username = component }
+                    style={styles.textInput}
+                    autoCorrect={false}
+                    placeholder='请输入会员名'
+                    maxLength={20}
+                    underlineColorAndroid='transparent'
+                    editable = {this.state.editable}
+                    value={this.state.userName}
+                    onChangeText={(text) => this.setState({userName:text})}
+                    reg={this._userName}/>
 
-                <TextInput style={styles.textInput}
-                           autoCorrect={false}
-                           placeholder='请输入联系人姓名'
-                           maxLength={20}
-                           underlineColorAndroid='transparent'
-                           editable = {this.state.editable}
-                           value={this.state.realName}
-                           onChangeText={(text) => this.setState({realName:text})}/>
+                <ValidateTextInput
+                    ref={ component => this._input_realname = component }
+                    style={styles.textInput}
+                    autoCorrect={false}
+                    placeholder='请输入联系人姓名'
+                    maxLength={20}
+                    underlineColorAndroid='transparent'
+                    editable = {this.state.editable}
+                    value={this.state.realName}
+                    onChangeText={(text) => this.setState({realName:text})}
+                    reg={this._realName}/>
 
 
-                <TextInput
-                           style={styles.textInput}
-                           autoCorrect={false}
-                           placeholder='请输入邮箱'
-                           maxLength={20}
-                           underlineColorAndroid='transparent'
-                           editable = {this.state.editable}
-                           value={this.state.email}
-                           onChangeText={(text) => this.setState({email:text})}/>
+                <ValidateTextInput
+                    ref={ component => this._input_email = component }
+                    style={styles.textInput}
+                    autoCorrect={false}
+                    placeholder='请输入邮箱'
+                    maxLength={20}
+                    underlineColorAndroid='transparent'
+                    editable = {this.state.editable}
+                    value={this.state.email}
+                    onChangeText={(text) => this.setState({email:text})}
+                    reg={this._email}/>
 
-                <TextInput style={[styles.textInput,{marginTop:10}]}
-                           autoCorrect={false}
-                           placeholder='请输入密码'
-                           maxLength={20}
-                           underlineColorAndroid='transparent'
-                           editable = {this.state.editable}
-                           secureTextEntry={true}
-                           value={this.state.newPass}
-                           onChangeText={(text) => this.setState({newPass:text})}/>
+                <ValidateTextInput
+                    ref={ component => this._input_password = component }
+                    style={[styles.textInput,{marginTop:10}]}
+                    autoCorrect={false}
+                    placeholder='请输入密码'
+                    maxLength={20}
+                    underlineColorAndroid='transparent'
+                    editable = {this.state.editable}
+                    secureTextEntry={true}
+                    value={this.state.newPass}
+                    onChangeText={(text) => this.setState({newPass:text})}
+                    reg={this._newPassword}/>
 
-                <TextInput style={styles.textInput}
-                           autoCorrect={false}
-                           placeholder='确认密码'
-                           maxLength={20}
-                           underlineColorAndroid='transparent'
-                           editable = {this.state.editable}
-                           secureTextEntry={true}
-                           value={this.state.confPass}
-                           onChangeText={(text) => this.setState({confPass:text})}/>
+                <ValidateTextInput
+                    ref={ component => this._input_conform_password = component }
+                    style={styles.textInput}
+                    autoCorrect={false}
+                    placeholder='确认密码'
+                    maxLength={20}
+                    underlineColorAndroid='transparent'
+                    editable = {this.state.editable}
+                    secureTextEntry={true}
+                    value={this.state.confPass}
+                    onChangeText={(text) => this.setState({confPass:text})}
+                    reg={this._conformPassword}/>
 
 
                 <Button
@@ -164,6 +184,66 @@ class Register extends Component {
                             </View>
                     }
                     onPress={ () => {
+                        if(!this._input_username.validate){
+                                    this._input_username.setState({
+                                    backgroundColor:constants.UIInputErrorColor,
+                                    })
+                                     this._toast.show({
+                                        position: Toast.constants.gravity.center,
+                                        duration: 255,
+                                        children: '用户名格式错误,要求2-20位,不能含有标点'
+                                    })
+                                    return
+                                }
+                        if(!this._input_realname.validate){
+                            this._input_realname.setState({
+                            backgroundColor:constants.UIInputErrorColor,
+                            })
+                             this._toast.show({
+                                position: Toast.constants.gravity.center,
+                                duration: 255,
+                                children: '联系人格式错误'
+                            })
+                            return
+                        }
+                        if(!this._input_email.validate){
+                            this._input_email.setState({
+                            backgroundColor:constants.UIInputErrorColor,
+                            })
+                             this._toast.show({
+                                position: Toast.constants.gravity.center,
+                                duration: 255,
+                                children: '电子邮件格式错误'
+                            })
+                            return
+                        }
+                         if(!this._input_password.validate){
+                                this._input_password.setState({
+                                backgroundColor:constants.UIInputErrorColor,
+                                })
+                                 this._toast.show({
+                                    position: Toast.constants.gravity.center,
+                                    duration: 255,
+                                    children: '密码格式错误'
+                                })
+                                return
+                            }
+
+                         if(!this._input_conform_password.validate||this.state.newPass!=this.state.confPass){
+
+                            this._input_conform_password.setState({
+                            backgroundColor:constants.UIInputErrorColor,
+                             iconColor: 'red',
+                             iconName: 'ios-close-circle',
+                             showIcon: true,
+                            })
+                             this._toast.show({
+                                position: Toast.constants.gravity.center,
+                                duration: 255,
+                                children: '两次密码不一致'
+                            })
+                            return
+                         }
                         this._button_2.setState({
                             loading: true,
                             //disabled: true,
@@ -176,7 +256,7 @@ class Register extends Component {
                             })
 
                         }, 3000)*/
-                    }}>
+                            } }>
                     注册
                 </Button>
 

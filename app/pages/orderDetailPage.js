@@ -133,36 +133,37 @@ class OrderDetail extends Component {
                             }
                     }}/>
                 {this.state.showProgress||this.state.showReload?null:(
-                    <ScrollView style={styles.container}>
+                    <ScrollView style={styles.container}
+                                showsVerticalScrollIndicator={false}>
                         <View style={styles.viewItem}>
 
                             <Text style={{flex:1}}>单号:</Text>
-                            <Text style={{flex:2}}>{this.state.service_no}</Text>
+                            <Text style={{flex:3}}>{this.state.service_no}</Text>
 
                             <View
                                 style={{flex:1,justifyContent:'flex-end',paddingRight:constants.MarginLeftRight,}}>
-                                <Text style={{color:constants.UIActiveColor}}>{this.state.order_status_name}</Text>
+                                <Text style={{color:constants.UIActiveColor,fontSize:17,}}>{this.state.order_status_name}</Text>
                             </View>
                         </View>
 
                         <View style={styles.viewItem}>
                             <Text style={{flex:1}}>发布时间:</Text>
-                            <Text style={{flex:3}}>{this.state.create_time_str}</Text>
+                            <Text style={{flex:4}}>{this.state.create_time_str}</Text>
                         </View>
 
                         <View style={styles.viewItem}>
                             <Text style={{flex:1}}>贸易条款:</Text>
-                            <Text style={{flex:3}}>{this.state.trade_terms}</Text>
+                            <Text style={{flex:4}}>{this.state.trade_terms}</Text>
                         </View>
 
                         <View style={styles.viewItem}>
                             <Text style={{flex:1}}>委托人:</Text>
-                            <Text style={{flex:3}}>{this.state.client_name}</Text>
+                            <Text style={{flex:4}}>{this.state.client_name}</Text>
                         </View>
 
-                        <View style={[this.state.order_status==30||this.state.order_status==0?{height:10}:{height:0}]}/>
+                        <View style={[styles.line,this.state.order_status==30||this.state.order_status==0?{height:5}:{height:0}]}/>
                         <View style={[styles.viewItem,{paddingRight:constants.MarginLeftRight},
-                                this.state.order_status==30||this.state.order_status==0?{height:50}:{height:0}]}>
+                                this.state.order_status==30||this.state.order_status==0?{height:40}:{height:0}]}>
                             <TouchableOpacity
                                 style={[{justifyContent:'center',alignItems:'center',},
                             this.state.order_status==30?{flex:1}:{width:0,}]}
@@ -176,39 +177,42 @@ class OrderDetail extends Component {
                                             })
                            } }}>
                                 <Text style={{color:constants.UIActiveColor,
-                            fontSize:17,textAlignVertical:'center',textAlign:'center',}}>修改</Text>
+                                      fontSize:17,textAlignVertical:'center',textAlign:'center',}}>修改</Text>
 
                             </TouchableOpacity>
                             <View
                                 style={[{height:30,backgroundColor:constants.UIInActiveColor},
-                            this.state.order_status==30?
-                            {width:StyleSheet.hairlineWidth,}:{width:0}]}/>
+                                this.state.order_status==30?
+                                {width:StyleSheet.hairlineWidth,}:{width:0}]}/>
                             <TouchableOpacity
                                 style={[{justifyContent:'center',alignItems:'center',},
-                             (this.state.order_status==0||this.state.order_status==30)?{flex:1,}:{width:0,height:0,}]}
+                                        (this.state.order_status==0||this.state.order_status==30)?{flex:1,}:{width:0,height:0,}]}
                                 onPress={ ()=>{
                                 //弹窗取消订单
                                 this.setState({showDialog:true,})
-                                } }>
-                                <Text style={{color:constants.UIActiveColor,
-                            fontSize:17,textAlignVertical:'center',textAlign:'center'}}>取消</Text>
+                                } } >
+                                <Text
+                                    style={{color:constants.UIActiveColor,
+                                    fontSize:17,
+                                    textAlignVertical:'center',
+                                    textAlign:'center'}}>取消</Text>
                             </TouchableOpacity>
                         </View>
-                        <View style={[this.state.order_status==30||this.state.order_status==0?{height:10}:{height:0}]}/>
+                        <View style={[styles.line,this.state.order_status==30||this.state.order_status==0?{marginBottom:5}:{marginBottom:0,height:0}]}/>
 
                         <View style={styles.viewItem}>
                             <Text style={{flex:1}}>联系方式:</Text>
-                            <Text style={{flex:3}}>{this.state.client_phone}</Text>
+                            <Text style={{flex:4}}>{this.state.client_phone}</Text>
                         </View>
 
                         <View style={styles.viewItem}>
                             <Text style={{flex:1}}>出发国家:</Text>
-                            <Text style={{flex:3}}>{this.state.departure_name}</Text>
+                            <Text style={{flex:4}}>{this.state.departure_name}</Text>
                         </View>
 
                         <View style={styles.viewItem}>
                             <Text style={{flex:1}}>目的国家:</Text>
-                            <Text style={{flex:3}}>{this.state.destination_name}</Text>
+                            <Text style={{flex:4}}>{this.state.destination_name}</Text>
                         </View>
 
                         <View style={[{flex:1, flexDirection: 'row',
@@ -219,7 +223,7 @@ class OrderDetail extends Component {
                             <View style={{flex:1}}>
                                 <Text style={{flex:1}}>货代服务:</Text>
                             </View>
-                            <View style={{flex:3}}>
+                            <View style={{flex:4}}>
                                 <Text style={{flex:1}}>
                                     {this.state.import_clearance == 1 ? '进口清关、' : ``}
                                     {this.state.international_logistics == 1 ? '国际物流、' : ``}
@@ -232,40 +236,42 @@ class OrderDetail extends Component {
 
                         <View style={styles.viewItem}>
                             <Text style={{flex:1}}>支付方式:</Text>
-                            <Text style={{flex:3}}>{this.state.credit_letter == 1 ? '信用证' : ``}</Text>
+                            <Text style={{flex:4}}>{this.state.credit_letter == 1 ? '信用证' : ``}</Text>
                         </View>
 
                         <View style={[styles.viewItem,{flex:1,}]}>
                             <Text style={{flex:1}}>委托内容:</Text>
-                            <Text style={{flex:3,}}>
+                            <Text style={{flex:4,}}>
                                 {this.state.commission_content}
                             </Text>
                         </View>
-                        <View style={this.state.order_status==30?{height:10}:{height:0}}/>
-                        <TextInput
-                            style={[{fontSize:15,textAlignVertical:'top',
-                            backgroundColor:'white',
-                              margin:3,
-                              borderColor: constants.UIInActiveColor,
-                              justifyContent:'flex-start',
-
-                                },this.state.order_status==30?{flex:1}:{height:0}]}
-                            clearButtonMode="while-editing"
-                            placeholder='拒绝原因'
-                            maxLength={300}
-                            underlineColorAndroid='transparent'
-                            multiline={true}//多行输入
-                            numberOfLines={8}
-                            editable={false}
-                            value={this.state.remark}/>
-                        <View style={this.state.order_status==30?{height:10}:{height:0}}/>
-                        <View style={[styles.viewItem]}>
-                            <TouchableOpacity style={{flex:1,justifyContent:'center',alignItems:'center',}}
-                                              onPress={()=>{
+                        <View style={this.state.order_status==30?{height:5}:{height:0}}/>
+                        <View style={this.state.order_status==30?{height:150}:{height:0}}>
+                            <TextInput
+                                style={[{fontSize:15,textAlignVertical:'top',
+                                backgroundColor:'white',
+                                padding:constants.MarginLeftRight,
+                                borderColor: constants.UIInActiveColor,
+                                justifyContent:'flex-start',
+                                },{flex:1}]}
+                                clearButtonMode="while-editing"
+                                placeholder='拒绝原因'
+                                maxLength={300}
+                                underlineColorAndroid='transparent'
+                                multiline={true}//多行输入
+                                numberOfLines={8}
+                                editable={false}
+                                value={this.state.remark}/>
+                        </View>
+                        <View style={this.state.order_status==30?{height:5}:{height:0}}/>
+                        <View style={[styles.viewItem,{height:40}]}>
+                            <TouchableOpacity
+                                style={{flex:1,justifyContent:'center',alignItems:'center',}}
+                                onPress={ ()=>{
                                         //打电话
                                         return Linking.openURL(constants.Tel);
-                                        }}>
-                                <Text style={{color:constants.UIActiveColor}}>联系客服</Text>
+                                 } }>
+                                <Text style={{color:constants.UIActiveColor,fontSize:17,}}>联系客服</Text>
                             </TouchableOpacity>
 
                         </View>

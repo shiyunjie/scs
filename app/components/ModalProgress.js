@@ -38,7 +38,7 @@ export default class ModalProgress extends Component {
 
     static propTypes = {
         ...View.propTypes, // 包含默认的View的属性
-        marginBottom:PropTypes.number,
+        marginBottom: PropTypes.number,
         showProgress: PropTypes.bool,
         showReload: PropTypes.bool,
         fetchData: PropTypes.func,
@@ -48,20 +48,20 @@ export default class ModalProgress extends Component {
     static defaultProps = {
         showProgress: true,
         showReload: false,
-        marginBottom:0,
+        marginBottom: 0,
     }
 
-    componentWillReceiveProps (nextProps) {
+    componentWillReceiveProps(nextProps) {
         let showProgress = nextProps.showProgress
         let showReload = nextProps.showReload
-        if(showProgress != this.state.showProgress) {
+        if (showProgress != this.state.showProgress) {
             this.setState({
-                showProgress:showProgress,
+                showProgress: showProgress,
             })
         }
-        if(showReload != this.state.showReload) {
+        if (showReload != this.state.showReload) {
             this.setState({
-                showReload:showReload,
+                showReload: showReload,
             })
         }
     }
@@ -83,27 +83,28 @@ export default class ModalProgress extends Component {
                     <View
                         style={[styles.modalStyle,{marginBottom:this.props.marginBottom},
                         {backgroundColor:this.state.showProgress ? 'rgba(0, 0, 0, 0.5)' : '#f5fcff',}]}>
-                    <TouchableOpacity
-                        style={[{flexDirection:'column',alignItems:'center',},
-                        this.state.showReload?{}:{height:0}]}
-                        onPress={this.props.fetchData}>
-                        <Image
-                            style={{width:100,height:100}}
-                            source={image_logo}/>
-                        <Text
-                            style={{marginTop:10,}}
-                            fontSize={16}
-                            //backgroundColor:'transparent'
-                            >重新加载</Text>
-                    </TouchableOpacity>
+                        { this.state.showReload ?
+                            <TouchableOpacity
+                                style={[{flexDirection:'column',alignItems:'center',}]}
+                                onPress={this.props.fetchData}>
+                                <Image
+                                    style={{width:100,height:100}}
+                                    source={image_logo}/>
+                                <Text
+                                    style={{marginTop:10,}}
+                                    fontSize={16}
+                                    //backgroundColor:'transparent'
+                                >重新加载</Text>
+                            </TouchableOpacity>:null
+                        }
 
-                                <ActivityIndicator
-                                    animating={this.state.showProgress}
-                                    color={'#fff'}
-                                    size={'large'}/>
+                        <ActivityIndicator
+                            animating={this.state.showProgress}
+                            color={'#fff'}
+                            size={'large'}/>
 
 
-                        </View>
+                    </View>
                 </Modal>
             ) : null
         }
@@ -115,11 +116,11 @@ export default class ModalProgress extends Component {
 }
 
 var styles = StyleSheet.create({
-    modalStyle:{
-        flex:1,
-        flexDirection:'column',
-        justifyContent:'center',
-        alignItems:'center',
+    modalStyle: {
+        flex: 1,
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
         marginTop: Platform.OS == 'ios' ? 64 : 56,
     },
 });

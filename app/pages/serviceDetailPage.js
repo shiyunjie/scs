@@ -385,34 +385,35 @@ class ServiceDetail extends Component {
                         this._fetch_cancel()
                     }}/>
                 {this.state.showProgress||this.state.showReload?null:(
-                <ScrollView style={styles.container}>
+                <ScrollView style={styles.container}
+                            showsVerticalScrollIndicator={false}>
                     <View style={styles.viewItem}>
 
                         <Text style={{flex:1}}>单号:</Text>
-                        <Text style={{flex:2}}>{this.state.service_no}</Text>
+                        <Text style={{flex:3}}>{this.state.service_no}</Text>
 
                         <View
                             style={{flex:1,justifyContent:'flex-end',paddingRight:constants.MarginLeftRight,}}>
-                            <Text style={{color:constants.UIActiveColor}}>{this.state.order_status_name}</Text>
+                            <Text style={{color:constants.UIActiveColor,fontSize:15,}}>{this.state.order_status_name}</Text>
                         </View>
                     </View>
                     <View style={styles.viewItem}>
                         <Text style={{flex:1}}>发布时间:</Text>
-                        <Text style={{flex:3}}>{this.state.time_name}</Text>
+                        <Text style={{flex:4}}>{this.state.time_name}</Text>
                     </View>
 
                     <View style={styles.viewItem}>
                         <Text style={{flex:1}}>贸易条款:</Text>
-                        <Text style={{flex:3}}>{this.state.trade_terms}</Text>
+                        <Text style={{flex:4}}>{this.state.trade_terms}</Text>
                     </View>
 
                     <View style={styles.viewItem}>
                         <Text style={{flex:1}}>委托人:</Text>
-                        <Text style={{flex:3}}>{this.state.client_name}</Text>
+                        <Text style={{flex:4}}>{this.state.client_name}</Text>
                     </View>
 
                     <View style={styles.line}/>
-                    <View style={[styles.viewItem]}>
+                    <View style={[styles.viewItem,{height:40}]}>
                         <TouchableOpacity style={[{justifyContent:'center',alignItems:'center',},
                                         this.state.order_status==10?{width:0}:{flex:1}]}
                                           onPress={()=>{
@@ -436,7 +437,7 @@ class ServiceDetail extends Component {
                                         }
 
                                         }}>
-                            <Text style={{color:constants.UIActiveColor}}>账单</Text>
+                            <Text style={{color:constants.UIActiveColor,fontSize:17,}}>账单</Text>
 
                         </TouchableOpacity>
                         <View
@@ -456,7 +457,7 @@ class ServiceDetail extends Component {
                                         }
                                     });
                             }}>
-                            <Text style={{color:constants.UIActiveColor}}>上传</Text>
+                            <Text style={{color:constants.UIActiveColor,fontSize:17,}}>上传</Text>
 
                         </TouchableOpacity>
                         <View
@@ -473,25 +474,25 @@ class ServiceDetail extends Component {
 
 
                                             }}>
-                            <Text style={{color:constants.UIActiveColor}}>取消</Text>
+                            <Text style={{color:constants.UIActiveColor,fontSize:17,}}>取消</Text>
 
                         </TouchableOpacity>
                     </View>
-                    <View style={styles.line}/>
+                    <View style={[styles.line,{marginBottom:5}]}/>
 
                     <View style={styles.viewItem}>
                         <Text style={{flex:1}}>联系方式:</Text>
-                        <Text style={{flex:3}}>{this.state.client_phone}</Text>
+                        <Text style={{flex:4}}>{this.state.client_phone}</Text>
                     </View>
 
                     <View style={styles.viewItem}>
                         <Text style={{flex:1}}>出发国家:</Text>
-                        <Text style={{flex:3}}>{this.state.country_name}</Text>
+                        <Text style={{flex:4}}>{this.state.country_name}</Text>
                     </View>
 
                     <View style={styles.viewItem}>
                         <Text style={{flex:1}}>目的国家:</Text>
-                        <Text style={{flex:3}}>{this.state.destination_name}</Text>
+                        <Text style={{flex:4}}>{this.state.destination_name}</Text>
                     </View>
 
                     <View style={[{flexDirection: 'row',
@@ -502,7 +503,7 @@ class ServiceDetail extends Component {
                         <View style={{flex:1}}>
                             <Text >货代服务:</Text>
                         </View>
-                        <View style={{flex:3}}>
+                        <View style={{flex:4}}>
                             <Text >{this.state.import_clearance == 1 ? '进口清关、' : ``}
                                 {this.state.international_logistics == 1 ? '国际物流、' : ``}
                                 {this.state.export_country_land == 1 ? '出口国陆运、' : ``}
@@ -513,7 +514,7 @@ class ServiceDetail extends Component {
 
                     <View style={styles.viewItem}>
                         <Text style={{flex:1}}>支付方式:</Text>
-                        <Text style={{flex:3}}>{this.state.credit_letter == 1 ? '信用证' : ``}</Text>
+                        <Text style={{flex:4}}>{this.state.credit_letter == 1 ? '信用证' : ``}</Text>
                     </View>
 
                     <View style={[{flexDirection: 'row',
@@ -522,23 +523,23 @@ class ServiceDetail extends Component {
                         paddingLeft: constants.MarginLeftRight,
                         backgroundColor: 'white',},]}>
                         <Text style={{flex:1}}>委托内容:</Text>
-                        <Text style={{flex:3}}> {this.state.commission_content}</Text>
+                        <Text style={{flex:4}}> {this.state.commission_content}</Text>
                     </View>
 
                     <View style={[styles.viewItem,]}>
                         <Text style={{flex:1}}>申报口岸:</Text>
-                        <Text style={{flex:3}}>{this.state.potcd}</Text>
+                        <Text style={{flex:4}}>{this.state.potcd}</Text>
                     </View>
 
                     <View style={[styles.viewItem,{flex:1,}]}>
                         <Text style={{flex:1}}>船公司:</Text>
-                        <Text style={{flex:3}}>{this.state.ship_company_code}</Text>
+                        <Text style={{flex:4}}>{this.state.ship_company_code}</Text>
                     </View>
 
                     <View style={[styles.viewItem]}>
 
                         <Text style={{flex:1}}>公司名字:</Text>
-                        <Text style={{flex:3}}>{this.state.ship_company_name}</Text>
+                        <Text style={{flex:4}}>{this.state.ship_company_name}</Text>
 
                     </View>
 
@@ -549,114 +550,117 @@ class ServiceDetail extends Component {
                         backgroundColor: 'white',},]}>
 
                         <Text style={{flex:1}}>英文船名:</Text>
-                        <Text style={{flex:3}}>{this.state.ship_name_english}</Text>
+                        <Text style={{flex:4}}>{this.state.ship_name_english}</Text>
 
                     </View>
 
                     <View style={[styles.viewItem]}>
 
                         <Text style={{flex:1}}>航次:</Text>
-                        <Text style={{flex:3}}>{this.state.voyage}</Text>
+                        <Text style={{flex:4}}>{this.state.voyage}</Text>
 
                     </View>
 
                     <View style={[styles.viewItem]}>
 
                         <Text style={{flex:1}}>提单号:</Text>
-                        <Text style={{flex:3}}>{this.state.bill_num}</Text>
+                        <Text style={{flex:4}}>{this.state.bill_num}</Text>
 
                     </View>
 
                     <View style={[styles.viewItem]}>
 
                         <Text style={{flex:1}}>目的港:</Text>
-                        <Text style={{flex:3}}>{this.state.destination_port_name}</Text>
+                        <Text style={{flex:4}}>{this.state.destination_port_name}</Text>
 
                     </View>
 
                     <View style={[styles.viewItem]}>
 
                         <Text style={{flex:1}}>箱型数量:</Text>
-                        <Text style={{flex:3}}>{this.state.box_quantity_information}</Text>
+                        <Text style={{flex:4}}>{this.state.box_quantity_information}</Text>
 
                     </View>
 
                     <View style={[styles.viewItem]}>
 
                         <Text style={{flex:1}}>提箱堆场:</Text>
-                        <Text style={{flex:3}}>{this.state.suitcase_yard}</Text>
+                        <Text style={{flex:4}}>{this.state.suitcase_yard}</Text>
 
                     </View>
 
                     <View style={[styles.viewItem,{flex:1,}]}>
 
                         <Text style={{flex:1}}>装箱地点:</Text>
-                        <Text style={{flex:3}}>{this.state.packing_place}</Text>
+                        <Text style={{flex:4}}>{this.state.packing_place}</Text>
 
                     </View>
 
                     <View style={[styles.viewItem]}>
 
                         <Text style={{flex:1}}>件数:</Text>
-                        <Text style={{flex:3}}>{this.state.number}</Text>
+                        <Text style={{flex:4}}>{this.state.number}</Text>
 
                     </View>
 
                     <View style={[styles.viewItem]}>
 
                         <Text style={{flex:1}}>毛重:</Text>
-                        <Text style={{flex:3}}>{this.state.weight}</Text>
+                        <Text style={{flex:4}}>{this.state.weight}</Text>
 
                     </View>
 
                     <View style={[styles.viewItem]}>
 
                         <Text style={{flex:1}}>体积:</Text>
-                        <Text style={{flex:3}}>{this.state.volume}</Text>
+                        <Text style={{flex:4}}>{this.state.volume}</Text>
 
                     </View>
 
                     <View style={[styles.viewItem,{flex:1,}]}>
 
                         <Text style={{flex:1}}>合同号:</Text>
-                        <Text style={{flex:3}}>{this.state.contract_number}</Text>
+                        <Text style={{flex:4}}>{this.state.contract_number}</Text>
 
                     </View>
 
                     <View style={[styles.viewItem]}>
 
                         <Text style={{flex:1}}>发票号:</Text>
-                        <Text style={{flex:3}}>{this.state.billing_number}</Text>
+                        <Text style={{flex:4}}>{this.state.billing_number}</Text>
 
                     </View>
 
                     <View style={[styles.viewItem,{flex:1,}]}>
 
                         <Text style={{flex:1}}>收货人:</Text>
-                        <Text style={{flex:3}}>{this.state.consignee_name}</Text>
+                        <Text style={{flex:4}}>{this.state.consignee_name}</Text>
 
                     </View>
 
                     <View style={[styles.viewItem,{flex:1,}]}>
 
                         <Text style={{flex:1}}>发货人:</Text>
-                        <Text style={{flex:3}}>{this.state.consignor_name}</Text>
+                        <Text style={{flex:4}}>{this.state.consignor_name}</Text>
 
                     </View>
                     <View style={[styles.viewItem]}>
 
                         <Text style={{ flex:1}}>物流状态:</Text>
-                        <Text style={{ flex:3,color:constants.UIActiveColor}}>{this.state.logistics_status_name}</Text>
+                        <Text style={{ flex:4,color:constants.UIActiveColor,fontSize:15,}}>{this.state.logistics_status_name}</Text>
 
                     </View>
-                    <View style={[{marginBottom:10}]}/>
+                    <View style={[{marginBottom:5}]}/>
 
+                    <View style={{height:150,}}>
                     <TextInput
-                        style={{flex:1,fontSize:15,textAlignVertical:'top',
-
-                      justifyContent:'flex-start',
+                        style={{flex:1,fontSize:15,
+                        textAlignVertical:'top',
+                        justifyContent:'flex-start',
                         backgroundColor:'white',
-                      }}
+                         padding:constants.MarginLeftRight,
+                        }}
+
                         clearButtonMode="while-editing"
                         placeholder='拒绝原因'
                         maxLength={300}
@@ -665,15 +669,16 @@ class ServiceDetail extends Component {
                         numberOfLines={6}
                         editable={false}
                         value={this.state.remark}/>
-                    <View style={[{marginBottom:10}]}/>
+                    </View>
+                    <View style={[{marginBottom:5}]}/>
                     <View style={[styles.viewItem]}>
                         <TouchableOpacity
                             style={{flex:1,justifyContent:'center',alignItems:'center',}}
                             onPress={()=>{
                         //打电话
                         return Linking.openURL(constants.Tel);
-                    }}><Text style={{color:constants.UIActiveColor}}>联系客服</Text></TouchableOpacity>
-                        <View style={[styles.line,{marginBottom:10}]}/>
+                    }}><Text style={{color:constants.UIActiveColor,fontSize:17,}}>联系客服</Text></TouchableOpacity>
+                        <View style={[styles.line,{marginBottom:5}]}/>
                     </View>
                     <View style={{height:50}}/>
                 </ScrollView>)}

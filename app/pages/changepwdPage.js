@@ -30,6 +30,7 @@ import {getDeviceID,getToken,getRealName} from '../lib/User'
 import {hex_md5} from '../lib/md5'
 import Toast from 'react-native-smart-toast'
 import AppEventListenerEnhance from 'react-native-smart-app-event-listener-enhance'
+import ValidateTextInput from '../components/validateTextInput'
 //import { member_changePwd,errorXhrMock } from '../mock/xhr-mock'   //mock data
 
 class SetPassword extends Component {
@@ -42,6 +43,9 @@ class SetPassword extends Component {
             newPass: '',
             confPass: '',
         };
+        this._oldPassword=/^[a-zA-Z0-9]{6,}$/
+        this._newPassword=/^[a-zA-Z0-9]{6,}$/
+        this._conformPassword=/^[a-zA-Z0-9]{6,}$/
     }
 
     componentWillMount() {
@@ -66,37 +70,43 @@ class SetPassword extends Component {
     render() {
         return (
             <View style={styles.container}>
-                <TextInput style={styles.textInput}
-                           clearButtonMode="while-editing"
-                           placeholder='原密码'
-                           maxLength={20}
-                           secureTextEntry={true}
-                           underlineColorAndroid='transparent'
-                           editable={true}
-                           value={this.state.oldPass}
-                           onChangeText={(text) => this.setState({oldPass:text})}/>
+                <ValidateTextInput
+                    ref={ component => this._input_old_password = component }
+                    style={styles.textInput}
+                    placeholder='原密码'
+                    maxLength={20}
+                    secureTextEntry={true}
+                    underlineColorAndroid='transparent'
+                    editable={true}
+                    value={this.state.oldPass}
+                    onChangeText={(text) => this.setState({oldPass:text})}
+                    reg={this._oldPassword}/>
 
 
-                <TextInput style={styles.textInput}
-                           clearButtonMode="while-editing"
-                           placeholder='新密码'
-                           maxLength={20}
-                           secureTextEntry={true}
-                           underlineColorAndroid='transparent'
-                           editable={true}
-                           value={this.state.newPass}
-                           onChangeText={(text) => this.setState({newPass:text})}/>
+                <ValidateTextInput
+                    ref={ component => this._input_new_password = component }
+                    style={styles.textInput}
+                    placeholder='新密码'
+                    maxLength={20}
+                    secureTextEntry={true}
+                    underlineColorAndroid='transparent'
+                    editable={true}
+                    value={this.state.newPass}
+                    onChangeText={(text) => this.setState({newPass:text})}
+                    reg={this._newPassword}/>
 
 
-                <TextInput style={styles.textInput}
-                           clearButtonMode="while-editing"
-                           placeholder='确认密码'
-                           maxLength={20}
-                           secureTextEntry={true}
-                           underlineColorAndroid='transparent'
-                           editable={true}
-                           value={this.state.confPass}
-                           onChangeText={(text) => this.setState({confPass:text})}/>
+                <ValidateTextInput
+                    ref={ component => this._input_conform_password = component }
+                    style={styles.textInput}
+                    placeholder='确认密码'
+                    maxLength={20}
+                    secureTextEntry={true}
+                    underlineColorAndroid='transparent'
+                    editable={true}
+                    value={this.state.confPass}
+                    onChangeText={(text) => this.setState({confPass:text})}
+                    reg={this._conformPassword}/>
 
 
                 <Button
@@ -114,6 +124,44 @@ class SetPassword extends Component {
                             </View>
                     }
                     onPress={ () => {
+                        if(!this._input_old_password.validate){
+                            this._input_old_password.setState({
+                            backgroundColor:constants.UIInputErrorColor,
+                            })
+                             this._toast.show({
+                                position: Toast.constants.gravity.center,
+                                duration: 255,
+                                children: '密码格式错误'
+                            })
+                            return
+                        }
+                        if(!this._input_new_password.validate){
+                            this._input_new_password.setState({
+                            backgroundColor:constants.UIInputErrorColor,
+                            })
+                             this._toast.show({
+                                position: Toast.constants.gravity.center,
+                                duration: 255,
+                                children: '密码格式错误'
+                            })
+                            return
+                        }
+
+                        if(!this._input_conform_password.validate||this.state.password!=this.state.confPwd){
+
+                            this._input_conform_password.setState({
+                            backgroundColor:constants.UIInputErrorColor,
+                             iconColor: 'red',
+                             iconName: 'ios-close-circle',
+                             showIcon: true,
+                            })
+                             this._toast.show({
+                                position: Toast.constants.gravity.center,
+                                duration: 255,
+                                children: '两次密码不一致'
+                            })
+                            return
+                        }
                         this._button_2.setState({
                             loading: true,
                             //disabled: true,
@@ -126,7 +174,7 @@ class SetPassword extends Component {
 
                         }, 3000)*/
                         this._fetch_changePassword()
-                    }}>
+                    } }>
                     保存
                 </Button>
                 <Toast
@@ -184,7 +232,7 @@ class SetPassword extends Component {
 
             options.data = await this.gZip(options)
 
-            console.log(`_fetch_sendCode options:`, options)
+            console.log(`_fetch_changePassword options:`, options)
 
             let resultData = await this.fetch(options)
 
@@ -193,12 +241,16 @@ class SetPassword extends Component {
             result = JSON.parse(result)
             console.log('gunZip:', result)
             if (result.code && result.code == -54) {
-                AsyncStorage.removeItem('token')
+                /*AsyncStorage.removeItem('token')
                 AsyncStorage.removeItem('realName')
                 this.props.navigator.replace({
                     title: '用户登录',
                     component: LoginPage,
-                })
+                })*/
+                /**
+                 * 发送事件去登录
+                 */
+                NativeAppEventEmitter.emit('getMsg_202_code_need_login');
             }
             if (result.code && result.code == 10) {
                 /* Alert.alert('提示', '注册成功', () => {

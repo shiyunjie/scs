@@ -101,11 +101,14 @@ class SetPassword extends Component {
 
                             this._input_conform_password.setState({
                             backgroundColor:constants.UIInputErrorColor,
+                             iconColor: 'red',
+                             iconName: 'ios-close-circle',
+                             showIcon: true,
                             })
                              this._toast.show({
                                 position: Toast.constants.gravity.center,
                                 duration: 255,
-                                children: '确认密码错误'
+                                children: '两次密码不一致'
                             })
                             return
                         }
@@ -167,7 +170,7 @@ class SetPassword extends Component {
                     children: '保存成功'
                 })
                 let routes = this.props.navigator.getCurrentRoutes();
-                this.props.navigator.popToRoute(routes[routes.length-3])
+                this.props.navigator.popToRoute(routes[routes.length-2])
 
             }else{
                 this._toast.show({

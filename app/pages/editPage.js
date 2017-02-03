@@ -66,10 +66,10 @@ class Edit extends Component {
                   style={{flex:1,}}>
                   <TextInput
                       style={{flex:1,
-                      fontSize:16,
+                      fontSize:15,
                       backgroundColor:'white',
                       textAlignVertical:'top',
-                      margin:5,
+                      padding:constants.MarginLeftRight,
                       borderTopWidth: StyleSheet.hairlineWidth,
                       borderBottomWidth: StyleSheet.hairlineWidth,
                       borderColor: constants.UIInActiveColor,
@@ -99,10 +99,9 @@ class Edit extends Component {
                                 <Text style={{fontSize: 17, color: 'white',
                                 fontWeight: 'bold', fontFamily: '.HelveticaNeueInterface-MediumP4',}}>提交中...</Text>
                             </View>
-                    }
+                        }
                         onPress={ () => {
                         this.button2.setState({
-
                             loading: true,
                             //disabled: true,
                         });
@@ -113,7 +112,7 @@ class Edit extends Component {
                             //disabled: false
                             })
                             }, 3000)*/
-                    }}>
+                        } }>
                         提交
                     </Button>
                 </View>

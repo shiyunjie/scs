@@ -54,8 +54,8 @@ export default class ListItemView extends Component {
                     <View style={styles.itemIcon}/>
                     <View style={styles.itemText}>
                         <View style={styles.itemDetail}>
-                            <Text style={{fontSize:17,}}>单号:</Text>
-                            <Text style={{flex:2,fontSize:17,}}>{this.props.orderNum}</Text>
+                            <Text style={{fontSize:15,}}>单号:</Text>
+                            <Text style={{flex:2,fontSize:15,}}>{this.props.orderNum}</Text>
                         </View>
                         <View style={styles.itemDetail}>
                             <Text style={{color:constants.UIInActiveColor}}>发起时间:</Text>
@@ -73,7 +73,7 @@ export default class ListItemView extends Component {
                             </View>:<View/>
                         }
                         <View style={styles.itemDetail}>
-                            <Text style={{flex:1,fontSize:19,}}>{this.props.route}</Text>
+                            <Text style={{flex:1,fontSize:16,}}>{this.props.route}</Text>
                         </View>
                     </View>
                     <View style={styles.itemButton}>

@@ -43,11 +43,7 @@ import XhrEnhance from '../lib/XhrEnhance' //http
 
 
 let pageIndex = 1;//当前页码
-let firstDataList = [{
-    title: 'ceshi消息',
-    send_time: '2017-1-11',
-    content: 'content_content',
-}];
+let firstDataList = [];
 
 class MessageList extends Component {
     // 构造
@@ -102,6 +98,7 @@ class MessageList extends Component {
                     contentContainerStyle={{backgroundColor: 'transparent', }}
                     initialListSize={10}
                     pageSize={10}
+                    enableEmptySections={true}
                     dataSource={this.state.dataSource}
                     renderHeader={this._renderHeader}
                     renderFooter={this._renderFooter}
@@ -160,12 +157,14 @@ class MessageList extends Component {
      </SwipeRow>*/
     _renderRow = (rowData, sectionID, rowID) => {
         return (
+        rowData.id==0?<View style={{height:0}}/>:
             <Swipeable
                 style={{flex:1}}
                 rightActionActivationDistance={50}
                 rightButtons={[
                     <TouchableOpacity
-                        onPress={()=>{this._fetchData_delete(rowData.id)}}
+                        onPress={()=>{this.setState({ rightActionActivated: false,})
+                        this._fetchData_delete(rowData.id)}}
                         style={{flex:1,justifyContent:'center',flexDirection:'column',
                         alignItems:'flex-start',backgroundColor:'red'}}>
                         <Text style={{color:'white',textAlign:'center',
@@ -175,6 +174,8 @@ class MessageList extends Component {
 
                 <TouchableOpacity style={{flex:1}}
                       onPress={ ()=>{
+                      //已读
+                      rowData.do_ret=true
                      this._fetchData_read(rowData.id)
                      this.props.navigator.push({
                      title: '消息',
@@ -393,7 +394,7 @@ class MessageList extends Component {
 
             result = JSON.parse(result)
             //console.log(`fetch result -> `, typeof result)
-            //console.log(`result`, result.result)
+            console.log(`result`, result.result)
             if (result.code && result.code == -54) {
                 /**
                  * 发送事件去登录
@@ -402,9 +403,9 @@ class MessageList extends Component {
                 return
             }
             if (result.code && result.code == 10) {
-                if (result.result.list && result.result.list.length > 0) {
+                if (result.result && result.result.length > 0) {
                     loadedAll = false
-                    let dataList = this.state.dataList.concat(result.result.list)
+                    let dataList = this.state.dataList.concat(result.result)
 
                     this.setState({
                         dataList: dataList,
@@ -490,7 +491,8 @@ class MessageList extends Component {
                 let dataList = this.state.dataList
                 for (let index = 0; index < dataList.length; index++) {
                     if (dataList[index].id == id) {
-                        dataList.splice(index, 1);
+                        //dataList.splice(index, 1);
+                        dataList[index].id=0
                         break;
                     }
 
@@ -501,6 +503,7 @@ class MessageList extends Component {
                     dataList: dataList,
                     dataSource: this._dataSource.cloneWithRows(dataList),
                 })
+
             } else {
                 this._toast.show({
                     position: Toast.constants.gravity.center,
