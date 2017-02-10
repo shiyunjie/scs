@@ -15,6 +15,7 @@
     "react-native": "0.39.2",
     "react-native-camera-roll-picker": "^1.1.9",
     "react-native-carousel": "^0.10.0",
+    "react-native-code-push": "^1.16.1-beta",
     "react-native-device-info": "^0.9.7",
     "react-native-fs": "^2.0.1-rc.2",
     "react-native-image-pan-zoom": "^1.1.12",

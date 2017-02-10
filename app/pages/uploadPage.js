@@ -205,6 +205,14 @@ class UploadPage extends Component {
                     onRequestClose={() => {this.setState({modalVisible:false})}}>
                     <View style={{flex:1,justifyContent:'center',alignItems:'center',
                     backgroundColor:'rgba(0, 0, 0, 0.5)'}}>
+                        <TouchableOpacity
+                            style={{position:'absolute',top:10,right:10, backgroundColor: 'transparent',}}
+                            onPress={()=>this.setState({modalVisible:false})}>
+                            <Icon
+                                name='md-close-circle'  // 图标
+                                size={constants.IconSize}
+                                color={constants.UIActiveColor}/>
+                        </TouchableOpacity>
                         <ImageZoom cropWidth={500}
                                    cropHeight={500}
                                    imageWidth={400}
@@ -220,6 +228,7 @@ class UploadPage extends Component {
                     dataSource={this.state.dataSource}
                     renderRow={this._renderRow}
                     contentContainerStyle={styles.listStyle}
+                    enableEmptySections={true}
                     showsVerticalScrollIndicator={false}
                     showsHorizontalScrollIndicator={false}/>
                 <Button
@@ -488,6 +497,7 @@ class UploadPage extends Component {
 
         //xhr.open('post', 'http://posttestserver.com/post.php')
         xhr.open('post', constants.api.service)
+        xhr.setRequestHeader('Content-Type', 'multipart/form-data')
         xhr.onload = () => {
             if (xhr.status == 200 && xhr.readyState == 4) {
                 console.log(`xhr.responseText = ${xhr.responseText}`)
@@ -682,7 +692,7 @@ class UploadPage extends Component {
 
             options.data = await this.gZip(options)
 
-            console.log(`_fetch_sendCode options:`, options)
+            console.log(`_fetch_finish options:`, options)
 
             let resultData = await this.fetch(options)
 
@@ -741,7 +751,7 @@ class UploadPage extends Component {
 
             options.data = await this.gZip(options)
 
-            console.log(`_fetch_sendCode options:`, options)
+            console.log(`_fetchData options:`, options)
 
             let resultData = await this.fetch(options)
 

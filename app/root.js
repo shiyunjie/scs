@@ -14,22 +14,22 @@ import {
     AsyncStorage,
 } from 'react-native';
 
-import IndexPage from './pages/indexPage';
-//import IndexPage from './pages/uploadPage';
-import UserPage from './pages/userPage';
-import OrderPage from './pages/orderPage';
-import MorePage from './pages/morePage';
-import LoginPage from './pages/loginPage';
-import JPushModule from 'jpush-react-native';
-import TabNavigator from 'react-native-tab-navigator';
+import IndexPage from './pages/indexPage'
+//import IndexPage from './pages/uploadPage'
+import UserPage from './pages/userPage'
+import OrderPage from './pages/orderPage'
+import MorePage from './pages/morePage'
+import LoginPage from './pages/loginPage'
+import JPushModule from 'jpush-react-native'
+import TabNavigator from 'react-native-tab-navigator'
 import Badge from 'react-native-smart-badge'
 import navigatorStyle from './styles/navigatorStyle'       //navigationBar样式
-import Icon from 'react-native-vector-icons/Ionicons';
+import Icon from 'react-native-vector-icons/Ionicons'
 import AppEventListenerEnhance from 'react-native-smart-app-event-listener-enhance'
 import { getToken, } from './lib/User'
-import DeviceInfo from 'react-native-device-info';
+import DeviceInfo from 'react-native-device-info'
 
-import constants from  './constants/constant';
+import constants from  './constants/constant'
 import TabView from './components/tabView'
 let backFirstClick = 0//判断一次点击回退键
 

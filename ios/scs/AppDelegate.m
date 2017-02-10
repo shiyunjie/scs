@@ -9,14 +9,16 @@
 
 #import "AppDelegate.h"
 #import <RCTJPushModule.h>
+#import "RCTSplashScreen.h" //import interface
 #ifdef NSFoundationVersionNumber_iOS_9_x_Max
 #import <UserNotifications/UserNotifications.h>
 #endif
-
+#import "CodePush.h"
 #import "RCTBundleURLProvider.h"
 #import "RCTRootView.h"
 #import <AlipaySDK/AlipaySDK.h> //导入支付宝SDK库
 #import "RCTAliPay.h" //import interface
+
 
 @implementation AppDelegate
 
@@ -45,10 +47,16 @@
                         channel:nil apsForProduction:nil];
   NSURL *jsCodeLocation;
 
-  jsCodeLocation = [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index.ios" fallbackResource:nil];
-//  jsCodeLocation = [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
-//jsCodeLocation = [[NSURL alloc] initWithString:@"http://192.168.2.1:8081/index.ios.bundle?platform=ios&dev=true&minify=false"];
   
+//  jsCodeLocation = [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index.ios" fallbackResource:nil];
+
+  // Use CodePush to resolve your JS bundle location, so that your app will run the version of the code distributed via CodePush
+//#ifdef DEBUG
+//   jsCodeLocation = [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index.ios" fallbackResource:nil];
+//#else
+//   jsCodeLocation = [CodePush bundleURL];
+//#endif
+  jsCodeLocation = [CodePush bundleURL];
   
 
   
@@ -58,6 +66,10 @@
                                                       moduleName:@"scs"
                                                initialProperties:nil
                                                    launchOptions:launchOptions];
+  [RCTSplashScreen open:rootView];
+//  [RCTSplashScreen open:rootView withImageNamed:@"splash.png"]; // activate splashscreen, imagename from LaunchScreen.xib
+
+  
   rootView.backgroundColor = [[UIColor alloc] initWithRed:1.0f green:1.0f blue:1.0f alpha:1];
 
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];

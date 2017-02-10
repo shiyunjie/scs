@@ -21,3 +21,5 @@ project(':react-native-fs').projectDir = new File(settingsDir, '../node_modules/
 include ':http-rsa-gzip'
 //project(':http-rsa-gzip').projectDir = new File(rootProject.projectDir, '../node_modules/http-rsa-gzip')
 project(':http-rsa-gzip').projectDir = new File(rootProject.projectDir, '../app/plugins/android/HttpRsaGzip')
+include ':react-native-code-push'
+project(':react-native-code-push').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-code-push/android/app')

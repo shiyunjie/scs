@@ -18,6 +18,13 @@ import {
 import Index from './root';
 import constants from  './constants/constant'
 import AppEventListenerEnhance from 'react-native-smart-app-event-listener-enhance'
+import CodePush from "react-native-code-push";
+import SplashScreen from 'react-native-smart-splash-screen'
+
+let codePushOptions = { checkFrequency: CodePush.CheckFrequency.ON_APP_RESUME };
+//let codePushOptions = { checkFrequency: CodePush.CheckFrequency.MANUAL };
+
+
 
 const HttpRSAModule = NativeModules.HttpRSAModule;
 
@@ -30,7 +37,64 @@ class Root extends Component {
         }
     }
 
+/*    syncImmediate() {
+
+        CodePush.sync(
+
+            { installMode: CodePush.InstallMode.IMMEDIATE,//启动模式三种：ON_NEXT_RESUME、ON_NEXT_RESTART、IMMEDIATE
+
+                updateDialog: {
+
+                    appendReleaseDescription:true,//是否显示更新description，默认为false
+
+                    descriptionPrefix:"更新内容：",//更新说明的前缀。 默认是” Description:
+
+                    mandatoryContinueButtonLabel:"立即更新",//强制更新的按钮文字，默认为continue
+
+                    mandatoryUpdateMessage:"",//- 强制更新时，更新通知. Defaults to “An update is available that must be installed.”.
+
+                    optionalIgnoreButtonLabel: '稍后',//非强制更新时，取消按钮文字,默认是ignore
+
+                    optionalInstallButtonLabel: '后台更新',//非强制更新时，确认文字. Defaults to “Install”
+
+                    optionalUpdateMessage: '有新版本了，是否更新？',//非强制更新时，更新通知. Defaults to “An update is available. Would you like to install it?”.
+
+                    title: '更新提示'//要显示的更新通知的标题. Defaults to “Update available”.
+
+                },
+
+            }
+
+        );
+
+    }*/
+
+    codePushStatusDidChange(status) {
+        switch(status) {
+            case CodePush.SyncStatus.CHECKING_FOR_UPDATE:
+                console.log("Checking for updates.");
+                break;
+            case CodePush.SyncStatus.DOWNLOADING_PACKAGE:
+                console.log("Downloading package.");
+                break;
+            case CodePush.SyncStatus.INSTALLING_UPDATE:
+                console.log("Installing update.");
+                break;
+            case CodePush.SyncStatus.UP_TO_DATE:
+                console.log("Up-to-date.");
+                break;
+            case CodePush.SyncStatus.UPDATE_INSTALLED:
+                console.log("Update installed.");
+                break;
+        }
+    }
+
+    codePushDownloadDidProgress(progress) {
+        console.log(progress.receivedBytes + " of " + progress.totalBytes + " received.");
+    }
+
     componentWillMount() {
+        CodePush.disallowRestart();//页面加载的禁止重启，在加载完了可以允许重启
         //检查版本更新
         /* if(Platform.OS=='android'){
          //检查更新app
@@ -42,15 +106,22 @@ class Root extends Component {
 
     }
 
+    componentWillUnmount() {
+        // Reallow restarts, and optionally trigger
+        // a restart if one was currently pending.
+        CodePush.allowRestart();
+    }
+
     componentDidMount() {
-        this.addAppEventListener(
+
+        //this.addAppEventListener(
             NativeAppEventEmitter.addListener('setNavigationBar.index', (navigationBar) => {
                 this.setState({
                     navigationBar: navigationBar,
                 })
             })
-        )
-
+        //)
+        SplashScreen.close(SplashScreen.animationType.scale,850,500)
     }
 
 
@@ -90,6 +161,7 @@ class Root extends Component {
     }
 }
 
+
 let NavigationBarRouteMapper = {
 
     LeftButton: function (route, navigator, index, navState) {
@@ -128,7 +200,6 @@ let NavigationBarRouteMapper = {
 
 };
 
-export default AppEventListenerEnhance(Root)
 
 const styles = StyleSheet.create({
     navigatorBg: {
@@ -161,3 +232,8 @@ const styles = StyleSheet.create({
         color: '#5890FF',
     },
 })
+
+//codepush
+Root=CodePush(codePushOptions)(Root);
+//export default AppEventListenerEnhance(Root)
+export default Root

@@ -14,6 +14,7 @@ import {
     Platform,
     NativeAppEventEmitter,
     TouchableOpacity,
+    Alert,
 } from 'react-native';
 
 
@@ -101,7 +102,7 @@ class OnLinePay extends Component {
                                       onPress={()=>{
                                         //this._payType = 'union'
                                        }}>
-                        <Image style={{height:35,width:45}}
+                        <Image style={{height:30,width:45}}
                                source={image_union} />
                         <View style={styles.textContent}>
                             <Text style={{color:constants.UIInActiveColor,
@@ -121,7 +122,7 @@ class OnLinePay extends Component {
                                           onPress={()=>{
                                             this._payType = 'alipay'
                                           }}>
-                            <Image style={{height:35,width:45}}
+                            <Image style={{height:35,width:35,marginRight:5,marginLeft:5,}}
                                    source={image_alipay} />
                             <View style={styles.textContent}>
                                 <Text style={{color:constants.UIInActiveColor,
@@ -141,7 +142,7 @@ class OnLinePay extends Component {
                                       onPress={()=>{
                                             //this._payType = 'tencent'
                                           }}>
-                        <Image style={{height:35,width:45}}
+                        <Image style={{height:35,width:35,marginRight:5,marginLeft:5,}}
                                source={image_tencent} />
                         <View style={styles.textContent}>
                             <Text style={{color:constants.UIInActiveColor,
@@ -331,6 +332,7 @@ const styles = StyleSheet.create({
         justifyContent:'center',
         alignItems:'center',
         width:30,
+        marginRight:5,
 
     },
 
