@@ -49,6 +49,7 @@ let typeShow = []
 
 
 import countryData from '../constants/country'
+import ValidateTextInput from '../components/validateTextInput'
 let countryShow = []
 
 let selectedItems = ['信用证',];
@@ -100,9 +101,9 @@ class AddOrder extends Component {
             items: items,
             pay:this.props.credit_letter?this.props.credit_letter:1,
             selectedItems: selectedItems,
-            type: this.props.trade_terms?this.props.trade_terms:'',
-            start: this.props.departure_name?this.props.departure_name:'',
-            reach: this.props.destination_name?this.props.destination_name:'',
+            type: this.props.trade_terms?this.props.trade_terms:typeData[0].value,
+            start: this.props.departure_name?this.props.departure_name:countryData[0].name,
+            reach: this.props.destination_name?this.props.destination_name:countryData[0].name,
             clearance: this.props.import_clearance?this.props.import_clearance:1,//进口清关
             logistics: this.props.international_logistics?this.props.international_logistics:1,//需求国际物流
             land: this.props.export_country_land?this.props.export_country_land:1,//出口国陆运
@@ -111,6 +112,9 @@ class AddOrder extends Component {
 
 
         }
+        this._realName=/^[A-Za-z]{2,20}$|^[\u4E00-\u9FA5]{2,8}$/
+
+        this._phoneReg = /^1[34578]\d{9}$/;//手机号码
     }
 
     componentWillMount() {
@@ -235,7 +239,8 @@ class AddOrder extends Component {
                             borderBottomWidth: StyleSheet.hairlineWidth,
                             borderColor: constants.UIInActiveColor,
                         }}>
-                        <TextInput
+                        <ValidateTextInput
+                            ref={ component => this._input_realName = component }
                             style={styles.textInput}
                             clearButtonMode="while-editing"
                             textAlign='right'
@@ -243,7 +248,8 @@ class AddOrder extends Component {
                             underlineColorAndroid='transparent'
                             value={this.state.realName}
                             editable={true}
-                            onChangeText={(text) => this.setState({realName:text})}/>
+                            onChangeText={(text) => this.setState({realName:text})}
+                            reg={this._realName}/>
                         </View>
                     </View>
                     <View
@@ -257,7 +263,8 @@ class AddOrder extends Component {
                             borderBottomWidth: StyleSheet.hairlineWidth,
                             borderColor: constants.UIInActiveColor,
                         }}>
-                        <TextInput
+                        <ValidateTextInput
+                            ref={ component => this._input_phone = component }
                             style={styles.textInput}
                             clearButtonMode="while-editing"
                             textAlign='right'
@@ -265,7 +272,8 @@ class AddOrder extends Component {
                             underlineColorAndroid='transparent'
                             value={this.state.phone}
                             editable={true}
-                            onChangeText={(text) => this.setState({phone:text})}/>
+                            onChangeText={(text) => this.setState({phone:text})}
+                            reg={this._phoneReg}/>
                         </View>
                     </View>
                     <TouchableOpacity
@@ -409,6 +417,7 @@ class AddOrder extends Component {
                                 color={this.state.sea_air==0?constants.UIActiveColor:constants.UIInActiveColor}
                                 name={this.state.sea_air==0?'md-checkmark-circle':'ios-close-circle-outline'}
                                 hasLine={false}
+                                showRightText={false}
                                 title='海运'
                                 rightText=''/>
                         </TouchableOpacity>
@@ -429,6 +438,7 @@ class AddOrder extends Component {
                                 color={this.state.sea_air==1?constants.UIActiveColor:constants.UIInActiveColor}
                                 name={this.state.sea_air==1?'md-checkmark-circle':'ios-close-circle-outline'}
                                 hasLine={false}
+                                showRightText={false}
                                 title='空运'
                                 rightText=''/>
                         </TouchableOpacity>
@@ -508,6 +518,31 @@ class AddOrder extends Component {
                                         </View>
                                         }
                             onPress={ () => {
+                                        if(!this._input_phone.validate){
+                                        this._input_phone.setState({
+                                        backgroundColor:constants.UIInputErrorColor,
+                                        })
+                                         this._toast.show({
+                                            position: Toast.constants.gravity.center,
+                                            duration: 255,
+                                            children: '需要手机号码'
+                                        })
+                                        return
+                                        }
+                                        if(!this._input_realName.validate){
+
+                                        this._input_realName.setState({
+                                        backgroundColor:constants.UIInputErrorColor,
+                                        })
+                                         this._toast.show({
+                                            position: Toast.constants.gravity.center,
+                                            duration: 255,
+                                            children: '需要委托人姓名'
+                                        })
+                                        return
+                                        }
+
+
                                             this.button2.setState({
 
                                                 loading: true,

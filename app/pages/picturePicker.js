@@ -16,7 +16,8 @@ import {
     NativeAppEventEmitter,
 } from 'react-native'
 import constants from '../constants/constant'
-import CameraRollPicker from 'react-native-camera-roll-picker'
+//import CameraRollPicker from 'react-native-camera-roll-picker'
+import CameraRollPicker from 'react-native-smart-camera-roll-picker'
 
 import navigatorStyle from '../styles/navigatorStyle'       //navigationBar样式
 
@@ -106,10 +107,12 @@ class PicturePicker extends Component {
                     pageSize={3}
                     removeClippedSubviews={true}
                     groupTypes='SavedPhotos'
+                    //groupTypes='All'
                     batchSize={5}
                     maximum={8}
                     selected={this.state.selected}
                     assetType='Photos'
+                    fetchSize={30}
                     imagesPerRow={3}
                     imageMargin={5}
                     callback={this._getSelectedImages} />

@@ -30,7 +30,7 @@ import navigatorStyle from '../styles/navigatorStyle'       //navigationBar样�
 import Icon from 'react-native-vector-icons/Ionicons';
 
 import SwipeRow from '../components/SwipeRow'
-import Swipeable from '../components/swipeable'
+//import Swipeable from '../components/swipeable'
 
 import {getDeviceID,getToken} from '../lib/User'
 import Toast from 'react-native-smart-toast'
@@ -39,7 +39,6 @@ import MessageDetail from './messageDetail'
 //import Swipeout from 'react-native-swipeout';
 
 import XhrEnhance from '../lib/XhrEnhance' //http
-//import { message_findSysInfoShow,errorXhrMock } from '../mock/xhr-mock'   //mock data
 
 
 let pageIndex = 1;//当前页码
@@ -120,32 +119,31 @@ class MessageList extends Component {
     }
 
     /*
-     <SwipeRow
+     <Swipeable
      style={{flex:1}}
-     onRowPress={ ()=>{
+     rightActionActivationDistance={50}
+     rightButtons={[
+     <TouchableOpacity
+     onPress={()=>{this.setState({ rightActionActivated: false,})
+     this._fetchData_delete(rowData.id)}}
+     style={{flex:1,justifyContent:'center',flexDirection:'column',
+     alignItems:'flex-start',backgroundColor:'red'}}>
+     <Text style={{color:'white',textAlign:'center',
+     textAlignVertical:'center',marginLeft:27}}>删除</Text>
+     </TouchableOpacity>
+     ]}>
+
+     <TouchableOpacity style={{flex:1}}
+     onPress={ ()=>{
+     //已读
+     rowData.do_ret=true
      this._fetchData_read(rowData.id)
      this.props.navigator.push({
      title: '消息',
      component: MessageDetail,
      passProps: rowData,
      });
-     } }
-     stopRightSwipe={-100}
-     rightOpenValue={-70}
-     disableRightSwipe={true}
-     tension={10}
-     preview={false}>
-     <View style={{flex:1,flexDirection:'row',alignItems:'stretch'}}>
-     <View style={{flex:1}}/>
-     <TouchableOpacity
-     onPress={()=>{this._fetchData_delete(rowData.id)}}
-     style={{width:100,justifyContent:'center',
-     alignItems:'stretch',backgroundColor:'red',}}>
-     <Text style={{color:'white',marginLeft:30,textAlign:'center'}}>删除</Text>
-     </TouchableOpacity>
-     </View>
-     <View
-     style={{flex:1}}>
+     } }>
      <ItemView
      style={[{overflow: 'hidden',}]}
      size={constants.IconSize}
@@ -153,45 +151,49 @@ class MessageList extends Component {
      time={rowData.send_time}
      content={rowData.content}
      do_ret={rowData.do_ret}/>
-     </View>
-     </SwipeRow>*/
+     </TouchableOpacity>
+     </Swipeable>
+     */
     _renderRow = (rowData, sectionID, rowID) => {
         return (
-        rowData.id==0?<View style={{height:0}}/>:
-            <Swipeable
-                style={{flex:1}}
-                rightActionActivationDistance={50}
-                rightButtons={[
-                    <TouchableOpacity
-                        onPress={()=>{this.setState({ rightActionActivated: false,})
-                        this._fetchData_delete(rowData.id)}}
-                        style={{flex:1,justifyContent:'center',flexDirection:'column',
-                        alignItems:'flex-start',backgroundColor:'red'}}>
-                        <Text style={{color:'white',textAlign:'center',
-                        textAlignVertical:'center',marginLeft:27}}>删除</Text>
-                    </TouchableOpacity>
-                    ]}>
+            rowData.id == 0 ? <View style={{height:0}}/> :
+                    <SwipeRow
+                        style={{flex:1}}
+                        onRowPress={ ()=>{
+                                        //已读
+                         this._fetchData_read(rowData.id)
+                         this.props.navigator.push({
+                         title: '消息',
+                         component: MessageDetail,
+                         passProps: rowData,
+                         });
+                         } }
+                        stopRightSwipe={-100}
+                        rightOpenValue={-70}
+                        disableRightSwipe={true}
+                        tension={10}
+                        preview={false}>
+                        <View style={{flex:1,flexDirection:'row',alignItems:'stretch'}}>
+                            <View style={{flex:1}}/>
+                            <TouchableOpacity
+                                onPress={ ()=>{this._fetchData_delete(rowData.id)} }
+                                style={{width:100,justifyContent:'center',
+                                alignItems:'stretch',backgroundColor:'red',}}>
+                                <Text style={{color:'white',marginLeft:30,textAlign:'center'}}>删除</Text>
+                            </TouchableOpacity>
+                        </View>
+                        <View
+                            style={{flex:1}}>
+                            <ItemView
+                                style={[{overflow: 'hidden',}]}
+                                size={constants.IconSize}
+                                title={rowData.title}
+                                time={rowData.send_time}
+                                content={rowData.content}
+                                do_ret={rowData.do_ret}/>
+                        </View>
+                    </SwipeRow>
 
-                <TouchableOpacity style={{flex:1}}
-                      onPress={ ()=>{
-                      //已读
-                      rowData.do_ret=true
-                     this._fetchData_read(rowData.id)
-                     this.props.navigator.push({
-                     title: '消息',
-                     component: MessageDetail,
-                     passProps: rowData,
-                     });
-                     } }>
-                    <ItemView
-                        style={[{overflow: 'hidden',}]}
-                        size={constants.IconSize}
-                        title={rowData.title}
-                        time={rowData.send_time}
-                        content={rowData.content}
-                        do_ret={rowData.do_ret}/>
-                </TouchableOpacity>
-            </Swipeable>
 
 
 
@@ -418,7 +420,7 @@ class MessageList extends Component {
                     pageIndex--;
                     if (pageIndex < 1) {
                         pageIndex = 1;
-0
+                        0
                     }
 
                 }
@@ -491,18 +493,22 @@ class MessageList extends Component {
                 let dataList = this.state.dataList
                 for (let index = 0; index < dataList.length; index++) {
                     if (dataList[index].id == id) {
-                        //dataList.splice(index, 1);
-                        dataList[index].id=0
+                        dataList.splice(index, 1);
+                        //dataList[index].id=0
                         break;
                     }
 
                 }
                 console.log(`dataList`, dataList);
 
+
+
                 this.setState({
                     dataList: dataList,
                     dataSource: this._dataSource.cloneWithRows(dataList),
                 })
+                this._PullToRefreshListView.endLoadMore(true)
+
 
             } else {
                 this._toast.show({

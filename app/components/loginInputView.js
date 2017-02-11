@@ -39,7 +39,7 @@ export default class InputView extends Component {
         maxLength: PropTypes.number,
         secureTextEntry: PropTypes.bool,
         onChangeText: PropTypes.func,
-        value:PropTypes.object,
+        value:PropTypes.string,
         secureTextEntry:PropTypes.bool,
 
     }

@@ -260,6 +260,9 @@ class SwipeRow extends Component {
     }
 
     render() {
+
+            this.manuallySwipeRow(0);
+
         return (
             <View style={this.props.style ? this.props.style : styles.container}>
                 <View style={[

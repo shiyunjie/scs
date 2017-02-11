@@ -74,8 +74,8 @@ export default class InputView extends Component {
                 backgroundColor: this.props.backgroundColor
             });
 
-
-            if (newValue == '') {
+            console.log(`newValue:`,newValue)
+            if (!newValue||newValue == '') {
                 this.setState({
                     showIcon: false,
                 });

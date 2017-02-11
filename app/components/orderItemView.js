@@ -32,6 +32,7 @@ export default class ListItemView extends Component {
         show: PropTypes.bool,
         hasCheckBox: PropTypes.bool,
         hasLine: PropTypes.bool,
+        showRightText:PropTypes.bool,
 
 
     }
@@ -43,6 +44,7 @@ export default class ListItemView extends Component {
         size:constants.IconSize,
         color:constants.UIInActiveColor,
         hasLine:true,
+        showRightText:true,
     }
 
 
@@ -54,7 +56,8 @@ export default class ListItemView extends Component {
                     <View style={[styles.itemText,this.props.hasLine?{borderBottomWidth:StyleSheet.hairlineWidth}:{borderBottomWidth:0}]}>
                         <Text style={styles.TabText}>{this.props.title}</Text>
                     </View>
-                    <View style={[styles.itemButton,this.props.hasLine?{borderBottomWidth:StyleSheet.hairlineWidth}:{borderBottomWidth:0}]}>
+                    <View style={[styles.itemButton,this.props.hasLine?{borderBottomWidth:StyleSheet.hairlineWidth}:{borderBottomWidth:0},
+                    this.props.showRightText?{}:{flex:2}]}>
                         <Text style={styles.TabText}>{this.props.rightText}</Text>
                         <Icon
                             name={this.props.name}  // 图标
@@ -70,7 +73,7 @@ export default class ListItemView extends Component {
                 <View style={styles.itemView}>
                     <View style={styles.itemIcon}/>
                     <View style={styles.itemText}>
-                        <Text style={styles.TabText}>{this.props.title}</Text>
+                        <Text style={styles.TabText} >{this.props.title}</Text>
                     </View>
                     <View style={styles.itemButton}>
                         <Text style={[styles.TabText,{textAlign:'right'},]}>{this.props.rightText}</Text>

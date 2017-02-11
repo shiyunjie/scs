@@ -1017,6 +1017,34 @@ export const testMock = fetchMock.mock(/\/app\/gateway/, (url, opts) => {
                             }
                         }
                         break;
+                    //发起委托
+                    case 231:
+                        console.log(`requestData.data:`,requestData.data)
+                        if(requestData.data.import_clearance
+                            &&requestData.data.international_logistics
+                            &&requestData.data.export_country_land
+                            &&!requestData.data.booking_service
+                            &&requestData.data.domestic_logistics
+                            &&requestData.data.credit_letter
+                            &&requestData.data.trade_terms
+                            &&requestData.data.departure_id
+                            &&requestData.data.departure_name
+                            &&requestData.data.destination_id
+                            &&requestData.data.destination_name
+                            &&requestData.data.client_name
+                            &&requestData.data.client_phone) {
+                            result = {
+                                code: 10,
+                                msg: '提交成功',
+                                result:{}
+                            }
+                        }else{
+                            result = {
+                                code: -10,
+                                msg: '系统错误',
+                                result: {},
+                            }
+                        }
 
                 }
 

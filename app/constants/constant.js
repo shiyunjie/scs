@@ -20,7 +20,7 @@ export const constant = {
 
 
 
-    development:false,//开发模式mock
+    development:true,//开发模式mock
 
     requestTimeout: 30000,  //默认请求超时30秒
     requestMethod: 'GET',   //默认请求方法为GET
