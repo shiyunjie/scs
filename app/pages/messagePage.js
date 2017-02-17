@@ -381,7 +381,13 @@ class MessageList extends Component {
         }
         catch (error) {
             //console.log(error)
-            //..调用toast插件, show出错误信息...
+            if(this._toast) {
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: error
+                })
+            }
 
         }
         finally {
@@ -460,7 +466,13 @@ class MessageList extends Component {
         }
         catch (error) {
             //console.log(error)
-            //..调用toast插件, show出错误信息...
+            if(this._toast) {
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: error
+                })
+            }
 
             pageIndex--;
             if (pageIndex < 1) {
@@ -546,7 +558,13 @@ class MessageList extends Component {
         }
         catch (error) {
             //console.log(error)
-            //..调用toast插件, show出错误信息...
+            if(this._toast) {
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: error
+                })
+            }
         }
 
     }
@@ -594,7 +612,13 @@ class MessageList extends Component {
         }
         catch (error) {
             //console.log(error)
-            //..调用toast插件, show出错误信息...
+            if(this._toast) {
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: error
+                })
+            }
 
         }
 

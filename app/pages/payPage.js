@@ -28,6 +28,8 @@ import navigatorStyle from '../styles/navigatorStyle'       //navigationBar样�
 import Icon from 'react-native-vector-icons/Ionicons';
 import AppEventListenerEnhance from 'react-native-smart-app-event-listener-enhance'
 
+import LoadingSpinnerOverlay from 'react-native-smart-loading-spinner-overlay'
+
 import {getDeviceID,getToken} from '../lib/User'
 import XhrEnhance from '../lib/XhrEnhance' //http
 import Toast from 'react-native-smart-toast'
@@ -324,6 +326,13 @@ class PayPage extends Component {
         }
         catch (error) {
             //console.log(error)
+            if(this._toast) {
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: error
+                })
+            }
             this.setState({
                 showProgress: false,//显示加载
                 showReload: true,//显示加载更多
@@ -524,6 +533,8 @@ class PayPage extends Component {
                     ref={ component => this._toast = component }
                     marginTop={64}>
                 </Toast>
+                <LoadingSpinnerOverlay
+                    ref={ component => this._modalLoadingSpinnerOverLay = component }/>
             </View>
         );
     }
@@ -555,6 +566,9 @@ class PayPage extends Component {
 
 
     async _fetch_confirm() {
+        if(this._modalLoadingSpinnerOverLay) {
+            this._modalLoadingSpinnerOverLay.show()
+        }
         try {
             let token = await getToken()
             let deviceID = await getDeviceID()
@@ -607,6 +621,13 @@ class PayPage extends Component {
         }
         catch (error) {
             //console.log(error)
+            if(this._toast) {
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: error
+                })
+            }
 
         }
         finally {
@@ -614,6 +635,9 @@ class PayPage extends Component {
                 loading: false,
                 //disabled: false
             })
+            if(this._modalLoadingSpinnerOverLay) {
+                this._modalLoadingSpinnerOverLay.hide()
+            }
             //console.log(`SplashScreen.close(SplashScreen.animationType.scale, 850, 500)`)
             //SplashScreen.close(SplashScreen.animationType.scale, 850, 500)
         }

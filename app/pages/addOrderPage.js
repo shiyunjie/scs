@@ -713,14 +713,22 @@ class AddOrder extends Component {
         }
         catch (error) {
             //console.log(error)
-
+            if(this._toast) {
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: error
+                })
+            }
         }
         finally {
             /*this.button2.setState({
              loading: false,
              //disabled: false
              })*/
-            this._modalLoadingSpinnerOverLay.hide()
+            if(this._modalLoadingSpinnerOverLay) {
+                this._modalLoadingSpinnerOverLay.hide()
+            }
             //console.log(`SplashScreen.close(SplashScreen.animationType.scale, 850, 500)`)
             //SplashScreen.close(SplashScreen.animationType.scale, 850, 500)
         }
@@ -806,6 +814,13 @@ class AddOrder extends Component {
         }
         catch (error) {
             //console.log(error)
+            if(this._toast) {
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: error
+                })
+            }
 
         }
         finally {

@@ -65,6 +65,7 @@ class Edit extends Component {
               <View
                   style={{flex:1,}}>
                   <TextInput
+                      ref={ component => this._input_text = component }
                       style={{flex:1,
                       fontSize:15,
                       backgroundColor:'white',
@@ -100,10 +101,20 @@ class Edit extends Component {
                             </View>
                         }
                         onPress={ () => {
+                        if(this.state.text==''){
+                        this._toast.show({
+                            position: Toast.constants.gravity.center,
+                            duration: 255,
+                            children: '请填写内容'
+                        })
+                        return
+                        }
+
                         this.button2.setState({
                             loading: true,
                             //disabled: true,
                         });
+                        this._input_text.editable=false
                         this._fetch_edit()
                        /* setTimeout( () => {
                             this.button2.setState({
@@ -178,7 +189,14 @@ class Edit extends Component {
 
     }
     catch (error) {
-        console.log(error)
+        //console.log(error)
+        if(this._toast) {
+            this._toast.show({
+                position: Toast.constants.gravity.center,
+                duration: 255,
+                children: error
+            })
+        }
 
 
     }
@@ -187,6 +205,7 @@ class Edit extends Component {
             loading: false,
             //disabled: false
         })
+            this._input_text.editable=true
         //console.log(`SplashScreen.close(SplashScreen.animationType.scale, 850, 500)`)
         //SplashScreen.close(SplashScreen.animationType.scale, 850, 500)
     }

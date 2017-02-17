@@ -723,6 +723,13 @@ class UploadPage extends Component {
         }
         catch (error) {
             //console.log(error)
+            if(this._toast) {
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: error
+                })
+            }
 
 
         }
@@ -805,7 +812,13 @@ class UploadPage extends Component {
         }
         catch (error) {
             //console.log(error)
-
+            if(this._toast) {
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: error
+                })
+            }
 
         }
         finally {

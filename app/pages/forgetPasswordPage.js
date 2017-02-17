@@ -327,7 +327,13 @@ class ForgetPassword extends Component {
 
         } catch (error) {
             //console.log(error)
-
+            if(this._toast) {
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: error
+                })
+            }
 
         } finally {
            /* this._button_3.setState({
@@ -410,7 +416,13 @@ class ForgetPassword extends Component {
 
         } catch (error) {
             //console.log(error)
-
+            if(this._toast) {
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: error
+                })
+            }
 
         } finally {
             this._input_phone.editable=true

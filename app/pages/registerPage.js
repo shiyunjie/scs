@@ -35,6 +35,8 @@ import XhrEnhance from '../lib/XhrEnhance' //http
 import {getDeviceID,getToken} from '../lib/User'
 import {hex_md5} from '../lib/md5'
 import ValidateTextInput from '../components/validateTextInput'
+
+import LoadingSpinnerOverlay from 'react-native-smart-loading-spinner-overlay'
 //import { register_secondStep, errorXhrMock } from '../mock/xhr-mock'   //mock data
 
 class Register extends Component {
@@ -295,6 +297,9 @@ class Register extends Component {
                     marginTop={64}>
 
                 </Toast>
+
+                <LoadingSpinnerOverlay
+                    ref={ component => this._modalLoadingSpinnerOverLay = component }/>
             </View>
             </View>
         );
@@ -329,6 +334,9 @@ class Register extends Component {
     }
 
     async _fetch_register(){
+        if(this._modalLoadingSpinnerOverLay) {
+            this._modalLoadingSpinnerOverLay.show()
+        }
         try {
         let token= await getToken()
         let deviceID= await getDeviceID()
@@ -386,7 +394,13 @@ class Register extends Component {
         }
         catch (error) {
             //console.log(error)
-
+            if(this._toast) {
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: error
+                })
+            }
 
         }
         finally {
@@ -395,6 +409,9 @@ class Register extends Component {
                 //disabled: false
             })
             this.setState({editable:true})
+            if(this._modalLoadingSpinnerOverLay) {
+                this._modalLoadingSpinnerOverLay.hide()
+            }
             //console.log(`SplashScreen.close(SplashScreen.animationType.scale, 850, 500)`)
             //SplashScreen.close(SplashScreen.animationType.scale, 850, 500)
         }

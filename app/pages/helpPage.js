@@ -292,7 +292,7 @@ class Help extends Component {
         }
         catch (error) {
             //console.log(error)
-            //..调用toast插件, show出错误信息...
+
 
         }
         finally {
@@ -344,7 +344,7 @@ class Help extends Component {
         }
         catch (error) {
             //console.log(error)
-            //..调用toast插件, show出错误信息...
+
 
             pageIndex--;
             if (pageIndex < 1) {

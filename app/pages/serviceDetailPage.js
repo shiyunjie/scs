@@ -280,6 +280,13 @@ class ServiceDetail extends Component {
         }
         catch (error) {
             //console.log(error)
+            if(this._toast) {
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: error
+                })
+            }
             this.setState({
                 showProgress: false,//显示加载
                 showReload: true,//显示加载更多
@@ -293,6 +300,9 @@ class ServiceDetail extends Component {
     }
 
     async _fetch_cancel() {
+        if(this._modalLoadingSpinnerOverLay) {
+            this._modalLoadingSpinnerOverLay.show()
+        }
         try {
 
             let token = await getToken()
@@ -347,10 +357,19 @@ class ServiceDetail extends Component {
         }
         catch (error) {
             //console.log(error)
+            if(this._toast) {
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: error
+                })
+            }
 
         }
         finally {
-
+            if(this._modalLoadingSpinnerOverLay) {
+                this._modalLoadingSpinnerOverLay.hide()
+            }
             //console.log(`SplashScreen.close(SplashScreen.animationType.scale, 850, 500)`)
             //SplashScreen.close(SplashScreen.animationType.scale, 850, 500)
         }
@@ -713,6 +732,8 @@ class ServiceDetail extends Component {
                     ref={ component => this._toast = component }
                     marginTop={64}>
                 </Toast>
+                <LoadingSpinnerOverlay
+                    ref={ component => this._modalLoadingSpinnerOverLay = component }/>
             </View>
         );
     }

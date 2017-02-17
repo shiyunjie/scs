@@ -29,6 +29,9 @@ import XhrEnhance from '../lib/XhrEnhance' //http
 import {getDeviceID,getToken} from '../lib/User'
 import Toast from 'react-native-smart-toast'
 import AppEventListenerEnhance from 'react-native-smart-app-event-listener-enhance'
+
+import LoadingSpinnerOverlay from 'react-native-smart-loading-spinner-overlay'
+
 import AliPay from 'react-native-smart-alipay'
 
 
@@ -192,11 +195,16 @@ class OnLinePay extends Component {
                     marginTop={64}>
 
                 </Toast>
+                <LoadingSpinnerOverlay
+                    ref={ component => this._modalLoadingSpinnerOverLay = component }/>
             </View>
         );
     }
 
     async _fetch_edit() {
+        if(this._modalLoadingSpinnerOverLay) {
+            this._modalLoadingSpinnerOverLay.show()
+        }
         try {
             let token = await getToken()
             let deviceID = await getDeviceID()
@@ -258,8 +266,19 @@ class OnLinePay extends Component {
         }
         catch (error) {
             //console.log(error)
+            if(this._toast) {
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: error
+                })
+            }
 
 
+        }finally {
+            if(this._modalLoadingSpinnerOverLay) {
+                this._modalLoadingSpinnerOverLay.hide()
+            }
         }
 
     }

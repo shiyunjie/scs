@@ -204,6 +204,11 @@ class Logistics extends Component {
 
                     </View>
                 }
+                <Toast
+                    ref={ component => this._toast = component }
+                    marginTop={64}>
+
+                </Toast>
             </View>
 
         )
@@ -261,7 +266,13 @@ class Logistics extends Component {
         }
         catch (error) {
             //console.log(error)
-
+            if(this._toast) {
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: error
+                })
+            }
 
         }
         finally {

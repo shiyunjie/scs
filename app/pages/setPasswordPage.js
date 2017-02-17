@@ -151,6 +151,9 @@ class SetPassword extends Component {
                             return
                         }
 
+                        this._input_new_password.editable=false
+                        this._input_conform_password=false
+
                         this._button_2.setState({
                             loading: true,
                             //disabled: true,
@@ -222,6 +225,13 @@ class SetPassword extends Component {
         }
         catch (error) {
             //console.log(error)
+            if(this._toast) {
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: error
+                })
+            }
 
 
         }
@@ -230,6 +240,8 @@ class SetPassword extends Component {
                 loading: false,
                 //disabled: false
             })
+            this._input_new_password.editable=true
+            this._input_conform_password=true
         }
     }
 

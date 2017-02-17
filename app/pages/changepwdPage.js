@@ -165,6 +165,11 @@ class SetPassword extends Component {
                             })
                             return
                         }
+
+                        this._input_old_password.editable=false
+                        this._input_new_password.editable=false
+                        this._input_conform_password.editable=false
+
                         this._button_2.setState({
                             loading: true,
                             //disabled: true,
@@ -284,7 +289,13 @@ class SetPassword extends Component {
         }
         catch (error) {
             //console.log(error)
-
+            if(this._toast) {
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: error
+                })
+            }
 
         }
         finally {
@@ -292,6 +303,9 @@ class SetPassword extends Component {
                 loading: false,
                 //disabled: false
             })
+            this._input_old_password.editable=true
+            this._input_new_password.editable=true
+            this._input_conform_password.editable=true
         }
     }
 }
@@ -316,7 +330,7 @@ const styles = StyleSheet.create({
     button: {
         height: 40,
         backgroundColor: constants.UIActiveColor,
-        borderRadius: 3, borderWidth: StyleSheet.hairlineWidth,
+        borderWidth: StyleSheet.hairlineWidth,
         borderColor: constants.UIActiveColor,
         justifyContent: 'center', borderRadius: 30,
 

@@ -38,6 +38,9 @@ import {getDeviceID,getToken,getPhone} from '../lib/User'
 import XhrEnhance from '../lib/XhrEnhance' //http
 import Toast from 'react-native-smart-toast'
 import AppEventListenerEnhance from 'react-native-smart-app-event-listener-enhance'
+
+import LoadingSpinnerOverlay from 'react-native-smart-loading-spinner-overlay'
+
 //import { member_changeInfoShow,member_changeInfo,errorXhrMock } from '../mock/xhr-mock'   //mock data
 
 class ChangeInfo extends Component {
@@ -96,7 +99,7 @@ class ChangeInfo extends Component {
                 }
             })
         )
-        this._fetchData_loadInfo()
+        setTimeout(()=>this._fetchData_loadInfo(),510)
     }
 
     render() {
@@ -300,6 +303,8 @@ class ChangeInfo extends Component {
                     marginTop={64}>
 
                 </Toast>
+                <LoadingSpinnerOverlay
+                    ref={ component => this._modalLoadingSpinnerOverLay = component }/>
             </View>
         );
     }
@@ -391,7 +396,13 @@ class ChangeInfo extends Component {
         catch (error) {
             //console.log(error)
 
-            //..调用toast插件, show出错误信息...
+            if(this._toast) {
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: error
+                })
+            }
 
         }finally {
             this.setState({
@@ -403,6 +414,9 @@ class ChangeInfo extends Component {
     }
 
     async _fetch_submitInfo() {
+        if(this._modalLoadingSpinnerOverLay) {
+            this._modalLoadingSpinnerOverLay.show()
+        }
         try {
             let token = await getToken()
             let deviceID = await getDeviceID()
@@ -461,9 +475,13 @@ class ChangeInfo extends Component {
 
         } catch (error) {
             //console.log(error)
-            //console.log(error)
-
-            //..调用toast插件, show出错误信息...
+            if(this._toast) {
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: error
+                })
+            }
 
 
         }
@@ -472,6 +490,9 @@ class ChangeInfo extends Component {
                 loading: false,
                 //disabled: false
             })
+            if(this._modalLoadingSpinnerOverLay) {
+                this._modalLoadingSpinnerOverLay.hide()
+            }
             //console.log(`SplashScreen.close(SplashScreen.animationType.scale, 850, 500)`)
             //SplashScreen.close(SplashScreen.animationType.scale, 850, 500)
         }

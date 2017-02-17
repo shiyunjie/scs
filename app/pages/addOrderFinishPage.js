@@ -108,7 +108,8 @@ class Version extends Component {
                                 style={{color:'white',
                                     fontSize:17,
                                     textAlignVertical:'center',
-                                    textAlign:'center'}}>完成</Text>
+                                    textAlign:'center',
+                                    color:'white'}}>完成</Text>
                         </TouchableOpacity>
 
                     </View>
@@ -133,8 +134,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'flex-start',
         alignItems: 'center',
-        marginLeft: constants.MarginLeftRight,
-        marginRight:constants.MarginLeftRight,
+        marginLeft: constants.MarginLeftRight*2,
+        marginRight:constants.MarginLeftRight*2,
         //backgroundColor: 'transparent',
         backgroundColor:constants.UIActiveColor,
         borderRadius:3,

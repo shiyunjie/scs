@@ -382,7 +382,13 @@ class OrderDetail extends Component {
         }
         catch (error) {
             //console.log(`error:`, error)
-            //console.log(`this:`, this)
+            if(this._toast) {
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: error
+                })
+            }
             this.setState({
                 showProgress: false,//显示加载
                 showReload: true,//显示加载更多
@@ -396,8 +402,10 @@ class OrderDetail extends Component {
     }
 
     async _fetchData_cancel() {
-        try {
+        if(this._modalLoadingSpinnerOverLay) {
             this._modalLoadingSpinnerOverLay.show()
+        }
+        try {
 
             let token = await getToken()
             let deviceID = await getDeviceID()
@@ -421,7 +429,7 @@ class OrderDetail extends Component {
             let result = await this.gunZip(resultData)
 
             result = JSON.parse(result)
-            //console.log('gunZip:', result)
+            console.log('gunZip:', result)
             if (result.code && result.code == -54) {
                 /**
                  * 发送事件去登录
@@ -450,10 +458,18 @@ class OrderDetail extends Component {
         }
         catch (error) {
             //console.log(error)
-
+            if(this._toast) {
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: error
+                })
+            }
         }
         finally {
-            this._modalLoadingSpinnerOverLay.hide()
+            if(this._modalLoadingSpinnerOverLay) {
+                this._modalLoadingSpinnerOverLay.hide()
+            }
             //console.log(`SplashScreen.close(SplashScreen.animationType.scale, 850, 500)`)
             //SplashScreen.close(SplashScreen.animationType.scale, 850, 500)
         }

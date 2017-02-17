@@ -98,6 +98,7 @@ class Login extends Component {
             <View style={styles.container}>
                 <View style={styles.instructions}>
                     <InputView style={{backgroundColor:'white',height:30}}
+                               ref={ component => this._input_phone = component }
                                iconName='ios-person'
                                iconSize={constants.IconSize}
                                placeholder='输入手机号/会员名/邮箱'
@@ -106,6 +107,7 @@ class Login extends Component {
                                value={this.state.phone}
                                onChangeText={(text) => this.setState({phone:text})}/>
                     <InputView style={{backgroundColor:'white',height:30,marginTop:10}}
+                               ref={ component => this._input_password = component }
                                iconName='ios-lock'
                                iconSize={constants.IconSize}
                                placeholder='输入密码'
@@ -170,6 +172,9 @@ class Login extends Component {
                             loading: true,
                             //disabled: true,
                         });
+                        this._input_phone.editable=false
+                        this._input_password.editable=false
+
                          AsyncStorage.setItem('account',this.state.phone)
                          this._fetch_Login()
                         /*
@@ -251,7 +256,13 @@ class Login extends Component {
         }
         catch (error) {
             //console.log(error)
-
+            if(this._toast) {
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: error
+                })
+            }
 
         }
         finally {
@@ -259,6 +270,8 @@ class Login extends Component {
                 loading: false,
                 //disabled: false
             })
+            this._input_phone.editable=true
+            this._input_password.editable=true
             //console.log(`SplashScreen.close(SplashScreen.animationType.scale, 850, 500)`)
             //SplashScreen.close(SplashScreen.animationType.scale, 850, 500)
         }
