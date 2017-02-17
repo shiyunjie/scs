@@ -165,7 +165,7 @@ class AddOrder extends Component {
             phone: phone,
             realName: realName,
             showProgress: false,//显示加载
-        }), 380);
+        }), 510);
 
     }
 

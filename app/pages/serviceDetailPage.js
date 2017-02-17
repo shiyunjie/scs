@@ -146,7 +146,7 @@ class ServiceDetail extends Component {
         )
         setTimeout(() => {
             this._fetchData()
-        }, 380)
+        }, 510)
     }
 
 

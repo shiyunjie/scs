@@ -107,7 +107,7 @@ class Logistics extends Component {
         )
         setTimeout(() => {
             this._fetch_logistics()
-        }, 380)
+        }, 510)
     }
 
 
