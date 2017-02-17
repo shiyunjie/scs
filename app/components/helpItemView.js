@@ -53,7 +53,7 @@ export default class HelpItem extends Component {
                         this.setState({show:!this.state.show})
                         }}>
                     <Text
-                        style={[styles.labelText,{marginLeft:constants.MarginLeftRight,},]}>{this.props.data.name}</Text>
+                        style={[styles.labelText,]}>{this.props.data.name}</Text>
                     <View
                         style={{flex:1,
                         flexDirection: 'row',
@@ -65,7 +65,7 @@ export default class HelpItem extends Component {
                             color={constants.UIInActiveColor}/>
                     </View>
                 </TouchableOpacity>
-                <View style={[this.state.show?{flex:1}:{height:0,width:0},{
+                <View style={[this.state.show?{flex:1,paddingRight:constants.MarginLeftRight,paddingTop:10}:{height:0,width:0},{
                         borderBottomWidth: StyleSheet.hairlineWidth,
                         borderColor: constants.UIInActiveColor,}]}>
                     {this.props.data.child.map((item, index) => {
