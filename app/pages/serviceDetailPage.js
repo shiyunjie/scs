@@ -25,6 +25,7 @@ import navigatorStyle from '../styles/navigatorStyle'       //navigationBar样�
 import Icon from 'react-native-vector-icons/Ionicons'
 import AppEventListenerEnhance from 'react-native-smart-app-event-listener-enhance'
 
+import LoadingSpinnerOverlay from 'react-native-smart-loading-spinner-overlay'
 import {getDeviceID,getToken} from '../lib/User'
 import XhrEnhance from '../lib/XhrEnhance' //http
 import Toast from 'react-native-smart-toast'
@@ -520,7 +521,8 @@ class ServiceDetail extends Component {
                                                 service_id:service_id,
                                             }
                                         });
-                                            }}>{this.state.logistics_status_name}></Text>
+                                            }}>{this.state.logistics_status_name!=null&&this.state.logistics_status_name!=''?
+                            this.state.logistics_status_name+'>':''}</Text>
                         </View>
                         <View style={styles.viewItem}>
                             <Text style={[{flex:1},styles.labelText]}>贸易条款</Text>

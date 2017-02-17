@@ -114,7 +114,7 @@ class Root extends Component {
     componentDidMount() {
 
         //this.addAppEventListener(
-        NativeAppEventEmitter.addListener('setNavigationBar.index', (navigationBar) => {
+        this._listener1 =NativeAppEventEmitter.addListener('setNavigationBar.index', (navigationBar) => {
             this.setState({
                 navigationBar: navigationBar,
             })
@@ -126,6 +126,15 @@ class Root extends Component {
             duration: 850,
             delay: 500,
         })
+    }
+
+    componentWillUnmount() {
+        //移除监听返回键
+        if (this._listener1) {
+
+        this._listener1.remove();
+    }
+
     }
 
 

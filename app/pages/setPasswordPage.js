@@ -13,8 +13,11 @@ import {
     ActivityIndicator,
     ActivityIndicatorIOS,
     ProgressBarAndroid,
+    NativeAppEventEmitter,
+    TouchableOpacity,
     Platform,
     BackAndroid,
+    AsyncStorage,
 } from 'react-native';
 
 import {getDeviceID,getToken} from '../lib/User'
@@ -25,7 +28,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import XhrEnhance from '../lib/XhrEnhance' //http
 import Toast from 'react-native-smart-toast'
 import AppEventListenerEnhance from 'react-native-smart-app-event-listener-enhance'
-
+import LoadingSpinnerOverlay from 'react-native-smart-loading-spinner-overlay'
 import navigatorStyle from '../styles/navigatorStyle'       //navigationBar样式
 import ValidateTextInput from '../components/validateTextInput'
 
@@ -151,6 +154,9 @@ class SetPassword extends Component {
                             return
                         }
 
+                        if(this._modalLoadingSpinnerOverLay){
+                            this._modalLoadingSpinnerOverLay.show()
+                        }
                         this._input_new_password.editable=false
                         this._input_conform_password=false
 
@@ -168,6 +174,8 @@ class SetPassword extends Component {
                     marginTop={64}>
 
                 </Toast>
+                <LoadingSpinnerOverlay
+                    ref={ component => this._modalLoadingSpinnerOverLay = component }/>
             </View>
         );
     }
@@ -211,7 +219,7 @@ class SetPassword extends Component {
                     children: '保存成功'
                 })
                 let routes = this.props.navigator.getCurrentRoutes();
-                this.props.navigator.popToRoute(routes[routes.length - 2])
+                this.props.navigator.popToRoute(routes[routes.length - 3])
 
             } else {
                 this._toast.show({
@@ -242,6 +250,9 @@ class SetPassword extends Component {
             })
             this._input_new_password.editable=true
             this._input_conform_password=true
+            if(this._modalLoadingSpinnerOverLay){
+                this._modalLoadingSpinnerOverLay.hide()
+            }
         }
     }
 
@@ -317,7 +328,7 @@ const navigationBarRouteMapper = {
 
 }
 
-export default XhrEnhance(SetPassword)
+export default AppEventListenerEnhance(XhrEnhance(SetPassword))
 
 const styles = StyleSheet.create({
     container: {

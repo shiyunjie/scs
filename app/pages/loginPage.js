@@ -23,7 +23,7 @@ import constants from  '../constants/constant';
 import InputView from '../components/loginInputView';
 import ForgetPasswordPage from './forgetPasswordPage';
 import Button from 'react-native-smart-button';
-
+import LoadingSpinnerOverlay from 'react-native-smart-loading-spinner-overlay'
 
 import Icon from 'react-native-vector-icons/Ionicons';
 import navigatorStyle from '../styles/navigatorStyle'       //navigationBar样式
@@ -77,6 +77,7 @@ class Login extends Component {
         const routers = this.props.navigator.getCurrentRoutes();
         if (routers.length > 1) {
             this.props.navigator.popToTop()
+            NativeAppEventEmitter.emit('setRootPageNavigationBar.index')
 
             return true;
         }
@@ -174,6 +175,9 @@ class Login extends Component {
                         });
                         this._input_phone.editable=false
                         this._input_password.editable=false
+                        if(this._modalLoadingSpinnerOverLay){
+                            this._modalLoadingSpinnerOverLay.show()
+                        }
 
                          AsyncStorage.setItem('account',this.state.phone)
                          this._fetch_Login()
@@ -195,6 +199,8 @@ class Login extends Component {
                     marginTop={64}>
 
                 </Toast>
+                <LoadingSpinnerOverlay
+                    ref={ component => this._modalLoadingSpinnerOverLay = component }/>
             </View>
         );
     }
@@ -243,6 +249,7 @@ class Login extends Component {
                     children: '登录成功'
                 })
                 this.props.navigator.pop()
+                NativeAppEventEmitter.emit('setRootPageNavigationBar.index')
 
             } else {
                 this._toast.show({
@@ -272,6 +279,9 @@ class Login extends Component {
             })
             this._input_phone.editable=true
             this._input_password.editable=true
+            if(this._modalLoadingSpinnerOverLay){
+                this._modalLoadingSpinnerOverLay.hide()
+            }
             //console.log(`SplashScreen.close(SplashScreen.animationType.scale, 850, 500)`)
             //SplashScreen.close(SplashScreen.animationType.scale, 850, 500)
         }
@@ -350,7 +360,7 @@ const styles = StyleSheet.create({
     button: {
         height: 40,
         backgroundColor: constants.UIActiveColor,
-        borderRadius: 3, borderWidth: StyleSheet.hairlineWidth,
+        borderWidth: StyleSheet.hairlineWidth,
         borderColor: constants.UIActiveColor,
         justifyContent: 'center', borderRadius: 30,
     },
@@ -368,7 +378,8 @@ const navigationBarRouteMapper = {
         var previousRoute = navState.routeStack[index - 1];
         return (
             <TouchableOpacity
-                onPress={() => navigator.popToTop()}
+                onPress={() => {navigator.popToTop()
+                 NativeAppEventEmitter.emit('setRootPageNavigationBar.index')}}
                 style={navigatorStyle.navBarLeftButton}>
                 <View style={navigatorStyle.navBarLeftButtonAndroid}>
                     <Icon

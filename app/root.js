@@ -77,6 +77,9 @@ class Root extends Component {
                 AsyncStorage.removeItem('token')
                 AsyncStorage.removeItem('realName')
                 this._PushLogin()
+                this.setState({selectedTab: '首页',})
+                //NativeAppEventEmitter.emit('setNavigationBar.index', NavigationBarRouteMapperList[0])
+
             })
         )
 

@@ -24,7 +24,7 @@ import constants from  '../constants/constant';
 import Icon from 'react-native-vector-icons/Ionicons';
 import navigatorStyle from '../styles/navigatorStyle'       //navigationBar样式
 import XhrEnhance from '../lib/XhrEnhance' //http
-
+import LoadingSpinnerOverlay from 'react-native-smart-loading-spinner-overlay'
 //import { register_firstStep, check_msg_code, errorXhrMock } from '../mock/xhr-mock'   //mock data
 
 import {getDeviceID,getToken,getRegMsgSerial,getForMsgSerial} from '../lib/User'
@@ -144,16 +144,23 @@ class ForgetPassword extends Component {
                            this.timer = setInterval(
                           () => {
                           secondNum--
-                          this.setState({ButtonText:`${secondNum}秒`})
+                          this.setState({ButtonText:`${secondNum}秒后重发`})
 
                           if(secondNum<=0){
                           this._button_3.setState({
                             loading: false,
                             //disabled: false
                             })
+                            if(this._input_phone) {
+                                this._input_phone.editable = true
+                            }
+                            if(this._modalLoadingSpinnerOverLay){
+                                this._modalLoadingSpinnerOverLay.hide()
+                            }
+
                          clearInterval(this.timer);
                          secondNum=60
-                          this.setState({ButtonText:`${secondNum}秒`})
+                          this.setState({ButtonText:`${secondNum}秒后重发`})
                           }
                            },
                           1000
@@ -163,6 +170,9 @@ class ForgetPassword extends Component {
                             loading: true,
                             //disabled: true,
                         })
+                        if(this._modalLoadingSpinnerOverLay){
+                            this._modalLoadingSpinnerOverLay.show()
+                        }
 
                          this._fetchData_code()
                         /*setTimeout( () => {
@@ -186,12 +196,12 @@ class ForgetPassword extends Component {
                         style={[styles.button,{ marginLeft: constants.MarginLeftRight,
                         marginRight: constants.MarginLeftRight,
                         marginTop: 20,}]}
-                        textStyle={{fontSize: 17, color: 'white'}}
+                        textStyle={{fontSize: 14, color: 'white'}}
                         loadingComponent={
                             <View style={{flexDirection: 'row', alignItems: 'center'}}>
                                 {this._renderActivityIndicator()}
-                                <Text style={{fontSize: 17, color: 'white', fontWeight: 'bold', fontFamily: '.HelveticaNeueInterface-MediumP4',}}>
-                                {this.state.ButtonText}</Text>
+                                <Text style={{fontSize: 14, color: 'white', fontWeight: 'bold', fontFamily: '.HelveticaNeueInterface-MediumP4',}}>
+                                认证中</Text>
                             </View>
                     }
                         onPress={ () => {
@@ -219,6 +229,9 @@ class ForgetPassword extends Component {
                         })
                         this._input_phone.editable=false
                         this._input_code.editable=false
+                        if(this._modalLoadingSpinnerOverLay){
+                        this._modalLoadingSpinnerOverLay.show()
+                        }
                           /*  this._button_2.setState({
                                 loading: false,
                                 //disabled: false
@@ -238,6 +251,8 @@ class ForgetPassword extends Component {
                     marginTop={64}>
 
                 </Toast>
+                <LoadingSpinnerOverlay
+                    ref={ component => this._modalLoadingSpinnerOverLay = component }/>
             </View>
         );
     }
@@ -299,6 +314,7 @@ class ForgetPassword extends Component {
                     AsyncStorage.setItem('ForMsgSerial',result.result)
                 }else{
                     //console.log('regist:',result.result)
+                    this.props.navigator.pop()
                     AsyncStorage.setItem('RegMsgSerial',result.result)
                     //console.log('AsyncStorage_segMsgSerial')
                 }
@@ -319,6 +335,8 @@ class ForgetPassword extends Component {
                     loading: false,
                     //disabled: false
                 })
+
+
                 clearInterval(this.timer);
                 secondNum=60
                 this.setState({ButtonText:`${secondNum}秒`})
@@ -335,14 +353,14 @@ class ForgetPassword extends Component {
                 })
             }
 
-        } finally {
-           /* this._button_3.setState({
-                loading: false,
-                //disabled: false
-            })*/
-            this._input_phone.editable=true
-            //console.log(`SplashScreen.close(SplashScreen.animationType.scale, 850, 500)`)
-            //SplashScreen.close(SplashScreen.animationType.scale, 850, 500)
+
+        }finally {
+            if(this._input_phone) {
+                this._input_phone.editable = true
+            }
+            if(this._modalLoadingSpinnerOverLay){
+                this._modalLoadingSpinnerOverLay.hide()
+            }
         }
     }
 
@@ -431,6 +449,9 @@ class ForgetPassword extends Component {
                 loading: false,
                 //disabled: false
             })
+            if(this._modalLoadingSpinnerOverLay){
+                this._modalLoadingSpinnerOverLay.hide()
+            }
 
         }
     }
@@ -456,7 +477,7 @@ const styles = StyleSheet.create(
         button: {
         height: 40,
         backgroundColor: constants.UIActiveColor,
-        borderRadius: 3, borderWidth: StyleSheet.hairlineWidth,
+        borderWidth: StyleSheet.hairlineWidth,
         borderColor: constants.UIActiveColor,
         justifyContent: 'center', borderRadius: 30
     }

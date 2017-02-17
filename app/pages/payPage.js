@@ -474,12 +474,12 @@ class PayPage extends Component {
                             <Text
                                 style={[styles.contentText,{flex:2,fontSize:12,borderBottomWidth: StyleSheet.hairlineWidth,
                                 borderColor: constants.LineColor}]}>由于不可估计因素,预估和实际价格可能略有出入,请以实际价格为准</Text>
-
+                            {this.state.order_status==10||this.state.order_status==30
+                            ||this.state.order_status==70||this.state.order_status==100?null:
                             <Button
                                 ref={ component => this.button2 = component }
                                 touchableType={Button.constants.touchableTypes.fadeContent}
-                                style={[styles.button,this.state.order_status==10||this.state.order_status==30
-                            ||this.state.order_status==70||this.state.order_status==100?{height:0}:{height:40}]}
+                                style={[styles.button,{height:40}]}
                                 textStyle={{fontSize: 12, color: 'white'}}
                                 loadingComponent={
                             <View style={{flexDirection: 'row', alignItems: 'center'}}>
@@ -487,7 +487,7 @@ class PayPage extends Component {
                                 <Text style={{fontSize: 12, color: 'white', fontWeight: 'bold',
                                 fontFamily: '.HelveticaNeueInterface-MediumP4',}}>确认中...</Text>
                             </View>
-                    }
+                             }
                                 onPress={ () => {
                         this.button2.setState({
 
@@ -525,6 +525,7 @@ class PayPage extends Component {
                     }}>
                                 {pageType == 'show' ? `确认报价` : `支付￥${this.state.total}`}
                             </Button>
+                            }
                         </View>
                     </View>
                 }

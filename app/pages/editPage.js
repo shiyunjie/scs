@@ -23,7 +23,7 @@ import navigatorStyle from '../styles/navigatorStyle'       //navigationBaræ ·å¼
 
 import XhrEnhance from '../lib/XhrEnhance' //http
 //import { sysInfo_feedBack,errorXhrMock } from '../mock/xhr-mock'   //mock data
-
+import LoadingSpinnerOverlay from 'react-native-smart-loading-spinner-overlay'
 import {getDeviceID,getToken,getRealName} from '../lib/User'
 import Toast from 'react-native-smart-toast'
 import AppEventListenerEnhance from 'react-native-smart-app-event-listener-enhance'
@@ -115,6 +115,9 @@ class Edit extends Component {
                             //disabled: true,
                         });
                         this._input_text.editable=false
+                        if(this._modalLoadingSpinnerOverLay){
+                        this._modalLoadingSpinnerOverLay.show()
+                        }
                         this._fetch_edit()
                        /* setTimeout( () => {
                             this.button2.setState({
@@ -131,6 +134,8 @@ class Edit extends Component {
                     marginTop={64}>
 
                 </Toast>
+                <LoadingSpinnerOverlay
+                    ref={ component => this._modalLoadingSpinnerOverLay = component }/>
             </View>
         );
     }
@@ -206,6 +211,9 @@ class Edit extends Component {
             //disabled: false
         })
             this._input_text.editable=true
+            if(this._modalLoadingSpinnerOverLay){
+                this._modalLoadingSpinnerOverLay.hide()
+            }
         //console.log(`SplashScreen.close(SplashScreen.animationType.scale, 850, 500)`)
         //SplashScreen.close(SplashScreen.animationType.scale, 850, 500)
     }

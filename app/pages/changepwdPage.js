@@ -31,6 +31,7 @@ import {hex_md5} from '../lib/md5'
 import Toast from 'react-native-smart-toast'
 import AppEventListenerEnhance from 'react-native-smart-app-event-listener-enhance'
 import ValidateTextInput from '../components/validateTextInput'
+import LoadingSpinnerOverlay from 'react-native-smart-loading-spinner-overlay'
 //import { member_changePwd,errorXhrMock } from '../mock/xhr-mock'   //mock data
 
 class SetPassword extends Component {
@@ -165,7 +166,9 @@ class SetPassword extends Component {
                             })
                             return
                         }
-
+                        if(this._modalLoadingSpinnerOverLay){
+                        this._modalLoadingSpinnerOverLay.show()
+                        }
                         this._input_old_password.editable=false
                         this._input_new_password.editable=false
                         this._input_conform_password.editable=false
@@ -190,6 +193,8 @@ class SetPassword extends Component {
                     marginTop={64}>
 
                 </Toast>
+                <LoadingSpinnerOverlay
+                    ref={ component => this._modalLoadingSpinnerOverLay = component }/>
             </View>
         );
     }
@@ -270,12 +275,13 @@ class SetPassword extends Component {
                     children: '保存成功'
                 })
 
-                AsyncStorage.removeItem('token')
+               /* AsyncStorage.removeItem('token')
                 AsyncStorage.removeItem('realName')
                 this.props.navigator.push({
                     title: '用户登录',
                     component: LoginPage,
-                })
+                })*/
+                NativeAppEventEmitter.emit('getMsg_202_code_need_login')
 
             } else {
                 this._toast.show({
@@ -306,6 +312,9 @@ class SetPassword extends Component {
             this._input_old_password.editable=true
             this._input_new_password.editable=true
             this._input_conform_password.editable=true
+            if(this._modalLoadingSpinnerOverLay){
+                this._modalLoadingSpinnerOverLay.hide()
+            }
         }
     }
 }

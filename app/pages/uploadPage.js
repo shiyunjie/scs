@@ -34,7 +34,7 @@ import Toast from 'react-native-smart-toast'
 import RNFS from 'react-native-fs'
 
 import {doSign} from '../lib/utils'
-
+import LoadingSpinnerOverlay from 'react-native-smart-loading-spinner-overlay'
 import ImageZoom from 'react-native-image-pan-zoom';
 
 const NativeCompressedModule = NativeModules.NativeCompressedModule;
@@ -132,10 +132,14 @@ class UploadPage extends Component {
         )
         this.addAppEventListener(
             NativeAppEventEmitter.addListener('PicturePicker.finish.saveIds', () => {
+                if(this._modalLoadingSpinnerOverLay){
+                    this._modalLoadingSpinnerOverLay.show()
+                }
                 this._fetch_finish()
             })
         )
-        this._fetchData()
+        setTimeout(()=>this._fetchData(), 510);
+
     }
 
 
@@ -259,6 +263,8 @@ class UploadPage extends Component {
                     ref={ component => this._toast = component }
                     marginTop={64}>
                 </Toast>
+                <LoadingSpinnerOverlay
+                    ref={ component => this._modalLoadingSpinnerOverLay = component }/>
             </View>
         );
     }
@@ -734,6 +740,9 @@ class UploadPage extends Component {
 
         }
         finally {
+            if(this._modalLoadingSpinnerOverLay){
+                this._modalLoadingSpinnerOverLay.hide()
+            }
             //console.log(`SplashScreen.close(SplashScreen.animationType.scale, 850, 500)`)
             //SplashScreen.close(SplashScreen.animationType.scale, 850, 500)
         }

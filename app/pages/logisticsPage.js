@@ -13,6 +13,7 @@ import {
     Platform,
     NativeAppEventEmitter,
     TouchableOpacity,
+    Image,
 } from 'react-native';
 
 
@@ -26,6 +27,7 @@ import XhrEnhance from '../lib/XhrEnhance' //http
 
 import {getDeviceID,getToken} from '../lib/User'
 import Toast from 'react-native-smart-toast'
+import image_logo from '../images/icon.png'
 import AppEventListenerEnhance from 'react-native-smart-app-event-listener-enhance'
 let firstDataList = []
 /*let firstDataList = [{
@@ -150,12 +152,14 @@ class Logistics extends Component {
                         this._fetch_logistics()
                         }}/> :
                     <View style={styles.container}>
-
+                        {this.state.dataList.length>0?
                         <View style={styles.line}>
-                            <Icon
-                                name='ios-boat'
-                                color={this.state.dataList.length==1?constants.UIActiveColor:constants.UIInActiveColor}
-                                size={constants.IconSize}/>
+
+                                <Icon
+                                    name='ios-boat'
+                                    color={this.state.dataList.length==1?constants.UIActiveColor:constants.UIInActiveColor}
+                                    size={constants.IconSize}/>:null
+
                             {this.state.dataList.map((data, index)=> {
                                 if (index == this.state.dataList.length - 1) {
                                     return null
@@ -168,7 +172,7 @@ class Logistics extends Component {
                                             <Icon
                                                 name='ios-boat'
                                                 color={index==this.state.dataList.length-2?
-                                        constants.UIActiveColor:constants.UIInActiveColor}
+                                                constants.UIActiveColor:constants.UIInActiveColor}
                                                 size={constants.IconSize}/>
                                         </View>
                                     )
@@ -176,8 +180,19 @@ class Logistics extends Component {
                             })
 
                             }
-                        </View>
+
+                        </View>:null
+                        }
                         <View style={styles.tab}>
+                            {this.state.dataList.length == 0 ?
+                                <View style={{flex:1,flexDirection:'column',justifyContent:'center',alignItems:'center'}}>
+                                    <Image
+                                        style={{width:100,height:100}}
+                                        source={image_logo}
+                                    />
+                                    <Text style={{fontSize:17,color:constants.LabelColor,marginTop:10}}>暂时没有数据</Text>
+                                </View>:null
+                            }
                             {this.state.dataList.map((data, index)=> {
                                 return (
                                     <View style={{height:60,flexDirection:'column',paddingTop:6,paddingBottom:6,paddingLeft:10,
@@ -276,12 +291,7 @@ class Logistics extends Component {
 
         }
         finally {
-            if (this.button2) {
-                this.button2.setState({
-                    loading: false,
-                    //disabled: false
-                })
-            }
+
             this.setState({
                 showProgress: false,
             })

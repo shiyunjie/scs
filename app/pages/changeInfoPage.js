@@ -59,8 +59,8 @@ class ChangeInfo extends Component {
             company_address: '',
             company_introduction: '',
         }
-        this._qqValidate=/^[0-9]*$/
-        this._textValidate=/^.*$/
+        this._qqValidate = /^[0-9]*$/
+        this._textValidate = /^.*$/
     }
 
     componentWillMount() {
@@ -87,19 +87,19 @@ class ChangeInfo extends Component {
                 } else if (label == '联系时间') {
 
                     this.setState({contact_time: context})
-                }else if (label == '公司名称') {
+                } else if (label == '公司名称') {
 
                     this.setState({company_name: context})
-                }else if (label == '公司地址') {
+                } else if (label == '公司地址') {
 
                     this.setState({company_address: context})
-                }else if (label == '公司简介') {
+                } else if (label == '公司简介') {
 
                     this.setState({company_introduction: context})
                 }
             })
         )
-        setTimeout(()=>this._fetchData_loadInfo(),510)
+        setTimeout(()=>this._fetchData_loadInfo(), 510)
     }
 
     render() {
@@ -234,7 +234,7 @@ class ChangeInfo extends Component {
                                 }
                             });
                             } }>
-                                <Text
+                            <Text
                                 style={{flex:1,fontSize:14,
                                 textAlignVertical:'top',
                                 backgroundColor:'white',
@@ -246,7 +246,9 @@ class ChangeInfo extends Component {
                                 underlineColorAndroid='transparent'
                                 multiline={true}//多行输入
                                 numberOfLines={4}
-                                >{this.state.company_introduction}</Text>
+
+                            >{this.state.company_introduction!=null&&this.state.company_introduction!=''?
+                                this.state.company_introduction:'请输入公司简介'}</Text>
 
                         </TouchableOpacity>
                         <View
@@ -295,7 +297,7 @@ class ChangeInfo extends Component {
                                 保存
                             </Button>
                         </View>
-                </ScrollView>
+                    </ScrollView>
                 }
 
                 <Toast
@@ -396,7 +398,7 @@ class ChangeInfo extends Component {
         catch (error) {
             //console.log(error)
 
-            if(this._toast) {
+            if (this._toast) {
                 this._toast.show({
                     position: Toast.constants.gravity.center,
                     duration: 255,
@@ -404,7 +406,7 @@ class ChangeInfo extends Component {
                 })
             }
 
-        }finally {
+        } finally {
             this.setState({
                 showProgress: false,//显示加载
             })
@@ -414,7 +416,7 @@ class ChangeInfo extends Component {
     }
 
     async _fetch_submitInfo() {
-        if(this._modalLoadingSpinnerOverLay) {
+        if (this._modalLoadingSpinnerOverLay) {
             this._modalLoadingSpinnerOverLay.show()
         }
         try {
@@ -475,7 +477,7 @@ class ChangeInfo extends Component {
 
         } catch (error) {
             //console.log(error)
-            if(this._toast) {
+            if (this._toast) {
                 this._toast.show({
                     position: Toast.constants.gravity.center,
                     duration: 255,
@@ -490,7 +492,7 @@ class ChangeInfo extends Component {
                 loading: false,
                 //disabled: false
             })
-            if(this._modalLoadingSpinnerOverLay) {
+            if (this._modalLoadingSpinnerOverLay) {
                 this._modalLoadingSpinnerOverLay.hide()
             }
             //console.log(`SplashScreen.close(SplashScreen.animationType.scale, 850, 500)`)
@@ -517,9 +519,9 @@ const styles = StyleSheet.create({
         justifyContent: 'center', borderRadius: 30,
     },
     textInput: {
-        flex:1,
+        flex: 1,
         alignSelf: 'stretch',
-        marginRight:constants.MarginLeftRight
+        marginRight: constants.MarginLeftRight
 
     },
     textLine: {

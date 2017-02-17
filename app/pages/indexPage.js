@@ -28,8 +28,7 @@ import addOrderPage from './addOrderPage'
 import navigatorStyle from '../styles/navigatorStyle'       //navigationBar样式
 import XhrEnhance from '../lib/XhrEnhance'
 
-
-
+import Button from 'react-native-smart-button';
 
 import Icon from 'react-native-vector-icons/Ionicons';
 import Toast from 'react-native-smart-toast'
@@ -122,7 +121,7 @@ class Index extends Component {
     componentDidMount() {
 
         //console.log(`this._pullToRefreshListView.beginRefresh()`)
-        //this._pullToRefreshListView.beginRefresh()
+        this._pullToRefreshListView.beginRefresh()
 
     }
 
@@ -307,12 +306,18 @@ class Index extends Component {
         else if (rowID == 1) {
             return (
                 <View style={styles.swiper}>
-                    <TouchableOpacity onPress={this._addOrder}>
+                        <Button
+                            touchableType={Button.constants.touchableTypes.fadeContent}
+                            style={{flex:1,}}
+                            textStyle={{fontSize: 14, color: 'white'}}
+                            onPress={this._addOrder}
+                        >
                         <Image source={rowData.buttonImage}
                                style={{width:150,height:95,justifyContent:'center',alignItems:'center'}}>
                             <Text style={{color:'white'}}>{rowData.buttonText}</Text>
                         </Image>
-                    </TouchableOpacity>
+                       </Button>
+
                 </View>
             )
         }

@@ -66,7 +66,8 @@ class ValidatePage extends Component {
         return (
             <View style={{flex:1}}>
                 <View style={styles.container}>
-                    <View style={{height:40,flexDirection:'row',alignItems:'center'}}>
+                    <View style={[{flexDirection:'row',alignItems:'center'},
+                    this.state.multiline?{height:200,justifyContent:'flex-start',}:{height:40}]}>
                         {/*this.state.multiline?null:
                             <View style={{backgroundColor:'white',height:40,justifyContent:'center',
                             alignItems:'center',paddingLeft:constants.MarginLeftRight}}>

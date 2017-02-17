@@ -44,13 +44,10 @@ import {getDeviceID,getToken,getPhone,getRealName} from '../lib/User'
 import XhrEnhance from '../lib/XhrEnhance' //http
 import Toast from 'react-native-smart-toast'
 import ProgressView from '../components/modalProgress'
-
 import LoadingSpinnerOverlay from 'react-native-smart-loading-spinner-overlay'
 
 import items from '../constants/serviceItem'
-
 import pay  from '../constants/pay'
-
 import typeData from '../constants/mode'
 let typeShow = []
 
