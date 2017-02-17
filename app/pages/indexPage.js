@@ -96,22 +96,22 @@ class Index extends Component {
         let currentRoute = this.props.navigator.navigationContext.currentRoute
         this.addAppEventListener(
             this.props.navigator.navigationContext.addListener('willfocus', (event) => {
-                console.log(`indexPage willfocus...`)
-                console.log(`currentRoute`, currentRoute)
-                console.log(`event.data.route`, event.data.route)
+                //console.log(`indexPage willfocus...`)
+                //console.log(`currentRoute`, currentRoute)
+                //console.log(`event.data.route`, event.data.route)
                 if (currentRoute === event.data.route) {
-                    console.log("indexPage willAppear")
+                    //console.log("indexPage willAppear")
                     //this._pullToRefreshListView.beginRefresh()
                     let { refreshBackAnimating, loadMoreBackAnimating, _scrollView, _scrollY, } = this._pullToRefreshListView
                     if (!refreshBackAnimating && !loadMoreBackAnimating) {
                         _scrollView.scrollTo({y: _scrollY - 5, animated: true,})
                         _scrollView.scrollTo({y: _scrollY + 5, animated: true,})
-                        console.log(`_scrollY + StyleSheet.hairlineWidth`, _scrollY + StyleSheet.hairlineWidth)
+                        //console.log(`_scrollY + StyleSheet.hairlineWidth`, _scrollY + StyleSheet.hairlineWidth)
                     }
                     //NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
                     NativeAppEventEmitter.emit('setRootPageNavigationBar.index')
                 } else {
-                    console.log("indexPage willDisappear, other willAppear")
+                    //console.log("indexPage willDisappear, other willAppear")
                 }
                 //
             })
@@ -121,7 +121,7 @@ class Index extends Component {
 
     componentDidMount() {
 
-        console.log(`this._pullToRefreshListView.beginRefresh()`)
+        //console.log(`this._pullToRefreshListView.beginRefresh()`)
         //this._pullToRefreshListView.beginRefresh()
 
     }
@@ -141,6 +141,8 @@ class Index extends Component {
                     renderHeader={this._renderHeader}
                     renderFooter={this._renderFooter}
                     enabledPullUp={false}
+                    showsVerticalScrollIndicator={false}
+                    enableEmptySections={true}
                     renderRow={this._renderRow}
                     onRefresh={this._onRefresh}
                     //pullUpDistance={70}
@@ -188,9 +190,9 @@ class Index extends Component {
         try {
 
             let resultData = await this.fetch(options)
-            console.log('resultData:', resultData)
+            //console.log('resultData:', resultData)
             let result = await this.gunZip(resultData)
-            console.log('gunZip:', result)
+            //console.log('gunZip:', result)
             result = JSON.parse(result)
 
 
@@ -214,7 +216,7 @@ class Index extends Component {
             }
         }
         catch (error) {
-            console.log(error)
+            //console.log(error)
 
             //..调用toast插件, show出错误信息...
 
@@ -277,15 +279,15 @@ class Index extends Component {
     _renderFooter = (viewState) => {
         return (
             <View
-                style={{flexDirection: 'row',height: 35, justifyContent: 'center', alignItems: 'center', backgroundColor: 'transparent',}}>
-                <Image source={image_logo} style={{width:40,height:40}}/>
+                style={{flexDirection: 'column',height: 60, justifyContent: 'center', alignItems: 'center', backgroundColor: 'transparent',}}>
+                <Image source={image_logo} style={{width:30,height:30}}/>
                 <Text>胖马贸服</Text>
             </View>
         )
     }
 
     _renderRow = (rowData, sectionID, rowID) => {
-        console.log(`rowData`, rowData)
+        //console.log(`rowData`, rowData)
         //console.log(`rowID`, rowID)
         if (rowID == 0) {
             return (

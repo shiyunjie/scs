@@ -10,6 +10,7 @@ import {
     NativeAppEventEmitter,
     TouchableOpacity,
     Platform,
+    BackAndroid,
 } from 'react-native';
 
 import image_logo from '../images/icon.png'
@@ -49,14 +50,25 @@ class Version extends Component {
             //
         })
         )
-       this._getVersion()
+        this.addAppEventListener(
+            BackAndroid.addEventListener('hardwareBackPress', this.onBackAndroid)
+        )
     }
 
-    async _getVersion(){
+    onBackAndroid = () => {
+        const routers = this.props.navigator.getCurrentRoutes();
+        if (routers.length > 1) {
+            /* Alert.alert('温馨提醒','确定退出吗?',[
+             {text:'取消',onPress:()=>{}},
+             {text:'确定',onPress:()=>this.props.navigator.popToTop()}
+             ])*/
+            this.props.navigator.popToTop()
+            return true;
+        }
 
-        let version=await getVersion()
-        this.setState({version:version})
     }
+
+
 
     render() {
         return (
@@ -72,13 +84,34 @@ class Version extends Component {
                     source={image_logo}
                     />
                     <Text
-                    style={{color:constants.UIActiveColor,marginTop:10,}}
+                    style={{color:constants.UIActiveColor,marginTop:10,marginBottom:10,fontSize:16,}}
                     //backgroundColor:'transparent'
-                    >胖马贸服</Text>
-                    <Text
-                        style={{color:constants.UIActiveColor,marginTop:10,}}
-                        //backgroundColor:'transparent'
-                    >{this.state.version}</Text>
+                    >发送委托单成功了</Text>
+                    <View style={[styles.viewItem,]}>
+
+                        <TouchableOpacity
+                            style={[{justifyContent:'center',alignItems:'center',},
+                            {flex:1}]}
+                            onPress={ ()=> this.props.navigator.pop() }>
+                            <Text style={{color:'white',
+                                      fontSize:17,textAlignVertical:'center',textAlign:'center',}}>再来一单</Text>
+
+                        </TouchableOpacity>
+                        <View
+                            style={[{height:30,backgroundColor:'white'},
+                                {width:StyleSheet.hairlineWidth,}]}/>
+                        <TouchableOpacity
+                            style={[{justifyContent:'center',alignItems:'center',},
+                                        {flex:1,}]}
+                            onPress={ ()=>this.props.navigator.popToTop()} >
+                            <Text
+                                style={{color:'white',
+                                    fontSize:17,
+                                    textAlignVertical:'center',
+                                    textAlign:'center'}}>完成</Text>
+                        </TouchableOpacity>
+
+                    </View>
 
                 </View>
                 <View style={{flex:1}}/>
@@ -95,6 +128,17 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: '#FCF0ED',
     },
+    viewItem: {
+        height: 40,
+        flexDirection: 'row',
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+        marginLeft: constants.MarginLeftRight,
+        marginRight:constants.MarginLeftRight,
+        //backgroundColor: 'transparent',
+        backgroundColor:constants.UIActiveColor,
+        borderRadius:3,
+    },
 
 });
 
@@ -108,7 +152,7 @@ const navigationBarRouteMapper = {
         var previousRoute = navState.routeStack[ index - 1 ];
         return (
             <TouchableOpacity
-                onPress={() => navigator.pop()}
+                onPress={() => navigator.popToTop()}
                 style={navigatorStyle.navBarLeftButton}>
                 <View style={navigatorStyle.navBarLeftButtonAndroid}>
                     <Icon

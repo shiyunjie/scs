@@ -21,12 +21,12 @@ export const doSign = (data)=> {
     rsa.readPrivateKeyFromPEMString(prvkey);
     let sigVal = rsa.signString(data, 'sha1');
 
-    console.log(`sigVal:`, sigVal)
+    //console.log(`sigVal:`, sigVal)
 
 
     let hex2b64Val = hex2b64(sigVal)
 
-    console.log(`hex2b64Val:`, hex2b64Val)
+    //console.log(`hex2b64Val:`, hex2b64Val)
     return hex2b64Val
 }
 

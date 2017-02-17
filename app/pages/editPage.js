@@ -69,9 +69,8 @@ class Edit extends Component {
                       fontSize:15,
                       backgroundColor:'white',
                       textAlignVertical:'top',
-                      padding:constants.MarginLeftRight,
-                      borderTopWidth: StyleSheet.hairlineWidth,
-                      borderBottomWidth: StyleSheet.hairlineWidth,
+                      margin:constants.MarginLeftRight,
+                      borderWidth: StyleSheet.hairlineWidth,
                       borderColor: constants.UIInActiveColor,
                       justifyContent:'flex-start'
                       }}
@@ -84,8 +83,8 @@ class Edit extends Component {
                       editable = {true}
                       value={this.state.text}
                       onChangeText={(text) => this.setState({text:text})}/>
-                  <Text style={{color:constants.UIInActiveColor,position:'absolute',
-                  bottom:5,right:5,backgroundColor:'transparent',}}>300字以内</Text>
+                  <Text style={{color:constants.UIInActiveColor,position:'absolute',bottom:constants.MarginLeftRight,
+                  right:constants.MarginLeftRight,backgroundColor:'transparent',}}>300字以内</Text>
               </View>
                 <View  style={{flex:1,padding:10}}>
                     <Button
@@ -231,7 +230,7 @@ const styles = StyleSheet.create({
     button: {
         height: 40,
         backgroundColor: constants.UIActiveColor,
-        borderRadius: 3, borderWidth: StyleSheet.hairlineWidth,
+        borderWidth: StyleSheet.hairlineWidth,
         borderColor: constants.UIActiveColor,
         justifyContent: 'center', borderRadius: 30,
     },

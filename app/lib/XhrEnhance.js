@@ -53,7 +53,7 @@ export default XhrEnhance = (ComposedComponent) => {
 
 
                         let result = fetchMock(options)
-                        console.log(`resultMock = `, result)
+                        //console.log(`resultMock = `, result)
                         return result
 
 
@@ -92,7 +92,7 @@ export default XhrEnhance = (ComposedComponent) => {
                  * 这里处理sign
                  */
                 data.sign = this._doRSASign(data.s)
-                console.log(`data:`, data)
+                //console.log(`data:`, data)
                 /**
                  * 处理sign结束
                  */
@@ -167,9 +167,9 @@ export default XhrEnhance = (ComposedComponent) => {
                     delete(sendData.data['iType'])
                     delete(sendData.data['deviceId'])
                     delete(sendData.data['token'])
-                    console.log('data_deviceId:', sendData.deviceId);
+                    //console.log('data_deviceId:', sendData.deviceId);
 
-                    console.log('data_sendData:', sendData);
+                    //console.log('data_sendData:', sendData);
 
                     let result = HttpRSAModule.gzipRSA(JSON.stringify(sendData))
 

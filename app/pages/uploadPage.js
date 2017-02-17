@@ -98,18 +98,18 @@ class UploadPage extends Component {
         //console.log(`RNFS.DocumentDirectoryPath = ${RNFS.DocumentDirectoryPath}`)
         RNFS.readDir(RNFS.DocumentDirectoryPath)
             .then((readDirItems) => {
-                console.log(`readDirItems -> `)
-                console.log(readDirItems)
+                //console.log(`readDirItems -> `)
+                //console.log(readDirItems)
             })
         NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
         let currentRoute = this.props.navigator.navigationContext.currentRoute
         this.addAppEventListener(
             this.props.navigator.navigationContext.addListener('willfocus', (event) => {
-                console.log(`orderPage willfocus...`)
-                console.log(`currentRoute`, currentRoute)
-                console.log(`event.data.route`, event.data.route)
+                //console.log(`orderPage willfocus...`)
+                //console.log(`currentRoute`, currentRoute)
+                //console.log(`event.data.route`, event.data.route)
                 if (event && currentRoute === event.data.route) {
-                    console.log("orderPage willAppear")
+                    //console.log("orderPage willAppear")
                     NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
                     if (this._waitForAddPhotos && this._waitForAddPhotos.length > 0) {
                         this.setTimeout(() => {
@@ -125,7 +125,7 @@ class UploadPage extends Component {
 
                     }
                 } else {
-                    console.log("orderPage willDisappear, other willAppear")
+                    //console.log("orderPage willDisappear, other willAppear")
                 }
                 //
             })
@@ -140,15 +140,15 @@ class UploadPage extends Component {
 
 
     componentWillUnmount() {
-        console.log(' componentWillUnmount');
+        //console.log(' componentWillUnmount');
         //删除缓存目录
         RNFS.unlink(this.ImgTemp)
             .then(() => {
-                console.log('componentWillUnmount', 'FILE DELETED');
+                //console.log('componentWillUnmount', 'FILE DELETED');
             })
             // `unlink` will throw an error, if the item to unlink does not exist
             .catch((err) => {
-                console.log(`componentWillUnmount`, err.message);
+                //console.log(`componentWillUnmount`, err.message);
             });
     }
 
@@ -165,7 +165,7 @@ class UploadPage extends Component {
                 //    uri: `file://${RNFS.ExternalDirectoryPath}/1.jpg`,   //for android, test ok
                 compressedUri = await NativeCompressedModule.compress(data.big_uri, this.ImgTemp, data.width / 2, data.height / 2)
                 compressedUri = `file://` + compressedUri
-                console.log(`compressedUri:`, compressedUri)
+                //console.log(`compressedUri:`, compressedUri)
             } else {
                 //    uri: RNFS.DocumentDirectoryPath + '/1.jpg',   //for ios, test ok
                 compressedUri = await NativeCompressedModule.compress(data.big_uri, this.ImgTemp, data.width / 2, data.height / 2)
@@ -330,7 +330,7 @@ class UploadPage extends Component {
     }
 
     _addToUploadQuene = (photos) => {
-        console.log(`_addToUploadQuene`, photos)
+        //console.log(`_addToUploadQuene`, photos)
         for (let photo of photos) {
             let uploadTask = {
                 uri: photo.big_uri,                 //用uri来做唯一性
@@ -368,7 +368,7 @@ class UploadPage extends Component {
         for (let data of this._ids) {
 
             if (data.uri == uri) {
-                console.log(`ids_delete${data.uri}:`, data.id)
+                //console.log(`ids_delete${data.uri}:`, data.id)
                 this._ids.splice(this._ids.indexOf(data), 1)
                 break
             }
@@ -424,7 +424,7 @@ class UploadPage extends Component {
 
         //options.data = await this.gZip(options)
 
-        console.log(`_fetch_sendCode options:`, options)
+        //console.log(`_fetch_sendCode options:`, options)
         /**
          * S sign处理完成
          * @type {XMLHttpRequest}
@@ -436,9 +436,9 @@ class UploadPage extends Component {
         let xhr = new XMLHttpRequest();
 
         xhr.onerror = () => {
-            console.log('onerror');
-            console.log('Status ', xhr.status);
-            console.log('Error ', xhr.responseText);
+            //console.log('onerror');
+            //console.log('Status ', xhr.status);
+            //console.log('Error ', xhr.responseText);
 
             let photoList = this._handlePhotoList({uploadPhoto, eventName: 'onerror'})
             this.setState({
@@ -466,9 +466,9 @@ class UploadPage extends Component {
         };
 
         xhr.ontimeout = () => {
-            console.log('ontimeout');
-            console.log('Status ', xhr.status);
-            console.log('Response ', xhr.responseText);
+            //console.log('ontimeout');
+            //console.log('Status ', xhr.status);
+            //console.log('Response ', xhr.responseText);
 
             let photoList = this._handlePhotoList({uploadPhoto, eventName: 'ontimeout'})
             this.setState({
@@ -500,23 +500,23 @@ class UploadPage extends Component {
         xhr.setRequestHeader('Content-Type', 'multipart/form-data')
         xhr.onload = () => {
             if (xhr.status == 200 && xhr.readyState == 4) {
-                console.log(`xhr.responseText = ${xhr.responseText}`)
+                //console.log(`xhr.responseText = ${xhr.responseText}`)
                 //处理获取的id
                 let eventName = 'onload'
                 this.gunZip(xhr.responseText).then((response)=> {
 
                     let result = JSON.parse(response)
                     if (result.code == '10' && result.result) {
-                        console.log(`response.result:`, result.result)
+                        //console.log(`response.result:`, result.result)
                         //id加入集合
                         let file = {uri: uploadPhoto.big_uri, id: result.result.id}
                         if (this._ids.indexOf(file) == -1) {
                             this._ids.push(file)
-                            console.log(`ids:`, this._ids);
+                            //console.log(`ids:`, this._ids);
                         }
                     } else {
                         //id出错
-                        console.log(`error`, result)
+                        //console.log(`error`, result)
                         eventName = 'onerror'
                     }
                 }, (error)=>console.log(`responseText:`, error))
@@ -559,18 +559,18 @@ class UploadPage extends Component {
              name=names[names.length-1]+'.jpg'*/
             name = 'android.jpg'
         }
-        console.log(` uploadPhoto`, uploadPhoto)
+        //console.log(` uploadPhoto`, uploadPhoto)
         formdata.append('file', {...uploadPhoto, type: 'image/jpg', name: name}); //for android, must set type:'...'
 
         //这里增加其他参数, 比如: itype
-        console.log(`options.data.s`, options.data.s)
+        //console.log(`options.data.s`, options.data.s)
         formdata.append('s', options.data.s);
         //formdata.append("text", options.data.s);
         /**
          * 这里处理sign
          */
         options.data.sign = this._doRSASign(options.data.s)
-        console.log(` options.data.sign:`, options.data.sign)
+        //console.log(` options.data.sign:`, options.data.sign)
         /**
          * 处理sign结束
          */
@@ -605,7 +605,7 @@ class UploadPage extends Component {
 
         xhr.timeout = 600000 //超时60秒
 
-        console.log(`formdata:`, formdata)
+        //console.log(`formdata:`, formdata)
         xhr.send(formdata);
 
         let photoList = this._handlePhotoList({uploadPhoto,})
@@ -692,17 +692,17 @@ class UploadPage extends Component {
 
             options.data = await this.gZip(options)
 
-            console.log(`_fetch_finish options:`, options)
+            //console.log(`_fetch_finish options:`, options)
 
             let resultData = await this.fetch(options)
 
             let result = await this.gunZip(resultData)
 
             result = JSON.parse(result)
-            console.log('gunZip:', result)
+            //console.log('gunZip:', result)
             if (result.code && result.code == 10) {
 
-                console.log('token', result.result)
+                //console.log('token', result.result)
 
                 this._toast.show({
                     position: Toast.constants.gravity.center,
@@ -722,7 +722,7 @@ class UploadPage extends Component {
 
         }
         catch (error) {
-            console.log(error)
+            //console.log(error)
 
 
         }
@@ -733,7 +733,7 @@ class UploadPage extends Component {
     }
 
     async _fetchData() {
-        console.log(`upload_fetchData`)
+        //console.log(`upload_fetchData`)
         try {
             let token = await getToken()
             let deviceID = await getDeviceID()
@@ -751,25 +751,25 @@ class UploadPage extends Component {
 
             options.data = await this.gZip(options)
 
-            console.log(`_fetchData options:`, options)
+            //console.log(`_fetchData options:`, options)
 
             let resultData = await this.fetch(options)
 
             let result = await this.gunZip(resultData)
 
             result = JSON.parse(result)
-            console.log('gunZip:', result)
+            //console.log('gunZip:', result)
             if (result.code && result.code == 10) {
 
-                console.log('token', result.result)
+                //console.log('token', result.result)
 
                 let photos = []
                 for (let data of result.result) {
-                    console.log('data', data)
+                    //console.log('data', data)
                     let file = {uri: data.file_url, id: data.id}
                     if (this._ids.indexOf(file) == -1) {
                         this._ids.push(file)
-                        console.log(`ids:`, this._ids);
+                        //console.log(`ids:`, this._ids);
                     }
 
                     photos.push(
@@ -804,7 +804,7 @@ class UploadPage extends Component {
 
         }
         catch (error) {
-            console.log(error)
+            //console.log(error)
 
 
         }

@@ -16,7 +16,6 @@ import {
     ActivityIndicator,
     ActivityIndicatorIOS,
     ProgressBarAndroid,
-    Modal,
 
 
 } from 'react-native';
@@ -24,6 +23,7 @@ import {
 import Icon from 'react-native-vector-icons/Ionicons';
 import constants from  '../constants/constant';
 import image_logo from '../images/icon.png'
+
 
 export default class ModalProgress extends Component {
     // 构造
@@ -46,18 +46,23 @@ export default class ModalProgress extends Component {
 
     }
     static defaultProps = {
-        showProgress: true,
-        showReload: false,
+
         marginBottom: 0,
     }
 
     componentWillReceiveProps(nextProps) {
         let showProgress = nextProps.showProgress
         let showReload = nextProps.showReload
+
+        //console.log(`componentWillReceiveProps:`, showProgress)
+
+
         if (showProgress != this.state.showProgress) {
+            //console.log(`showProgress:`, showProgress)
             this.setState({
                 showProgress: showProgress,
             })
+
         }
         if (showReload != this.state.showReload) {
             this.setState({
@@ -73,42 +78,40 @@ export default class ModalProgress extends Component {
      * @returns {XML}
      */
     render() {
-        {
-            return this.state.showProgress || this.state.showReload ? (
-                <Modal
-                    animationType={"none"}
-                    transparent={true}
-                    visible={this.state.showProgress || this.state.showReload}
-                    onRequestClose={this.props.onRequestClose}>
-                    <View
-                        style={[styles.modalStyle,{marginBottom:this.props.marginBottom},
-                        {backgroundColor:this.state.showProgress ? 'rgba(0, 0, 0, 0.5)' : '#f5fcff',}]}>
-                        { this.state.showReload ?
-                            <TouchableOpacity
-                                style={[{flexDirection:'column',alignItems:'center',}]}
-                                onPress={this.props.fetchData}>
-                                <Image
-                                    style={{width:100,height:100}}
-                                    source={image_logo}/>
-                                <Text
-                                    style={{marginTop:10,}}
-                                    fontSize={16}
-                                    //backgroundColor:'transparent'
-                                >重新加载</Text>
-                            </TouchableOpacity>:null
-                        }
 
-                        <ActivityIndicator
-                            animating={this.state.showProgress}
-                            color={'#fff'}
-                            size={'large'}/>
+        return (
+            <View
+                style={[styles.modalStyle,{marginBottom:this.props.marginBottom},
+                        {backgroundColor: '#f5fcff',}]}>
+                {
+                    this.state.showProgress ?
 
+                            <ActivityIndicator
+                                style={{position: 'relative', left: 1, top: 1,
+                                 marginBottom: Platform.OS == 'ios' ? 64 : 56,
+                                }}
+                                animating={true}
+                                color={constants.UIInActiveColor}
+                                size={'large'}/>
+                       : null
+                }
+                {
+                    this.state.showReload ?
+                        <TouchableOpacity
+                            style={[{flexDirection:'column',alignItems:'center',}]}
+                            onPress={this.props.fetchData}>
+                            <Image
+                                style={{width:100,height:100}}
+                                source={image_logo}/>
+                            <Text
+                                style={{marginTop:10,}}
+                                fontSize={16}
+                                //backgroundColor:'transparent'
+                            >重新加载</Text>
+                        </TouchableOpacity> : null
+                }
 
-                    </View>
-                </Modal>
-            ) : null
-        }
-
+            </View>)
 
     }
 

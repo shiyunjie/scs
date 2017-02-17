@@ -52,7 +52,8 @@ export default class HelpItem extends Component {
                     onPress={() => {
                         this.setState({show:!this.state.show})
                         }}>
-                    <Text style={{marginLeft:constants.MarginLeftRight}}>{this.props.data.name}</Text>
+                    <Text
+                        style={[styles.labelText,{marginLeft:constants.MarginLeftRight,},]}>{this.props.data.name}</Text>
                     <View
                         style={{flex:1,
                         flexDirection: 'row',
@@ -64,20 +65,21 @@ export default class HelpItem extends Component {
                             color={constants.UIInActiveColor}/>
                     </View>
                 </TouchableOpacity>
-                <View style={this.state.show?{flex:1}:{height:0}}>
+                <View style={[this.state.show?{flex:1}:{height:0,width:0},{
+                        borderBottomWidth: StyleSheet.hairlineWidth,
+                        borderColor: constants.UIInActiveColor,}]}>
                     {this.props.data.child.map((item, index) => {
                         return (
-                                <View
-                                    key={`keyItem=${index}`}
-                                    style={[{flexDirection: 'column',
+                            <View
+                                key={`keyItem=${index}`}
+                                style={[{flexDirection: 'column',
                                 justifyContent: 'flex-start',
                                 alignItems: 'stretch',
                                 marginLeft:constants.MarginLeftRight*2,
                                },this.state.show?{flex:1}:{height:0}]}>
-                                    <Text>{item.Q}</Text>
-                                    <Text>{item.detail}</Text>
-                                </View>
-                            )
+                                <Text style={[styles.labelText,{color:constants.PointColor}]}>{item.detail}</Text>
+                            </View>
+                        )
                     })}
                 </View>
             </View>
@@ -89,7 +91,10 @@ export default class HelpItem extends Component {
 }
 
 var styles = StyleSheet.create({
-
+    labelText: {
+        fontSize: 14,
+        color: constants.LabelColor,
+    },
     tabText: {
         flex: 1,
         margin: 0,
@@ -102,23 +107,20 @@ var styles = StyleSheet.create({
         fontSize: 13
     },
     tabView: {
-        flex:1,
+        flex: 1,
         flexDirection: 'column',
         justifyContent: 'flex-start',
         alignItems: 'center',
-        padding: 0,
+        paddingLeft: constants.MarginLeftRight,
     },
     tabTitle: {
-        height: 50,
+        height: 40,
         margin: 0,
         flexDirection: 'row',
         justifyContent: 'flex-start',
         alignItems: 'center',
-        backgroundColor: constants.UIBackgroundColor,
         borderColor: constants.UIInActiveColor,
         borderBottomWidth: StyleSheet.hairlineWidth,
-        borderTopWidth: StyleSheet.hairlineWidth,
-
     },
     tabItem: {
         height: 40,
@@ -126,7 +128,6 @@ var styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'flex-start',
         alignItems: 'center',
-        backgroundColor: 'white',
 
     },
 

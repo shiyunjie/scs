@@ -53,7 +53,7 @@ class Root extends Component {
                 //appkey: map.myAppKey,
                 //imei: map.myImei,
                 //package: map.myPackageName,
-                console.log('JPushModule:' + map.myDeviceId + `,version:` + map.myVersion)
+                //console.log('JPushModule:' + map.myDeviceId + `,version:` + map.myVersion)
 
             });
 
@@ -67,7 +67,7 @@ class Root extends Component {
             let uniqueID = DeviceInfo.getUniqueID()
             AsyncStorage.setItem('deviceID', uniqueID)
 
-            console.log('DeviceInfo:' + uniqueID + `,version:` + version)
+            //console.log('DeviceInfo:' + uniqueID + `,version:` + version)
 
         }
         //NativeAppEventEmitter.sendEvent('getMsg_202_code_need_login')
@@ -186,7 +186,7 @@ class Root extends Component {
     _handlePressPerson = async () => {
         let token = await getToken()
 
-        console.log('token', token)
+        //console.log('token', token)
         if (token && token != '') {
             this.setState({selectedTab: '我的',})
             //NativeAppEventEmitter.emit('setNavigationBar.index', NavigationBarRouteMapperList[2])
@@ -194,7 +194,7 @@ class Root extends Component {
         }
         else {
 
-            console.log(`_handlePressPerson`)
+            //console.log(`_handlePressPerson`)
             this._PushLogin()
 
         }
@@ -202,7 +202,7 @@ class Root extends Component {
     _handlePressMore = async () => {
         let token = await getToken()
 
-        console.log('token', token)
+        //console.log('token', token)
         if (token && token != '') {
             this.setState({selectedTab: '更多',})
             //NativeAppEventEmitter.emit('setNavigationBar.index', NavigationBarRouteMapperList[3])
@@ -210,7 +210,7 @@ class Root extends Component {
         }
         else {
 
-            console.log(`_handlePressPerson`)
+            //console.log(`_handlePressPerson`)
             this._PushLogin()
 
         }
@@ -219,7 +219,7 @@ class Root extends Component {
     _handlePressOrder = async () => {
         let token = await getToken()
 
-        console.log('token', token)
+        //console.log('token', token)
         if (token && token != '') {
             this.setState({selectedTab: '订单',})
             //NativeAppEventEmitter.emit('setNavigationBar.index', NavigationBarRouteMapperList[1])

@@ -43,6 +43,7 @@ export default class InputView extends Component {
         iconSize: PropTypes.number.isRequired,
         iconColor: PropTypes.string,
         validate: PropTypes.bool,
+        useIcon:PropTypes.bool,
         reg: PropTypes.object,
 
 
@@ -56,6 +57,7 @@ export default class InputView extends Component {
         iconSize: constants.IconSize,
         iconName: 'md-checkmark-circle',
         validate:false,
+        useIcon:false,
 
     }
 
@@ -74,7 +76,7 @@ export default class InputView extends Component {
                 backgroundColor: this.props.backgroundColor
             });
 
-            console.log(`newValue:`,newValue)
+            //console.log(`newValue:`,newValue)
             if (!newValue||newValue == '') {
                 this.setState({
                     showIcon: false,
@@ -87,7 +89,7 @@ export default class InputView extends Component {
                     iconName: 'md-checkmark-circle',
                     showIcon: true,
                 });
-                console.log(`validate:`,this.validate)
+                //console.log(`validate:`,this.validate)
             } else {
                 this.validate = false
                 this.setState({
@@ -105,23 +107,25 @@ export default class InputView extends Component {
     }
 
     render() {
-        console.log(`this.props.style:`, this.props.style)
+        //console.log(`this.props.style:`, this.props.style)
         return (
-            <View style={this.props.style} onLayout={this._onLayout}>
+            <View style={[this.props.style]} onLayout={this._onLayout}>
                 <View  style={[{backgroundColor:this.state.backgroundColor},
-                    {flex:1,paddingLeft:0,paddingRight:0,margin:0},]}>
+                    {flex:1,paddingLeft:0,paddingRight:0,margin:0},styles.groupView]}>
                     <TextInput
-                        style={[{flex:1,paddingLeft:0,paddingRight:0,margin:0},]}
+                        style={[{flex:5,paddingLeft:0,paddingRight:0,margin:0,
+                        color:constants.PointColor,fontSize:14,},]}
                         clearButtonMode={this.props.clearButtonMode}
                         placeholder={this.props.placeholder}
                         maxLength={this.props.maxLength}
                         keyboardType={this.props.keyboardType}
                         underlineColorAndroid={this.props.underlineColorAndroid}
                         editable={this.props.editable}
+                        multiline={this.props.multiline?true:false}
                         value={this.props.value}
                         secureTextEntry={this.props.secureTextEntry}
                         onChangeText={this.props.onChangeText}/>
-                    {this.state.showIcon ?
+                    {this.state.showIcon&&this.props.useIcon ?
                         <View style={[styles.icon,{height:this.state.height,width:40,}]}>
                             <Icon
                                 name={this.state.iconName}  // 图标
@@ -148,7 +152,7 @@ let styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        position: 'absolute',
+        //position: 'absolute',
         right: 0,
         backgroundColor: 'transparent',
     },

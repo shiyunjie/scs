@@ -12,7 +12,7 @@ const HttpRSAModule = NativeModules.HttpRSAModule;
 
 //fetchMock.get(/facebook.github.io/, (url, opts) => {
 export const testMock = fetchMock.mock(/\/app\/gateway/, (url, opts) => {
-    console.log(`fetchMock url, opts = `, url, opts)
+    //console.log(`fetchMock url, opts = `, url, opts)
 
     /*
      let parsedUrlObj = Url.parse(url)
@@ -34,10 +34,10 @@ export const testMock = fetchMock.mock(/\/app\/gateway/, (url, opts) => {
         this.gunZip(data.s).then(
             (parameter)=> {
                 //请求参数获得
-                console.log(`parameter:`, parameter)
+                //console.log(`parameter:`, parameter)
                 let requestData = JSON.parse(parameter)
-                console.log(`parameter_itype:`, requestData.itype)
-                console.log(`fetchMock parameter:`, requestData)
+                //console.log(`parameter_itype:`, requestData.itype)
+                //console.log(`fetchMock parameter:`, requestData)
                 switch (requestData.itype) {
                     //首页轮播
                     case 111:
@@ -209,6 +209,19 @@ export const testMock = fetchMock.mock(/\/app\/gateway/, (url, opts) => {
                             }
                         }
                         break;
+                    case 233:
+                        if (requestData.data.id) {
+                            result = {
+                                code: 10,
+                                msg: '取消成功',
+                                result: {
+
+                                },
+                            }
+                        } else {
+                            result = {code: -10, msg: '系统异常'}
+                        }
+                        break;
                     //服务单列表
                     case 331:
 
@@ -357,6 +370,7 @@ export const testMock = fetchMock.mock(/\/app\/gateway/, (url, opts) => {
                     //询价单详情
                     case 234:
                         if (requestData.data.id) {
+
                             result = {
                                 code: 10,
                                 msg: '查询成功',
@@ -367,7 +381,7 @@ export const testMock = fetchMock.mock(/\/app\/gateway/, (url, opts) => {
 
                                     create_time_str: '2017-01-31 19:00',// 发布时间
 
-                                    remark: '备注',// 备注
+                                    remark: '你的出价实在太低了',// 备注
 
                                     trade_terms: 'FOB',// 贸易条款
 
@@ -553,6 +567,19 @@ export const testMock = fetchMock.mock(/\/app\/gateway/, (url, opts) => {
                             }
                         }
                         break;
+                    case 335:
+                        if (requestData.data.id) {
+                            result = {
+                                code: 10,
+                                msg: '取消成功',
+                                result: {
+
+                                },
+                            }
+                        } else {
+                            result = {code: -10, msg: '系统异常'}
+                        }
+                        break;
                     //账单
                     case 333:
                         if (requestData.data.id) {
@@ -649,7 +676,7 @@ export const testMock = fetchMock.mock(/\/app\/gateway/, (url, opts) => {
                                         cost: 1,
                                         id: '402881665986f1fe015986f579240027',
                                         is_cal: 0,
-                                        is_pay: 0 },
+                                        is_pay: 1 },
                                     { first_cost_name: '查验',
                                         cost_name: '检验检疫费',
                                         estimate_cost: 1,
@@ -1019,7 +1046,7 @@ export const testMock = fetchMock.mock(/\/app\/gateway/, (url, opts) => {
                         break;
                     //发起委托
                     case 231:
-                        console.log(`requestData.data:`,requestData.data)
+                        //console.log(`requestData.data:`,requestData.data)
                         if(requestData.data.import_clearance
                             &&requestData.data.international_logistics
                             &&requestData.data.export_country_land

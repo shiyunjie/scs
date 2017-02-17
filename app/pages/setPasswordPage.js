@@ -14,6 +14,7 @@ import {
     ActivityIndicatorIOS,
     ProgressBarAndroid,
     Platform,
+    BackAndroid,
 } from 'react-native';
 
 import {getDeviceID,getToken} from '../lib/User'
@@ -25,8 +26,8 @@ import XhrEnhance from '../lib/XhrEnhance' //http
 import Toast from 'react-native-smart-toast'
 import AppEventListenerEnhance from 'react-native-smart-app-event-listener-enhance'
 
+import navigatorStyle from '../styles/navigatorStyle'       //navigationBar样式
 import ValidateTextInput from '../components/validateTextInput'
-
 
 
 class SetPassword extends Component {
@@ -36,12 +37,47 @@ class SetPassword extends Component {
         // 初始状态
         this.state = {
             phone: this.props.phone,
-            password:'',
-            confPwd:'',
+            password: '',
+            confPwd: '',
 
         };
-        this._newPassword=/^[a-zA-Z0-9]{6,}$/
-        this._conformPassword=/^[a-zA-Z0-9]{6,}$/
+        this._newPassword = /^[a-zA-Z0-9]{6,}$/
+        this._conformPassword = /^[a-zA-Z0-9]{6,}$/
+    }
+
+    componentWillMount() {
+        NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
+        let currentRoute = this.props.navigator.navigationContext.currentRoute
+        this.addAppEventListener(
+            this.props.navigator.navigationContext.addListener('willfocus', (event) => {
+                //console.log(`orderPage willfocus...`)
+                //console.log(`currentRoute`, currentRoute)
+                //console.log(`event.data.route`, event.data.route)
+                if (event && currentRoute === event.data.route) {
+                    //console.log("orderPage willAppear")
+                    NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
+                } else {
+                    //console.log("orderPage willDisappear, other willAppear")
+                }
+                //
+            })
+        )
+        this.addAppEventListener(
+            BackAndroid.addEventListener('hardwareBackPress', this.onBackAndroid)
+        )
+    }
+
+    onBackAndroid = () => {
+        const routers = this.props.navigator.getCurrentRoutes();
+        if (routers.length > 1) {
+            Alert.alert('温馨提醒', '确定退出吗?', [
+                {text: '确定', onPress: ()=>this.props.navigator.popToTop()},
+                {text: '取消', onPress: ()=> {}},
+            ])
+
+            return true;
+        }
+
     }
 
     render() {
@@ -50,6 +86,7 @@ class SetPassword extends Component {
                 <ValidateTextInput
                     ref={ component => this._input_new_password = component }
                     style={styles.textInput}
+                    clearButtonMode="while-editing"
                     placeholder='请输入密码'
                     maxLength={20}
                     underlineColorAndroid='transparent'
@@ -62,6 +99,7 @@ class SetPassword extends Component {
                 <ValidateTextInput
                     ref={ component => this._input_conform_password = component }
                     style={styles.textInput}
+                    clearButtonMode="while-editing"
                     placeholder='确认密码'
                     maxLength={20}
                     underlineColorAndroid='transparent'
@@ -131,36 +169,36 @@ class SetPassword extends Component {
         );
     }
 
-    async _fetch_setPassword(){
+    async _fetch_setPassword() {
         try {
-            let token= await getToken()
-            let deviceID= await getDeviceID()
+            let token = await getToken()
+            let deviceID = await getDeviceID()
 
             let options = {
-                method:'post',
+                method: 'post',
                 url: constants.api.service,
                 data: {
                     iType: constants.iType.SavePwd,
-                    phone:this.state.phone,
-                    pwd:hex_md5(this.state.password),
-                    surePwd:hex_md5(this.state.confPwd),
-                    deviceId:deviceID,
-                    token:token,
+                    phone: this.state.phone,
+                    pwd: hex_md5(this.state.password),
+                    surePwd: hex_md5(this.state.confPwd),
+                    deviceId: deviceID,
+                    token: token,
 
                 }
             }
 
-            options.data=await this.gZip(options)
+            options.data = await this.gZip(options)
 
-            console.log(`_fetch_sendCode options:` ,options)
+            //console.log(`_fetch_sendCode options:`, options)
 
             let resultData = await this.fetch(options)
 
-            let result=await this.gunZip(resultData)
+            let result = await this.gunZip(resultData)
 
-            result=JSON.parse(result)
-            console.log('gunZip:',result)
-            if(result.code&&result.code==10){
+            result = JSON.parse(result)
+            //console.log('gunZip:', result)
+            if (result.code && result.code == 10) {
                 /* Alert.alert('提示', '注册成功', () => {
                  this.props.navigator.popToTop()
                  })*/
@@ -170,9 +208,9 @@ class SetPassword extends Component {
                     children: '保存成功'
                 })
                 let routes = this.props.navigator.getCurrentRoutes();
-                this.props.navigator.popToRoute(routes[routes.length-2])
+                this.props.navigator.popToRoute(routes[routes.length - 2])
 
-            }else{
+            } else {
                 this._toast.show({
                     position: Toast.constants.gravity.center,
                     duration: 255,
@@ -183,7 +221,7 @@ class SetPassword extends Component {
 
         }
         catch (error) {
-            console.log(error)
+            //console.log(error)
 
 
         }
@@ -221,11 +259,57 @@ class SetPassword extends Component {
     }
 }
 
+const navigationBarRouteMapper = {
+
+    LeftButton: function (route, navigator, index, navState) {
+        if (index === 0) {
+            return null;
+        }
+
+        var previousRoute = navState.routeStack[index - 1];
+        return (
+            <TouchableOpacity
+                onPress={() => Alert.alert('温馨提醒','确定退出吗?',[
+             {text:'取消',onPress:()=>{}},
+             {text:'确定',onPress:()=>this.props.navigator.popToTop()}
+             ])}
+                style={navigatorStyle.navBarLeftButton}>
+                <View style={navigatorStyle.navBarLeftButtonAndroid}>
+                    <Icon
+                        style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText,{fontSize: 20,}]}
+                        name={'ios-arrow-back'}
+                        size={constants.IconSize}
+                        color={'white'}/>
+                </View>
+            </TouchableOpacity>
+
+        );
+    },
+
+    RightButton: function (route, navigator, index, navState) {
+
+    },
+
+    Title: function (route, navigator, index, navState) {
+        return (
+            Platform.OS == 'ios' ?
+                <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText]}>
+                    {route.title}
+                </Text> : <View style={navigatorStyle.navBarTitleAndroid}>
+                <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText]}>
+                    {route.title}
+                </Text>
+            </View>
+        )
+    },
+
+}
+
 export default XhrEnhance(SetPassword)
 
 const styles = StyleSheet.create({
     container: {
-        paddingTop: Platform.OS == 'ios' ? 64+10 : 56+10,
+        paddingTop: Platform.OS == 'ios' ? 64 + 10 : 56 + 10,
         flex: 1,
         flexDirection: 'column',
         alignItems: 'stretch',
@@ -236,16 +320,17 @@ const styles = StyleSheet.create({
         height: 40,
         borderWidth: StyleSheet.hairlineWidth,
         borderColor: constants.UIBackgroundColor,
-        paddingLeft:10,
-        paddingRight:10,
+        paddingLeft: 10,
+        paddingRight: 10,
 
     },
     button: {
         height: 40,
         backgroundColor: constants.UIActiveColor,
-        borderRadius: 3, borderWidth: StyleSheet.hairlineWidth,
+        borderWidth: StyleSheet.hairlineWidth,
         borderColor: constants.UIActiveColor,
-        justifyContent: 'center', borderRadius: 30,
+        justifyContent: 'center',
+        borderRadius: 30,
 
     },
 });

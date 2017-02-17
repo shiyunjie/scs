@@ -31,6 +31,8 @@ import constants from  '../constants/constant';
 import Button from 'react-native-smart-button';
 import Icon from 'react-native-vector-icons/Ionicons';
 import navigatorStyle from '../styles/navigatorStyle'       //navigationBar样式
+import ValidatePage from './validateInputPage';
+import ProgressView from '../components/modalProgress'
 
 import {getDeviceID,getToken,getPhone} from '../lib/User'
 import XhrEnhance from '../lib/XhrEnhance' //http
@@ -42,6 +44,8 @@ class ChangeInfo extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            showProgress: true,//显示加载
+            showReload: false,//显示加载更多
             account: '',
             email: '',
             qq: '',
@@ -53,6 +57,7 @@ class ChangeInfo extends Component {
             company_introduction: '',
         }
         this._qqValidate=/^[0-9]*$/
+        this._textValidate=/^.*$/
     }
 
     componentWillMount() {
@@ -60,16 +65,35 @@ class ChangeInfo extends Component {
         let currentRoute = this.props.navigator.navigationContext.currentRoute
         this.addAppEventListener(
             this.props.navigator.navigationContext.addListener('willfocus', (event) => {
-                console.log(`orderPage willfocus...`)
-                console.log(`currentRoute`, currentRoute)
+                //console.log(`orderPage willfocus...`)
+                //console.log(`currentRoute`, currentRoute)
                 //console.log(`event.data.route`, event.data.route)
                 if (event && currentRoute === event.data.route) {
-                    console.log("orderPage willAppear")
+                    //console.log("orderPage willAppear")
                     NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
                 } else {
-                    console.log("orderPage willDisappear, other willAppear")
+                    //console.log("orderPage willDisappear, other willAppear")
                 }
                 //
+            })
+        )
+        this.addAppEventListener(
+            NativeAppEventEmitter.addListener('validatepage_send_value', (context, label) => {
+                if (label == 'QQ') {
+                    this.setState({qq: context})
+                } else if (label == '联系时间') {
+
+                    this.setState({contact_time: context})
+                }else if (label == '公司名称') {
+
+                    this.setState({company_name: context})
+                }else if (label == '公司地址') {
+
+                    this.setState({company_address: context})
+                }else if (label == '公司简介') {
+
+                    this.setState({company_introduction: context})
+                }
             })
         )
         this._fetchData_loadInfo()
@@ -78,157 +102,158 @@ class ChangeInfo extends Component {
     render() {
         return (
             <View style={{flex:1}}>
-                <ScrollView
-                    style={styles.container}
-                    showsVerticalScrollIndicator={false}>
-                    <View
-                        style={[{height:50,},{marginTop:10}]}>
-                        <ItemView
-                            title='用户名'
-                            show={false}
-                            rightText={this.state.account}/>
-                    </View>
-
-                    <View
-                        style={{height:50,}}>
-                        <ItemView
-                            title='姓名'
-                            show={false}
-                            rightText={this.state.real_name}/>
-                    </View>
-                    <View
-                        style={{height:50,}}>
-                        <ItemView
-                            title='联系电话'
-                            show={false}
-                            rightText={this.state.phone}/>
-                    </View>
-                    <View
-                        style={{height:50,}}>
-                        <ItemView
-                            title='邮箱'
-                            show={false}
-                            rightText={this.state.email}/>
-                    </View>
-
-                    <View
-                        style={styles.inputView}>
+                {this.state.showProgress || this.state.showReload ?
+                    <ProgressView
+                        showProgress={this.state.showProgress}
+                        showReload={this.state.showReload}
+                        fetchData={()=>{}}/> :
+                    <ScrollView
+                        style={styles.container}
+                        showsVerticalScrollIndicator={false}>
                         <View
-                            style={ styles.textLine}>
-                            <Text>QQ</Text>
+                            style={[{height:50,},{marginTop:10}]}>
+                            <ItemView
+                                title='用户名'
+                                show={false}
+                                rightText={this.state.account}/>
+                        </View>
+
+                        <View
+                            style={{height:50,}}>
+                            <ItemView
+                                title='姓名'
+                                show={false}
+                                rightText={this.state.real_name}/>
                         </View>
                         <View
-                            style={{flex: 4,
-                                borderBottomWidth: StyleSheet.hairlineWidth,
-                                borderColor: constants.UIInActiveColor,}}>
-                            <TextInput
-                                ref={(component) => this._QQ = component}
-                                style={styles.textInput}
-                                placeholder='请输入'
-                                textAlign='right'
-                                maxLength={40}
+                            style={{height:50,}}>
+                            <ItemView
+                                title='联系电话'
+                                show={false}
+                                rightText={this.state.phone}/>
+                        </View>
+                        <View
+                            style={{height:50,}}>
+                            <ItemView
+                                title='邮箱'
+                                show={false}
+                                rightText={this.state.email}/>
+                        </View>
+
+                        <TouchableOpacity
+                            style={styles.inputView}
+                            onPress={ ()=>{
+                            this.props.navigator.push({
+                            title: 'QQ',
+                            component: ValidatePage,
+                            passProps:{
+                            context:this.state.qq,
+                            label:'QQ',
+                            reg:this._qqValidate
+                                }
+                            });
+                            } }>
+                            <ItemView
+                                name='ios-arrow-forward'
+                                title='QQ'
+                                rightText={this.state.qq}
+                                aligRight={true}/>
+
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={styles.inputView}
+                            onPress={ ()=>{
+                            this.props.navigator.push({
+                            title: '联系时间',
+                            component: ValidatePage,
+                            passProps:{
+                            context:this.state.contact_time,
+                            label:'联系时间',
+                            reg:this._textValidate
+                                }
+                            });
+                            } }>
+                            <ItemView
+                                name='ios-arrow-forward'
+                                title='联系时间'
+                                rightText={this.state.contact_time}
+                                aligRight={true}/>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={styles.inputView}
+                            onPress={ ()=>{
+                            this.props.navigator.push({
+                            title: '公司名称',
+                            component: ValidatePage,
+                            passProps:{
+                            context:this.state.company_name,
+                            label:'公司名称',
+                            reg:this._textValidate
+                                }
+                            });
+                            } }>
+                            <ItemView
+                                name='ios-arrow-forward'
+                                title='公司名称'
+                                rightText={this.state.company_name}
+                                aligRight={true}/>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={styles.inputView}
+                            onPress={ ()=>{
+                            this.props.navigator.push({
+                            title: '公司地址',
+                            component: ValidatePage,
+                            passProps:{
+                            context:this.state.company_address,
+                            label:'公司地址',
+                            reg:this._textValidate
+                                }
+                            });
+                            } }>
+                            <ItemView
+                                name='ios-arrow-forward'
+                                title='公司地址'
+                                rightText={this.state.company_address}
+                                aligRight={true}/>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={{height:150,}}
+                            onPress={ ()=>{
+                            this.props.navigator.push({
+                            title: '公司简介',
+                            component: ValidatePage,
+                            passProps:{
+                            context:this.state.company_introduction,
+                            label:'公司简介',
+                            reg:this._textValidate,
+                            multiline:4,
+                                }
+                            });
+                            } }>
+                                <Text
+                                style={{flex:1,fontSize:14,
+                                textAlignVertical:'top',
+                                backgroundColor:'white',
+                                padding:constants.MarginLeftRight,
+                                color:constants.PointColor,}}
+
+                                placeholder='请输入公司简介'
+                                maxLength={300}
                                 underlineColorAndroid='transparent'
-                                editable={true}
-                                onChangeText={(text) => this.setState({qq:text})}
-                                value={this.state.qq}
-                                reg={this._qqValidate}/>
-                        </View>
-                    </View>
-                    <View
-                        style={styles.inputView}>
-                        <View
-                            style={ styles.textLine}>
-                            <Text>联系时间</Text>
-                        </View>
-                        <View
-                            style={{flex: 4,
-                                borderBottomWidth: StyleSheet.hairlineWidth,
-                                borderColor: constants.UIInActiveColor,}}>
-                            <TextInput
-                                ref={(component) => this._Contact_time = component}
-                                style={styles.textInput}
-                                placeholder='请输入'
-                                clearButtonMode="while-editing"
+                                multiline={true}//多行输入
+                                numberOfLines={4}
+                                >{this.state.company_introduction}</Text>
 
-                                textAlign='right'
-                                maxLength={40}
-                                underlineColorAndroid='transparent'
-                                value={this.state.contact_time}
-                                editable={true}
-                                onChangeText={(text) => this.setState({contact_time:text})}/>
-                        </View>
-                    </View>
-                    <View
-                        style={styles.inputView}>
+                        </TouchableOpacity>
                         <View
-                            style={ styles.textLine}>
-                            <Text>公司名称</Text>
-                        </View>
-                        <View
-                            style={{flex: 4,
-                                borderBottomWidth: StyleSheet.hairlineWidth,
-                                borderColor: constants.UIInActiveColor,}}>
-                            <TextInput
-                                ref={(component) => this._Company_name = component}
-                                style={styles.textInput}
-                                placeholder='请输入'
-                                clearButtonMode="while-editing"
-                                textAlign='right'
-                                maxLength={40}
-                                underlineColorAndroid='transparent'
-                                value={this.state.company_name}
-                                editable={true}
-                                onChangeText={(text) => this.setState({company_name:text})}/>
-                        </View>
-                    </View>
-                    <View
-                        style={styles.inputView}>
-                        <View
-                            style={ styles.textLine}>
-                            <Text>公司地址</Text>
-                        </View>
-                        <View
-                            style={{flex: 4,
-                                borderBottomWidth: StyleSheet.hairlineWidth,
-                                borderColor: constants.UIInActiveColor,}}>
-                            <TextInput
-                                style={styles.textInput}
-                                placeholder='请输入'
-                                clearButtonMode="while-editing"
-                                textAlign='right'
-                                maxLength={80}
-                                underlineColorAndroid='transparent'
-                                value={this.state.company_address}
-                                editable={true}
-                                onChangeText={(text) => this.setState({company_address:text})}/>
-                        </View>
-                    </View>
-                    <View
-                        style={{height:150,}}>
-                        <TextInput
-                            style={{flex:1,fontSize:15,
-                            textAlignVertical:'top',
-                            backgroundColor:'white',
-                            padding:constants.MarginLeftRight}}
-
-                            placeholder='请输入公司简介'
-                            maxLength={300}
-                            underlineColorAndroid='transparent'
-                            multiline={true}//多行输入
-                            numberOfLines={8}
-                            value={this.state.company_introduction}
-                            editable={true}
-                            onChangeText={(text) => this.setState({company_introduction:text})}/>
-
-                    </View>
-                    <View
-                        style={{flex:1,padding:10,marginLeft:constants.MarginLeftRight,marginRight:constants.MarginLeftRight}}>
-                        <Button
-                            ref={ component => this.button2 = component }
-                            touchableType={Button.constants.touchableTypes.fadeContent}
-                            style={styles.button}
-                            textStyle={{fontSize: 17, color: 'white'}}
-                            loadingComponent={
+                            style={{flex:1,padding:10,marginLeft:constants.MarginLeftRight,marginRight:constants.MarginLeftRight}}>
+                            <Button
+                                ref={ component => this.button2 = component }
+                                touchableType={Button.constants.touchableTypes.fadeContent}
+                                style={styles.button}
+                                textStyle={{fontSize: 17, color: 'white'}}
+                                loadingComponent={
                             <View
                             style={{flexDirection: 'row', alignItems: 'center'}}>
                                 {this._renderActivityIndicator()}
@@ -237,16 +262,16 @@ class ChangeInfo extends Component {
                                  fontWeight: 'bold', fontFamily: '.HelveticaNeueInterface-MediumP4',}}>保存中...</Text>
                             </View>
                         }
-                            onPress={ () => {
+                                onPress={ () => {
                              if(!this._qqValidate.test(this.state.qq)){
 
                              this._toast.show({
                                 position: Toast.constants.gravity.center,
                                 duration: 255,
                                 children: 'QQ格式错误'
-                            })
-                            return
-                        }
+                                })
+                                return
+                            }
                         this.button2.setState({
 
                             loading: true,
@@ -264,10 +289,11 @@ class ChangeInfo extends Component {
                                 this.props.navigator.pop();
                             }, 3000)*/
                         }}>
-                            保存
-                        </Button>
-                    </View>
+                                保存
+                            </Button>
+                        </View>
                 </ScrollView>
+                }
 
                 <Toast
                     ref={ component => this._toast = component }
@@ -320,14 +346,14 @@ class ChangeInfo extends Component {
 
             options.data = await this.gZip(options)
 
-            console.log(`_fetch_sendCode options:`, options)
+            //console.log(`_fetch_sendCode options:`, options)
 
             let resultData = await this.fetch(options)
 
             let result = await this.gunZip(resultData)
 
             result = JSON.parse(result)
-            console.log('gunZip:', result)
+            //console.log('gunZip:', result)
             //console.log(`fetch result -> `, typeof result)
             //console.log(`result`, result.result)
             if (result.code && result.code == -54) {
@@ -363,10 +389,14 @@ class ChangeInfo extends Component {
 
         }
         catch (error) {
-            console.log(error)
+            //console.log(error)
 
             //..调用toast插件, show出错误信息...
 
+        }finally {
+            this.setState({
+                showProgress: false,//显示加载
+            })
         }
 
 
@@ -393,7 +423,7 @@ class ChangeInfo extends Component {
 
             options.data = await this.gZip(options)
 
-            console.log(`_fetch_sendCode options:`, options)
+            //console.log(`_fetch_sendCode options:`, options)
 
             let resultData = await this.fetch(options)
 
@@ -411,7 +441,7 @@ class ChangeInfo extends Component {
                 /* Alert.alert('提示', '注册成功', () => {
                  this.props.navigator.popToTop()
                  })*/
-                console.log('result', result.result)
+                //console.log('result', result.result)
 
                 this._toast.show({
                     position: Toast.constants.gravity.center,
@@ -431,7 +461,7 @@ class ChangeInfo extends Component {
 
         } catch (error) {
             //console.log(error)
-            console.log(error)
+            //console.log(error)
 
             //..调用toast插件, show出错误信息...
 

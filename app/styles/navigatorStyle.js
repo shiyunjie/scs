@@ -32,7 +32,7 @@ const navigatorStyles = StyleSheet.create({
 
     navBarLeftButton: {
         paddingLeft: 15,
-        width:30,
+        width:40,
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'flex-start',

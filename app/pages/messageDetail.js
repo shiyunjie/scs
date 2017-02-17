@@ -29,14 +29,14 @@ class MessageDetail extends Component {
         let currentRoute = this.props.navigator.navigationContext.currentRoute
         this.addAppEventListener(
             this.props.navigator.navigationContext.addListener('willfocus', (event) => {
-                console.log(`OrderDetail willfocus...`)
-                console.log(`currentRoute`, currentRoute)
-                console.log(`event.data.route`, event.data.route)
+                //console.log(`OrderDetail willfocus...`)
+                //console.log(`currentRoute`, currentRoute)
+                //console.log(`event.data.route`, event.data.route)
                 if (currentRoute === event.data.route) {
-                    console.log("OrderDetail willAppear")
+                    //console.log("OrderDetail willAppear")
                     NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
                 } else {
-                    console.log("OrderDetail willDisappear, other willAppear")
+                    //console.log("OrderDetail willDisappear, other willAppear")
                 }
                 //
             })
@@ -45,7 +45,7 @@ class MessageDetail extends Component {
 
 
     render() {
-        return (
+       /* return (
             <View style={styles.container}>
                 <View style={styles.itemView}>
                     <View style={{flex:3,}}>
@@ -60,6 +60,24 @@ class MessageDetail extends Component {
                     <Text numberOfLines={5}>{this.props.content}</Text>
                 </View>
             </View>
+        );*/
+        return (
+            <View style={styles.container}>
+                <View style={styles.itemView}>
+
+                        <Text style={{fontSize:17,color:constants.LabelColor,}} numberOfLines={1}>{this.props.title}</Text>
+
+
+                        <Text style={{fontSize:12,marginTop:5,color:constants.UIInActiveColor}}>{this.props.send_time}</Text>
+
+                </View>
+                <View style={{height:1,borderBottomWidth: StyleSheet.hairlineWidth,borderColor:constants.LineColor,
+                marginLeft:constants.MarginLeftRight,marginRight:constants.MarginLeftRight}}/>
+                <View
+                    style={{flex:1,marginTop:10,marginLeft:constants.MarginLeftRight,marginRight:constants.MarginLeftRight}}>
+                    <Text numberOfLines={5} style={{fontSize:14,color:constants.PointColor}}>{this.props.content}</Text>
+                </View>
+            </View>
         );
     }
 }
@@ -72,15 +90,15 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-start',
         alignItems: 'stretch',
         marginTop: Platform.OS == 'ios' ? 64 : 56,
-        backgroundColor: constants.UIBackgroundColor,
+        backgroundColor: 'white',
     },
     itemView: {
-        flexDirection: 'row',
-        justifyContent: 'flex-start',
+        flexDirection: 'column',
+        justifyContent: 'center',
         alignItems: 'center',
         paddingTop: 15,
         paddingBottom: 15,
-        borderBottomWidth: StyleSheet.hairlineWidth,
+
     },
 
 });

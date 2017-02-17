@@ -20,6 +20,7 @@ import {
     NativeAppEventEmitter,
     Alert,
     AsyncStorage,
+    BackAndroid,
 } from 'react-native';
 
 import AppEventListenerEnhance from 'react-native-smart-app-event-listener-enhance'
@@ -68,18 +69,35 @@ class Register extends Component {
         let currentRoute = this.props.navigator.navigationContext.currentRoute
         this.addAppEventListener(
             this.props.navigator.navigationContext.addListener('willfocus', (event) => {
-                console.log(`orderPage willfocus...`)
-                console.log(`currentRoute`, currentRoute)
+                //console.log(`orderPage willfocus...`)
+                //console.log(`currentRoute`, currentRoute)
                 //console.log(`event.data.route`, event.data.route)
                 if (event&&currentRoute === event.data.route) {
-                    console.log("orderPage willAppear")
+                    //console.log("orderPage willAppear")
                     NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
                 } else {
-                    console.log("orderPage willDisappear, other willAppear")
+                    //console.log("orderPage willDisappear, other willAppear")
                 }
                 //
             })
         )
+        this.addAppEventListener(
+            BackAndroid.addEventListener('hardwareBackPress', this.onBackAndroid)
+        )
+    }
+
+    onBackAndroid = () => {
+        const routers = this.props.navigator.getCurrentRoutes();
+        if (routers.length > 1) {
+            Alert.alert('温馨提醒','确定退出吗?',[
+                {text:'确定',onPress:()=>this.props.navigator.popToTop()},
+                {text:'取消',onPress:()=>{}},
+
+            ])
+
+            return true;
+        }
+
     }
 
     render() {
@@ -109,6 +127,7 @@ class Register extends Component {
                     style={styles.textInput}
                     autoCorrect={false}
                     placeholder='请输入会员名'
+                    clearButtonMode="while-editing"
                     maxLength={20}
                     underlineColorAndroid='transparent'
                     editable = {this.state.editable}
@@ -121,6 +140,7 @@ class Register extends Component {
                     style={styles.textInput}
                     autoCorrect={false}
                     placeholder='请输入联系人姓名'
+                    clearButtonMode="while-editing"
                     maxLength={20}
                     underlineColorAndroid='transparent'
                     editable = {this.state.editable}
@@ -134,6 +154,7 @@ class Register extends Component {
                     style={styles.textInput}
                     autoCorrect={false}
                     placeholder='请输入邮箱'
+                    clearButtonMode="while-editing"
                     maxLength={20}
                     underlineColorAndroid='transparent'
                     editable = {this.state.editable}
@@ -146,6 +167,7 @@ class Register extends Component {
                     style={[styles.textInput,{marginTop:10}]}
                     autoCorrect={false}
                     placeholder='请输入密码'
+                    clearButtonMode="while-editing"
                     maxLength={20}
                     underlineColorAndroid='transparent'
                     editable = {this.state.editable}
@@ -159,6 +181,7 @@ class Register extends Component {
                     style={styles.textInput}
                     autoCorrect={false}
                     placeholder='确认密码'
+                    clearButtonMode="while-editing"
                     maxLength={20}
                     underlineColorAndroid='transparent'
                     editable = {this.state.editable}
@@ -328,19 +351,19 @@ class Register extends Component {
 
             options.data=await this.gZip(options)
 
-            console.log(`_fetch_sendCode options:` ,options)
+            //console.log(`_fetch_sendCode options:` ,options)
 
             let resultData = await this.fetch(options)
 
             let result=await this.gunZip(resultData)
 
             result=JSON.parse(result)
-            console.log('gunZip:',result)
+            //console.log('gunZip:',result)
             if(result.code&&result.code==10){
                /* Alert.alert('提示', '注册成功', () => {
                     this.props.navigator.popToTop()
                 })*/
-                console.log('token',result.result)
+                //console.log('token',result.result)
                 AsyncStorage.setItem('token',result.result)
                 AsyncStorage.setItem('phone',this.state.phone)
                 AsyncStorage.setItem('realName',this.state.realName)
@@ -362,7 +385,7 @@ class Register extends Component {
 
         }
         catch (error) {
-            console.log(error)
+            //console.log(error)
 
 
         }
@@ -419,7 +442,10 @@ const navigationBarRouteMapper = {
         var previousRoute = navState.routeStack[ index - 1 ];
         return (
             <TouchableOpacity
-                onPress={() => navigator.pop()}
+                onPress={() => Alert.alert('温馨提醒','确定退出吗?',[
+             {text:'取消',onPress:()=>{}},
+             {text:'确定',onPress:()=>this.props.navigator.popToTop()}
+             ])}
                 style={navigatorStyle.navBarLeftButton}>
                 <View style={navigatorStyle.navBarLeftButtonAndroid}>
                     <Icon

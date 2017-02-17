@@ -26,10 +26,11 @@ class ItemView extends Component {
     render() {
         return (
             <View style={styles.itemView}><View style={styles.itemTitle}>
-                <Text style={[styles.TabText,{color:'black'}]}>{this.props.title}</Text>
+                <Text style={[styles.TabText,]}>{this.props.title}</Text>
             </View>
                 <View style={styles.itemText}>
-                    <Text style={styles.TabText}>{this.props.text}</Text>
+                    <Text style={[styles.TabText,this.props.color?{color:this.props.color}:
+                    {color:constants.PointColor}]}>{this.props.text}</Text>
                 </View>
 
             </View>
@@ -45,14 +46,14 @@ class Contact extends Component {
         let currentRoute = this.props.navigator.navigationContext.currentRoute
         this.addAppEventListener(
             this.props.navigator.navigationContext.addListener('willfocus', (event) => {
-                console.log(`orderPage willfocus...`)
-                console.log(`currentRoute`, currentRoute)
+                //console.log(`orderPage willfocus...`)
+                //console.log(`currentRoute`, currentRoute)
                 //console.log(`event.data.route`, event.data.route)
                 if (event && currentRoute === event.data.route) {
-                    console.log("orderPage willAppear")
+                    //console.log("orderPage willAppear")
                     NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
                 } else {
-                    console.log("orderPage willDisappear, other willAppear")
+                    //console.log("orderPage willDisappear, other willAppear")
                 }
                 //
             })
@@ -64,7 +65,7 @@ class Contact extends Component {
             <View style={styles.container}>
                 <ItemView title='公司名字' text={constants.CompName}/>
                 <TouchableOpacity onPress={this._onCall}>
-                    <ItemView title='联系电话' text={constants.CompTel}/>
+                <ItemView title='联系电话' text={constants.CompTel} color={constants.UIActiveColor}/>
                 </TouchableOpacity><ItemView title='传真' text={constants.CompFax}/>
                 <ItemView title='邮箱' text={constants.CompEmail}/>
                 <ItemView title='公司地址' text={constants.CompAddress}/>
@@ -92,11 +93,11 @@ const styles = StyleSheet.create({
         backgroundColor: constants.UIBackgroundColor,
     },
     itemView: {
-        height: 50,
+        height: 40,
         flexDirection: 'row',
         justifyContent: 'flex-start',
         alignItems: 'stretch',
-        marginLeft: 20,
+        marginLeft: constants.MarginLeftRight,
         borderBottomWidth: StyleSheet.hairlineWidth,
         borderColor: constants.UIInActiveColor,
 
@@ -121,8 +122,8 @@ const styles = StyleSheet.create({
     },
     TabText: {
         marginRight: 10,
-        fontSize: 17,
-        marginLeft: 10,
+        fontSize: 14,
+        color:constants.LabelColor,
     },
 
 });

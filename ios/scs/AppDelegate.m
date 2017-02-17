@@ -51,12 +51,12 @@
 //  jsCodeLocation = [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index.ios" fallbackResource:nil];
 
   // Use CodePush to resolve your JS bundle location, so that your app will run the version of the code distributed via CodePush
-//#ifdef DEBUG
-//   jsCodeLocation = [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index.ios" fallbackResource:nil];
-//#else
-//   jsCodeLocation = [CodePush bundleURL];
-//#endif
-  jsCodeLocation = [CodePush bundleURL];
+#ifdef DEBUG
+   jsCodeLocation = [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index.ios" fallbackResource:nil];
+#else
+   jsCodeLocation = [CodePush bundleURL];
+#endif
+//  jsCodeLocation = [CodePush bundleURL];
   
 
   

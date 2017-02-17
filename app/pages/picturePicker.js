@@ -25,8 +25,6 @@ import Icon from 'react-native-vector-icons/Ionicons'
 import AppEventListenerEnhance from 'react-native-smart-app-event-listener-enhance'
 
 
-
-
 class PicturePicker extends Component {
     constructor(props) {
         super(props);
@@ -42,32 +40,32 @@ class PicturePicker extends Component {
         let currentRoute = this.props.navigator.navigationContext.currentRoute
         this.addAppEventListener(
             this.props.navigator.navigationContext.addListener('willfocus', (event) => {
-                console.log(`OrderDetail willfocus...`)
-                console.log(`currentRoute`, currentRoute)
-                console.log(`event.data.route`, event.data.route)
+                //console.log(`OrderDetail willfocus...`)
+                //console.log(`currentRoute`, currentRoute)
+                //console.log(`event.data.route`, event.data.route)
                 if (currentRoute === event.data.route) {
-                    console.log("OrderDetail willAppear")
+                    //console.log("OrderDetail willAppear")
                     NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
                 } else {
-                    console.log("OrderDetail willDisappear, other willAppear")
+                    //console.log("OrderDetail willDisappear, other willAppear")
                 }
                 //
             })
         )
         this.addAppEventListener(
             NativeAppEventEmitter.addListener('PicturePicker.selected.setState', () => {
-                let Uris=[]
+                let Uris = []
 
-                for(let data of this.props.ids){
+                for (let data of this.props.ids) {
                     Uris.push(data.uri)
                 }
-                console.log(`Uris:`,Uris)
-                let selected=[];
-                for(let i=this.state.selected.length-1;i>=0;i--){
-                    let data=this.state.selected[i]
-                    if(Uris.indexOf(data.uri)==-1){
-                        console.log(`Uris_data:`,data)
-                        data.big_uri=data.uri
+                //console.log(`Uris:`, Uris)
+                let selected = [];
+                for (let i = this.state.selected.length - 1; i >= 0; i--) {
+                    let data = this.state.selected[i]
+                    if (Uris.indexOf(data.uri) == -1) {
+                        //console.log(`Uris_data:`, data)
+                        data.big_uri = data.uri
                         selected.push(data)
                     }
 
@@ -82,9 +80,58 @@ class PicturePicker extends Component {
 
     }
 
-    render () {
+    /**
+     *
+     * @returns {XML}
+     */
+
+    render() {
+        /*return (
+         <View style={styles.container}>
+
+         <View style={styles.content}>
+         <View style={{flex:1}}/>
+         <Text style={[styles.text,{color:'black'}]}>
+         <Text style={styles.bold}>已选择{this.state.num}张</Text>照片
+         </Text>
+         <TouchableOpacity
+         style={{flex:1,alignItems:'center',justifyContent:'center'}}
+         underlayColor={'#eee'}
+         onPress={() => {
+         //this.props.waitForAddToUploadQuene(this.state.selected)
+         //this.props.addToUploadQuene(this.state.selected)
+         //this.props.navigator.pop()
+         }}>
+
+         </TouchableOpacity>
+         </View>
+         <CameraRollPicker
+         scrollRenderAheadDistance={500}
+         initialListSize={1}
+         pageSize={3}
+         removeClippedSubviews={true}
+         groupTypes='SavedPhotos'
+         //groupTypes='All'
+         batchSize={5}
+         maximum={8}
+         selected={this.state.selected}
+         assetType='Photos'
+         fetchSize={30}
+         imagesPerRow={3}
+         imageMargin={5}
+         //onEndReachedThreshold={100}
+         callback={this._getSelectedImages} />
+         </View>
+         )*/
+        //return (
+        //    <View style={{marginTop: Platform.OS == 'ios' ? 64 : 56, flex: 1,}}>
+        //    <CameraRollPicker
+        //        style={{flex: 1,}}
+        //        onSelect={this._getSelectedImages}/>
+        //</View>)
+
         return (
-            <View style={styles.container}>
+            <View style={{marginTop: Platform.OS == 'ios' ? 64 : 56, flex: 1,}}>
                 <View style={styles.content}>
                     <View style={{flex:1}}/>
                     <Text style={[styles.text,{color:'black'}]}>
@@ -93,31 +140,15 @@ class PicturePicker extends Component {
                     <TouchableOpacity
                         style={{flex:1,alignItems:'center',justifyContent:'center'}}
                         underlayColor={'#eee'}
-                        onPress={() => {
-                            //this.props.waitForAddToUploadQuene(this.state.selected)
-                            //this.props.addToUploadQuene(this.state.selected)
-                            //this.props.navigator.pop()
-                    }}>
-
+                        onPress={() => {}}>
                     </TouchableOpacity>
                 </View>
                 <CameraRollPicker
-                    scrollRenderAheadDistance={500}
-                    initialListSize={1}
-                    pageSize={3}
-                    removeClippedSubviews={true}
-                    groupTypes='SavedPhotos'
-                    //groupTypes='All'
-                    batchSize={5}
-                    maximum={8}
-                    selected={this.state.selected}
-                    assetType='Photos'
-                    fetchSize={30}
-                    imagesPerRow={3}
-                    imageMargin={5}
-                    callback={this._getSelectedImages} />
-            </View>
-        )
+                    initialListSize={30}
+                    pageSize={30}
+                    fetchSize={90}
+                    onSelect={this._getSelectedImages}/>
+            </View>)
 
     }
 
@@ -139,8 +170,8 @@ const styles = StyleSheet.create({
         flex: 1,
         marginTop: Platform.OS == 'ios' ? 64 : 56,
         backgroundColor: constants.UIBackgroundColor,
-        marginLeft:2,
-        marginRight:2,
+        marginLeft: 2,
+        marginRight: 2,
     },
     content: {
         height: 50,

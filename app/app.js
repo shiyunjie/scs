@@ -21,9 +21,8 @@ import AppEventListenerEnhance from 'react-native-smart-app-event-listener-enhan
 import CodePush from "react-native-code-push";
 import SplashScreen from 'react-native-smart-splash-screen'
 
-let codePushOptions = { checkFrequency: CodePush.CheckFrequency.ON_APP_RESUME };
+let codePushOptions = {checkFrequency: CodePush.CheckFrequency.ON_APP_RESUME};
 //let codePushOptions = { checkFrequency: CodePush.CheckFrequency.MANUAL };
-
 
 
 const HttpRSAModule = NativeModules.HttpRSAModule;
@@ -37,40 +36,40 @@ class Root extends Component {
         }
     }
 
-/*    syncImmediate() {
+    /*    syncImmediate() {
 
-        CodePush.sync(
+     CodePush.sync(
 
-            { installMode: CodePush.InstallMode.IMMEDIATE,//启动模式三种：ON_NEXT_RESUME、ON_NEXT_RESTART、IMMEDIATE
+     { installMode: CodePush.InstallMode.IMMEDIATE,//启动模式三种：ON_NEXT_RESUME、ON_NEXT_RESTART、IMMEDIATE
 
-                updateDialog: {
+     updateDialog: {
 
-                    appendReleaseDescription:true,//是否显示更新description，默认为false
+     appendReleaseDescription:true,//是否显示更新description，默认为false
 
-                    descriptionPrefix:"更新内容：",//更新说明的前缀。 默认是” Description:
+     descriptionPrefix:"更新内容：",//更新说明的前缀。 默认是” Description:
 
-                    mandatoryContinueButtonLabel:"立即更新",//强制更新的按钮文字，默认为continue
+     mandatoryContinueButtonLabel:"立即更新",//强制更新的按钮文字，默认为continue
 
-                    mandatoryUpdateMessage:"",//- 强制更新时，更新通知. Defaults to “An update is available that must be installed.”.
+     mandatoryUpdateMessage:"",//- 强制更新时，更新通知. Defaults to “An update is available that must be installed.”.
 
-                    optionalIgnoreButtonLabel: '稍后',//非强制更新时，取消按钮文字,默认是ignore
+     optionalIgnoreButtonLabel: '稍后',//非强制更新时，取消按钮文字,默认是ignore
 
-                    optionalInstallButtonLabel: '后台更新',//非强制更新时，确认文字. Defaults to “Install”
+     optionalInstallButtonLabel: '后台更新',//非强制更新时，确认文字. Defaults to “Install”
 
-                    optionalUpdateMessage: '有新版本了，是否更新？',//非强制更新时，更新通知. Defaults to “An update is available. Would you like to install it?”.
+     optionalUpdateMessage: '有新版本了，是否更新？',//非强制更新时，更新通知. Defaults to “An update is available. Would you like to install it?”.
 
-                    title: '更新提示'//要显示的更新通知的标题. Defaults to “Update available”.
+     title: '更新提示'//要显示的更新通知的标题. Defaults to “Update available”.
 
-                },
+     },
 
-            }
+     }
 
-        );
+     );
 
-    }*/
+     }*/
 
     codePushStatusDidChange(status) {
-        switch(status) {
+        switch (status) {
             case CodePush.SyncStatus.CHECKING_FOR_UPDATE:
                 console.log("Checking for updates.");
                 break;
@@ -115,13 +114,18 @@ class Root extends Component {
     componentDidMount() {
 
         //this.addAppEventListener(
-            NativeAppEventEmitter.addListener('setNavigationBar.index', (navigationBar) => {
-                this.setState({
-                    navigationBar: navigationBar,
-                })
+        NativeAppEventEmitter.addListener('setNavigationBar.index', (navigationBar) => {
+            this.setState({
+                navigationBar: navigationBar,
             })
+        })
         //)
-        SplashScreen.close(SplashScreen.animationType.scale,850,500)
+        //SplashScreen.close(SplashScreen.animationType.scale,850,500)
+        SplashScreen.close({
+            animationType: SplashScreen.animationType.scale,
+            duration: 850,
+            delay: 500,
+        })
     }
 
 
@@ -234,6 +238,6 @@ const styles = StyleSheet.create({
 })
 
 //codepush
-Root=CodePush(codePushOptions)(Root);
+Root = CodePush(codePushOptions)(Root);
 //export default AppEventListenerEnhance(Root)
 export default Root

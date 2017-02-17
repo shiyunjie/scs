@@ -40,15 +40,15 @@ class More extends Component {
         let currentRoute = this.props.navigator.navigationContext.currentRoute
         this.addAppEventListener(
         this.props.navigator.navigationContext.addListener('willfocus', (event) => {
-            console.log(`orderPage willfocus...`)
-            console.log(`currentRoute`, currentRoute)
-            console.log(`event.data.route`, event.data.route)
+            //console.log(`orderPage willfocus...`)
+            //console.log(`currentRoute`, currentRoute)
+            //console.log(`event.data.route`, event.data.route)
             if (currentRoute === event.data.route) {
-                console.log("orderPage willAppear")
+                //console.log("orderPage willAppear")
                 //NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
                 NativeAppEventEmitter.emit('setRootPageNavigationBar.index')
             } else {
-                console.log("orderPage willDisappear, other willAppear")
+                //console.log("orderPage willDisappear, other willAppear")
             }
             //
         })

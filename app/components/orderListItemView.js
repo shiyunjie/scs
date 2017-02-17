@@ -54,34 +54,34 @@ export default class ListItemView extends Component {
                     <View style={styles.itemIcon}/>
                     <View style={styles.itemText}>
                         <View style={styles.itemDetail}>
-                            <Text style={{fontSize:15,}}>单号:</Text>
-                            <Text style={{flex:2,fontSize:15,}}>{this.props.orderNum}</Text>
+                            <Text style={{fontSize:13,color:constants.LabelColor}}>单号:</Text>
+                            <Text style={{flex:2,fontSize:13,}}>{this.props.orderNum}</Text>
                         </View>
                         <View style={styles.itemDetail}>
-                            <Text style={{color:constants.UIInActiveColor}}>发起时间:</Text>
-                            <Text style={{flex:2,color:constants.UIInActiveColor}}>{this.props.time}</Text>
+                            <Text style={{fontSize:12,color:constants.UIInActiveColor}}>发起时间:</Text>
+                            <Text style={{flex:2,fontSize:12,color:constants.UIInActiveColor}}>{this.props.time}</Text>
                         </View>
                         {
                             this.props.logistics?<View style={styles.itemDetail}>
-                            <Text  style={{color:constants.UIInActiveColor}}>物流状态:</Text>
-                            <Text style={{flex:2,color:constants.UIInActiveColor}}>{this.props.logistics}</Text>
+                            <Text  style={{fontSize:12,color:constants.UIInActiveColor}}>物流状态:</Text>
+                            <Text style={{flex:2,fontSize:12,color:constants.UIInActiveColor}}>{this.props.logistics}</Text>
                             </View>:<View/>}
                         {
                             this.props.showCost?<View style={styles.itemDetail}>
-                            <Text style={{color:constants.UIInActiveColor}}>服务费总计:</Text>
-                            <Text style={{flex:2,color:constants.UIInActiveColor}}>￥{this.props.cost}</Text>
+                            <Text style={{fontSize:12,color:constants.UIInActiveColor}}>服务费总计:</Text>
+                            <Text style={{flex:2,fontSize:12,color:constants.UIInActiveColor}}>￥{this.props.cost}</Text>
                             </View>:<View/>
                         }
                         <View style={styles.itemDetail}>
-                            <Text style={{flex:1,fontSize:16,}}>{this.props.route}</Text>
+                            <Text style={{flex:1,fontSize:13,color:constants.LabelColor,}}>{this.props.route}</Text>
                         </View>
                     </View>
                     <View style={styles.itemButton}>
                         <Text style={styles.TabText}>{this.props.rightText}</Text>
                         <Icon
                             name='ios-arrow-forward'  // 图标
-                            size={constants.IconSize}
-                            color={constants.UIInActiveColor}/>
+                            size={constants.IconSize-5}
+                            color={constants.LineColor}/>
                     </View>
 
                 </View>
@@ -103,7 +103,7 @@ var styles = StyleSheet.create({
         paddingTop:10,
         paddingBottom:10,
         borderBottomWidth: StyleSheet.hairlineWidth,
-        borderColor: constants.UIInActiveColor,
+        borderColor: constants.LineColor,
 
     },
     itemIcon: {
@@ -131,8 +131,8 @@ var styles = StyleSheet.create({
         paddingRight: 10,
     },
     TabText: {
-        margin: 0,
-        fontSize: 15,
+        marginRight: 5,
+        fontSize: 13,
         color:constants.UIActiveColor,
 
     },

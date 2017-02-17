@@ -65,14 +65,14 @@ class MessageList extends Component {
         let currentRoute = this.props.navigator.navigationContext.currentRoute
         this.addAppEventListener(
             this.props.navigator.navigationContext.addListener('willfocus', (event) => {
-                console.log(`OrderDetail willfocus...`)
-                console.log(`currentRoute`, currentRoute)
-                console.log(`event.data.route`, event.data.route)
+                //console.log(`OrderDetail willfocus...`)
+                //console.log(`currentRoute`, currentRoute)
+                //console.log(`event.data.route`, event.data.route)
                 if (currentRoute === event.data.route) {
-                    console.log("OrderDetail willAppear")
+                    //console.log("OrderDetail willAppear")
                     NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
                 } else {
-                    console.log("OrderDetail willDisappear, other willAppear")
+                    //console.log("OrderDetail willDisappear, other willAppear")
                 }
                 //
             })
@@ -81,7 +81,8 @@ class MessageList extends Component {
 
     componentDidMount() {
         if (this.state.dataList.length == 0) {
-            this._PullToRefreshListView.beginRefresh()
+            setTimeout( ()=>this._PullToRefreshListView.beginRefresh(),380)
+
         }
     }
 
@@ -98,6 +99,7 @@ class MessageList extends Component {
                     initialListSize={10}
                     pageSize={10}
                     enableEmptySections={true}
+                    showsVerticalScrollIndicator={false}
                     dataSource={this.state.dataSource}
                     renderHeader={this._renderHeader}
                     renderFooter={this._renderFooter}
@@ -162,6 +164,21 @@ class MessageList extends Component {
                         onRowPress={ ()=>{
                                         //已读
                          this._fetchData_read(rowData.id)
+                         rowData.do_ret = true
+
+                       /* let dataList = this.state.dataList
+                        for (let index = 0; index < dataList.length; index++) {
+                            if (dataList[index].id == rowData.id) {
+                                dataList[index].do_ret = true
+                                break;
+                            }
+
+                        }*/
+                        //console.log(`dataList`, dataList);
+
+                        this.setState({
+                            dataSource: this._dataSource.cloneWithRows(this.state.dataList),
+                        })
                          this.props.navigator.push({
                          title: '消息',
                          component: MessageDetail,
@@ -176,19 +193,20 @@ class MessageList extends Component {
                         <View style={{flex:1,flexDirection:'row',alignItems:'stretch'}}>
                             <View style={{flex:1}}/>
                             <TouchableOpacity
-                                onPress={ ()=>{this._fetchData_delete(rowData.id)} }
+                                onPress={ ()=>{
+                                this._fetchData_delete(rowData.id)
+                                } }
                                 style={{width:100,justifyContent:'center',
                                 alignItems:'stretch',backgroundColor:'red',}}>
-                                <Text style={{color:'white',marginLeft:30,textAlign:'center'}}>删除</Text>
+                                <Text style={{color:'white',marginLeft:30,textAlign:'center',fontSize:14}}>删除</Text>
                             </TouchableOpacity>
                         </View>
                         <View
                             style={{flex:1}}>
                             <ItemView
-                                style={[{overflow: 'hidden',}]}
                                 size={constants.IconSize}
                                 title={rowData.title}
-                                time={rowData.send_time}
+                                //time={rowData.send_time}
                                 content={rowData.content}
                                 do_ret={rowData.do_ret}/>
                         </View>
@@ -261,34 +279,38 @@ class MessageList extends Component {
                     <HeaderView name='md-arrow-round-down'  // 图标
                                 size={constants.IconSize}
                                 title='上拉加载更多...'
-                                degree={degree}/>
+                                degree={degree}
+                                isFoot={true}/>
                 )
             case load_more_idle:
                 return (
                     <HeaderView name='md-arrow-round-up'  // 图标
                                 size={constants.IconSize}
                                 title='上拉加载更多...'
-                                degree={degree}/>
+                                degree={degree}
+                                isFoot={true}/>
                 )
             case will_load_more:
                 return (
                     <HeaderView name='md-arrow-round-up'  // 图标
                                 size={constants.IconSize}
                                 title='释放加载更多...'
-                                degree={degree}/>
+                                degree={degree}
+                                isFoot={true}/>
                 )
             case loading_more:
                 return (
                     <HeaderView name='Circle' // spinkit
                                 size={constants.IconSize}
                                 title='加载中...'
-                                isRefresh={true}/>
+                                isRefresh={true}
+                                isFoot={true}/>
                 )
             case loaded_all:
                 return (
                     <View
                         style={{height: 35, justifyContent: 'center', alignItems: 'center', backgroundColor: 'transparent',}}>
-                        <Text>没有更多信息</Text>
+                        <Text style={{color:constants.PointColor,fontSize:constants.DefaultFontSize}}>没有更多信息</Text>
                     </View>
                 )
         }
@@ -341,10 +363,10 @@ class MessageList extends Component {
             }
             if (result.code && result.code == 10) {
 
-                console.log(`result list`, result.result);
+                //console.log(`result list`, result.result);
                 let dataList = result.result
 
-                console.log(`dataList`, dataList);
+                //console.log(`dataList`, dataList);
 
                 this.setState({
                     dataList: dataList,
@@ -360,7 +382,7 @@ class MessageList extends Component {
 
         }
         catch (error) {
-            console.log(error)
+            //console.log(error)
             //..调用toast插件, show出错误信息...
 
         }
@@ -396,7 +418,7 @@ class MessageList extends Component {
 
             result = JSON.parse(result)
             //console.log(`fetch result -> `, typeof result)
-            console.log(`result`, result.result)
+            //console.log(`result`, result.result)
             if (result.code && result.code == -54) {
                 /**
                  * 发送事件去登录
@@ -499,8 +521,13 @@ class MessageList extends Component {
                     }
 
                 }
-                console.log(`dataList`, dataList);
+                //console.log(`dataList`, dataList);
+                this.setState({
 
+                    dataSource: new ListView.DataSource({
+                        rowHasChanged: (r1, r2) => r1 !== r2,
+                    })
+                })
 
 
                 this.setState({
@@ -520,9 +547,8 @@ class MessageList extends Component {
 
         }
         catch (error) {
-            console.log(error)
+            //console.log(error)
             //..调用toast插件, show出错误信息...
-
         }
 
     }
@@ -558,24 +584,7 @@ class MessageList extends Component {
             }
             if (result.code && result.code == 10) {
 
-                /**
-                 * dataList中设置已读消息
-                 * @type {*[]}
-                 */
-                let dataList = this.state.dataList
-                for (let index = 0; index < dataList.length; index++) {
-                    if (dataList[index].id == id) {
-                        dataList[index].do_ret = true
-                        break;
-                    }
 
-                }
-                console.log(`dataList`, dataList);
-
-                this.setState({
-                    dataList: dataList,
-                    dataSource: this._dataSource.cloneWithRows(dataList),
-                })
             } else {
                 this._toast.show({
                     position: Toast.constants.gravity.center,
@@ -586,7 +595,7 @@ class MessageList extends Component {
 
         }
         catch (error) {
-            console.log(error)
+            //console.log(error)
             //..调用toast插件, show出错误信息...
 
         }

@@ -37,7 +37,6 @@ export default class InputView extends Component {
         placeholderTextColor: PropTypes.string,
         radius: PropTypes.number,
         maxLength: PropTypes.number,
-        secureTextEntry: PropTypes.bool,
         onChangeText: PropTypes.func,
         value:PropTypes.string,
         secureTextEntry:PropTypes.bool,
@@ -47,7 +46,6 @@ export default class InputView extends Component {
     static defaultProps = {
 
         radius: 30,
-        secureTextEntry: false,
         placeholderTextColor: constants.UIInActiveColor,
         iconColor: constants.UIActiveColor,
         secureTextEntry:false,

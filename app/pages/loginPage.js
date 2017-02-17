@@ -16,6 +16,7 @@ import {
     Platform,
     NativeAppEventEmitter,
     AsyncStorage,
+    BackAndroid,
 } from 'react-native';
 
 import constants from  '../constants/constant';
@@ -35,7 +36,6 @@ import Toast from 'react-native-smart-toast'
 import AppEventListenerEnhance from 'react-native-smart-app-event-listener-enhance'
 
 
-
 class Login extends Component {
 
     // 构造
@@ -44,7 +44,7 @@ class Login extends Component {
         // 初始状态
         this.state = {
             phone: '',
-            password:'',
+            password: '',
 
 
         };
@@ -54,29 +54,42 @@ class Login extends Component {
         NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
         let currentRoute = this.props.navigator.navigationContext.currentRoute
         this.addAppEventListener(
-        this.props.navigator.navigationContext.addListener('willfocus', (event) => {
-            console.log(`orderPage willfocus...`)
-            console.log(`currentRoute`, currentRoute)
-            //console.log(`event.data.route`, event.data.route)
-            if (event&&currentRoute === event.data.route) {
-                console.log("orderPage willAppear")
-                NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
-            } else {
-                console.log("orderPage willDisappear, other willAppear")
-            }
-            //
-        })
+            this.props.navigator.navigationContext.addListener('willfocus', (event) => {
+                //console.log(`orderPage willfocus...`)
+                //console.log(`currentRoute`, currentRoute)
+                //console.log(`event.data.route`, event.data.route)
+                if (event && currentRoute === event.data.route) {
+                    //console.log("orderPage willAppear")
+                    NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
+                } else {
+                    //console.log("orderPage willDisappear, other willAppear")
+                }
+                //
+            })
+        )
+        this.addAppEventListener(
+            BackAndroid.addEventListener('hardwareBackPress', this.onBackAndroid)
         )
         this._getAccount()
     }
 
-   async _getAccount(){
-       let account=await getAccount();
-       if(account&&account==''){
+    onBackAndroid = () => {
+        const routers = this.props.navigator.getCurrentRoutes();
+        if (routers.length > 1) {
+            this.props.navigator.popToTop()
 
-       }else{
-           this.setState({phone:account})
-       }
+            return true;
+        }
+
+    }
+
+    async _getAccount() {
+        let account = await getAccount();
+        if (account && account == '') {
+
+        } else {
+            this.setState({phone: account})
+        }
 
     }
 
@@ -134,6 +147,24 @@ class Login extends Component {
                             </View>
                     }
                             onPress={ () => {
+                            if(this.state.phone==''){
+                            this._toast.show({
+                                position: Toast.constants.gravity.center,
+                                duration: 255,
+                                children: '请填写用户名'
+                            })
+                            return
+                            }
+
+                            if(this.state.password==''){
+                            this._toast.show({
+                                position: Toast.constants.gravity.center,
+                                duration: 255,
+                                children: '请填写密码'
+                            })
+                            return
+                            }
+
                         this.button2.setState({
 
                             loading: true,
@@ -162,43 +193,44 @@ class Login extends Component {
             </View>
         );
     }
-    async _fetch_Login(){
+
+    async _fetch_Login() {
         try {
-            let token= await getToken()
-            let deviceID= await getDeviceID()
-            let pwd=hex_md5(this.state.password)
-            console.log(`md5_pwd`,pwd)
+            let token = await getToken()
+            let deviceID = await getDeviceID()
+            let pwd = hex_md5(this.state.password)
+            //console.log(`md5_pwd`, pwd)
             let options = {
-                method:'post',
+                method: 'post',
                 url: constants.api.service,
                 data: {
                     iType: constants.iType.login,
-                    member_name:this.state.phone,
-                    pwd:pwd,
-                    deviceId:deviceID,
-                    token:token,
+                    member_name: this.state.phone,
+                    pwd: pwd,
+                    deviceId: deviceID,
+                    token: token,
                 }
             }
 
-            options.data=await this.gZip(options)
+            options.data = await this.gZip(options)
 
-            console.log(`_fetch_sendCode options:` ,options)
+            //console.log(`_fetch_sendCode options:`, options)
 
             let resultData = await this.fetch(options)
 
-            let result=await this.gunZip(resultData)
+            let result = await this.gunZip(resultData)
 
-            result=JSON.parse(result)
-            console.log('gunZip:',result)
-            if(result.code&&result.code==10){
+            result = JSON.parse(result)
+            //console.log('gunZip:', result)
+            if (result.code && result.code == 10) {
                 /* Alert.alert('提示', '注册成功', () => {
                  this.props.navigator.popToTop()
                  })*/
-                console.log('token',result.result)
-                AsyncStorage.setItem('token',result.result.token)
-                AsyncStorage.setItem('phone',result.result.phone)
-                console.log('real_name:',result.result.real_name)
-                AsyncStorage.setItem('realName',result.result.real_name)
+                //console.log('token', result.result)
+                AsyncStorage.setItem('token', result.result.token)
+                AsyncStorage.setItem('phone', result.result.phone)
+                //console.log('real_name:', result.result.real_name)
+                AsyncStorage.setItem('realName', result.result.real_name)
 
                 this._toast.show({
                     position: Toast.constants.gravity.center,
@@ -207,7 +239,7 @@ class Login extends Component {
                 })
                 this.props.navigator.pop()
 
-            }else{
+            } else {
                 this._toast.show({
                     position: Toast.constants.gravity.center,
                     duration: 255,
@@ -218,7 +250,7 @@ class Login extends Component {
 
         }
         catch (error) {
-            console.log(error)
+            //console.log(error)
 
 
         }
@@ -238,7 +270,7 @@ class Login extends Component {
             title: '注册',
             component: ForgetPasswordPage,
             passProps: {
-                nextPageIndex:'register'
+                nextPageIndex: 'register'
             }
         });
     }
@@ -249,7 +281,7 @@ class Login extends Component {
             title: '忘记密码',
             component: ForgetPasswordPage,
             passProps: {
-                nextPageIndex:'forget'
+                nextPageIndex: 'forget'
             }
         });
     }
@@ -261,7 +293,7 @@ class Login extends Component {
                 animating={true}
                 color={'#fff'}
                 size={'small'}/>
-            ) : Platform.OS == 'android' ?
+        ) : Platform.OS == 'android' ?
             (
                 <ProgressBarAndroid
                     style={{margin: 10,}}
@@ -278,7 +310,6 @@ class Login extends Component {
 
 
     }
-
 
 
 }
@@ -321,10 +352,10 @@ const navigationBarRouteMapper = {
             return null;
         }
 
-        var previousRoute = navState.routeStack[ index - 1 ];
+        var previousRoute = navState.routeStack[index - 1];
         return (
             <TouchableOpacity
-                onPress={() => navigator.pop()}
+                onPress={() => navigator.popToTop()}
                 style={navigatorStyle.navBarLeftButton}>
                 <View style={navigatorStyle.navBarLeftButtonAndroid}>
                     <Icon

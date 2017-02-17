@@ -91,10 +91,10 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
-        paddingBottom: 10,
+        //paddingBottom: 10,
     },
     tabs: {
-        height: 50,
+        height: 40,
         flexDirection: 'row',
         justifyContent: 'space-around',
         borderWidth: 0,

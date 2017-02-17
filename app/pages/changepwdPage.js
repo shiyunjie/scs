@@ -53,14 +53,14 @@ class SetPassword extends Component {
         let currentRoute = this.props.navigator.navigationContext.currentRoute
         this.addAppEventListener(
             this.props.navigator.navigationContext.addListener('willfocus', (event) => {
-                console.log(`orderPage willfocus...`)
-                console.log(`currentRoute`, currentRoute)
+                //console.log(`orderPage willfocus...`)
+                //console.log(`currentRoute`, currentRoute)
                 //console.log(`event.data.route`, event.data.route)
                 if (event && currentRoute === event.data.route) {
-                    console.log("orderPage willAppear")
+                    //console.log("orderPage willAppear")
                     NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
                 } else {
-                    console.log("orderPage willDisappear, other willAppear")
+                    //console.log("orderPage willDisappear, other willAppear")
                 }
                 //
             })
@@ -74,6 +74,7 @@ class SetPassword extends Component {
                     ref={ component => this._input_old_password = component }
                     style={styles.textInput}
                     placeholder='原密码'
+                    clearButtonMode="while-editing"
                     maxLength={20}
                     secureTextEntry={true}
                     underlineColorAndroid='transparent'
@@ -87,6 +88,7 @@ class SetPassword extends Component {
                     ref={ component => this._input_new_password = component }
                     style={styles.textInput}
                     placeholder='新密码'
+                    clearButtonMode="while-editing"
                     maxLength={20}
                     secureTextEntry={true}
                     underlineColorAndroid='transparent'
@@ -100,6 +102,7 @@ class SetPassword extends Component {
                     ref={ component => this._input_conform_password = component }
                     style={styles.textInput}
                     placeholder='确认密码'
+                    clearButtonMode="while-editing"
                     maxLength={20}
                     secureTextEntry={true}
                     underlineColorAndroid='transparent'
@@ -232,14 +235,14 @@ class SetPassword extends Component {
 
             options.data = await this.gZip(options)
 
-            console.log(`_fetch_changePassword options:`, options)
+            //console.log(`_fetch_changePassword options:`, options)
 
             let resultData = await this.fetch(options)
 
             let result = await this.gunZip(resultData)
 
             result = JSON.parse(result)
-            console.log('gunZip:', result)
+            //console.log('gunZip:', result)
             if (result.code && result.code == -54) {
                 /*AsyncStorage.removeItem('token')
                 AsyncStorage.removeItem('realName')
@@ -264,7 +267,7 @@ class SetPassword extends Component {
 
                 AsyncStorage.removeItem('token')
                 AsyncStorage.removeItem('realName')
-                this.props.navigator.replace({
+                this.props.navigator.push({
                     title: '用户登录',
                     component: LoginPage,
                 })
@@ -280,7 +283,7 @@ class SetPassword extends Component {
 
         }
         catch (error) {
-            console.log(error)
+            //console.log(error)
 
 
         }

@@ -34,12 +34,12 @@ export const getDeviceID = async () => {
 }
 export const getRealName = async () => {
     let realName=await AsyncStorage.getItem('realName')
-    console.log(`realName:`+realName)
+    //console.log(`realName:`+realName)
     return realName
 }
 export const getVersion = async () => {
     let version=await AsyncStorage.getItem('version')
-    console.log(`version:`+version)
+    //console.log(`version:`+version)
     return version
 }
 /**
@@ -48,7 +48,7 @@ export const getVersion = async () => {
  */
 export const getRegMsgSerial = async () => {
     let MsgSerial=await AsyncStorage.getItem('RegMsgSerial')
-    console.log(`RegMsgSerial:`+MsgSerial)
+    //console.log(`RegMsgSerial:`+MsgSerial)
     return MsgSerial
 }
 /**
@@ -57,6 +57,6 @@ export const getRegMsgSerial = async () => {
  */
 export const getForMsgSerial = async () => {
     let MsgSerial=await AsyncStorage.getItem('ForMsgSerial')
-    console.log(`ForMsgSerial:`+MsgSerial)
+    //console.log(`ForMsgSerial:`+MsgSerial)
     return MsgSerial
 }

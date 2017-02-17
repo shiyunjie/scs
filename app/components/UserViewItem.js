@@ -49,7 +49,7 @@ export default class ListItemView extends Component{
     static defaultProps = {
         show:false,
         hasCheckBox:false,
-        color:constants.UIInActiveColor,
+        color:constants.LineColor,
         hasLine:true,
 
     }
@@ -141,8 +141,9 @@ var styles = StyleSheet.create({
     },
     TabText: {
         margin: 0,
-        fontSize: 15,
+        fontSize: 14,
         marginLeft:10,
+        color:constants.LabelColor,
     },
 
 });

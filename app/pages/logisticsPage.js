@@ -20,7 +20,7 @@ import constants from  '../constants/constant';
 import Button from 'react-native-smart-button';
 import Icon from 'react-native-vector-icons/Ionicons';
 import navigatorStyle from '../styles/navigatorStyle'       //navigationBar样式
-
+import ProgressView from '../components/modalProgress'
 import XhrEnhance from '../lib/XhrEnhance' //http
 //import { sysInfo_feedBack,errorXhrMock } from '../mock/xhr-mock'   //mock data
 
@@ -29,56 +29,58 @@ import Toast from 'react-native-smart-toast'
 import AppEventListenerEnhance from 'react-native-smart-app-event-listener-enhance'
 let firstDataList = []
 /*let firstDataList = [{
-    status_name: 'status_name',// 物流状态名称
+ status_name: 'status_name',// 物流状态名称
 
-    time_name: 'status_name',//  时间名称
+ time_name: 'status_name',//  时间名称
 
-    create_time_str: '1991-00-22 00:22:21',//  时间
+ create_time_str: '1991-00-22 00:22:21',//  时间
 
-    box_no: 'status_name',// 箱号
+ box_no: 'status_name',// 箱号
 
-    //seal_no 铅封号
+ //seal_no 铅封号
 
-},{
-    status_name: 'status_name',// 物流状态名称
+ },{
+ status_name: 'status_name',// 物流状态名称
 
-    time_name: 'status_name',//  时间名称
+ time_name: 'status_name',//  时间名称
 
-    create_time_str: '1991-00-22 00:22:21',//  时间
+ create_time_str: '1991-00-22 00:22:21',//  时间
 
-    //box_no: 'status_name',// 箱号
+ //box_no: 'status_name',// 箱号
 
-    seal_no:'seal_no' //铅封号
+ seal_no:'seal_no' //铅封号
 
-},{
-    status_name: 'status_name',// 物流状态名称
+ },{
+ status_name: 'status_name',// 物流状态名称
 
-    time_name: 'status_name',//  时间名称
+ time_name: 'status_name',//  时间名称
 
-    create_time_str: '1991-00-22 00:22:21',//  时间
+ create_time_str: '1991-00-22 00:22:21',//  时间
 
-    //box_no: 'status_name',// 箱号
+ //box_no: 'status_name',// 箱号
 
-    //seal_no:'seal_no' //铅封号
+ //seal_no:'seal_no' //铅封号
 
-},{
-    status_name: 'status_name',// 物流状态名称
+ },{
+ status_name: 'status_name',// 物流状态名称
 
-    time_name: 'status_name',//  时间名称
+ time_name: 'status_name',//  时间名称
 
-    create_time_str: '1991-00-22 00:22:21',//  时间
+ create_time_str: '1991-00-22 00:22:21',//  时间
 
-    //box_no: 'status_name',// 箱号
+ //box_no: 'status_name',// 箱号
 
-    //seal_no:'seal_no' //铅封号
+ //seal_no:'seal_no' //铅封号
 
-}]*/
+ }]*/
 class Logistics extends Component {
     // 构造
     constructor(props) {
         super(props);
         // 初始状态
         this.state = {
+            showProgress: true,//显示加载
+            showReload: false,//显示加载更多
             dataList: firstDataList,
 
             service_id: this.props.service_id,
@@ -91,23 +93,23 @@ class Logistics extends Component {
         let currentRoute = this.props.navigator.navigationContext.currentRoute
         this.addAppEventListener(
             this.props.navigator.navigationContext.addListener('willfocus', (event) => {
-                console.log(`orderPage willfocus...`)
-                console.log(`currentRoute`, currentRoute)
+                //console.log(`orderPage willfocus...`)
+                //console.log(`currentRoute`, currentRoute)
                 //console.log(`event.data.route`, event.data.route)
                 if (event && currentRoute === event.data.route) {
-                    console.log("orderPage willAppear")
+                    //console.log("orderPage willAppear")
                     NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
                 } else {
-                    console.log("orderPage willDisappear, other willAppear")
+                    //console.log("orderPage willDisappear, other willAppear")
                 }
                 //
             })
         )
+        setTimeout(() => {
+            this._fetch_logistics()
+        }, 380)
     }
 
-    componentDidMount() {
-        this._fetch_logistics()
-    }
 
     /*
      status_name 物流状态名称
@@ -135,51 +137,73 @@ class Logistics extends Component {
      . contianer_list 箱号列表*/
     render() {
         return (
-            <View style={styles.container}>
-                <View style={styles.line}>
-                    <Icon
-                        name='ios-radio-button-on'
-                        color={this.state.dataList.length==1?constants.UIActiveColor:constants.UIInActiveColor}
-                        size={12}/>
-                    {this.state.dataList.map((data, index)=> {
-                        if (index==this.state.dataList.length - 1) {
-                            return null
-                        }
-                        else {
-                            return (
-                                <View style={{justifyContent:'flex-start',alignItems:'center'}}>
-                                    <View style={{width:2,height:55,marginTop:5,marginBottom:5,
-                                        backgroundColor:constants.UIInActiveColor}}/>
-                                    <Icon
-                                        name='ios-radio-button-on'
-                                        color={index==this.state.dataList.length-2?
-                                        constants.UIActiveColor:constants.UIInActiveColor}
-                                        size={12}/>
-                                </View>
-                            )
-                        }
-                    })
+            <View style={{flex:1}}>
+                {this.state.showProgress || this.state.showReload ?
+                    <ProgressView
+                        showProgress={this.state.showProgress}
+                        showReload={this.state.showReload}
+                        fetchData={()=>{
+                        this.setState({
+                        showProgress:true,//显示加载
+                        showReload:false,//显示加载更多
+                         })
+                        this._fetch_logistics()
+                        }}/> :
+                    <View style={styles.container}>
 
-                    }
-                </View>
-                <View style={styles.tab}>
-                    {this.state.dataList.map((data, index)=> {
-                        return (
-                            <View style={{height:60,flexDirection:'column',paddingTop:5,paddingBottom:5,
-                            alignItems:'stretch',backgroundColor:'white', marginTop: 15,marginRight:10}}>
-                                <Text fonsSize={16} style={[{fontWeight:'bold'},index==this.state.dataList.length-1?
-                                {color:constants.UIActiveColor}:{color:'black'}]}>{data.status_name}</Text>
-                                <View style={{flex:1,flexDirection:'row',}}>
-                                    <Text >{data.time_name}</Text>
-                                    <Text style={{flex:1}} numberOfLines={1}>{data.create_time_str}</Text>
-                                    <Text style={data.box_no||data.seal_no?{}:{width:0}}>{data.box_no ? '箱号' : '铅封号'}</Text>
-                                    <Text style={[{flex:1},data.box_no||data.seal_no?{}:{width:0}]}
-                                          numberOfLines={1}>{data.box_no ? data.box_no : data.seal_no}</Text>
-                                </View>
-                            </View>)
-                        })
-                    }
-                </View>
+                        <View style={styles.line}>
+                            <Icon
+                                name='ios-boat'
+                                color={this.state.dataList.length==1?constants.UIActiveColor:constants.UIInActiveColor}
+                                size={constants.IconSize}/>
+                            {this.state.dataList.map((data, index)=> {
+                                if (index == this.state.dataList.length - 1) {
+                                    return null
+                                }
+                                else {
+                                    return (
+                                        <View style={{justifyContent:'flex-start',alignItems:'center'}}>
+                                            <View style={{width:2,height:52,marginTop:5,marginBottom:5,
+                                        backgroundColor:constants.UIInActiveColor}}/>
+                                            <Icon
+                                                name='ios-boat'
+                                                color={index==this.state.dataList.length-2?
+                                        constants.UIActiveColor:constants.UIInActiveColor}
+                                                size={constants.IconSize}/>
+                                        </View>
+                                    )
+                                }
+                            })
+
+                            }
+                        </View>
+                        <View style={styles.tab}>
+                            {this.state.dataList.map((data, index)=> {
+                                return (
+                                    <View style={{height:60,flexDirection:'column',paddingTop:6,paddingBottom:6,paddingLeft:10,
+                                        alignItems:'stretch',backgroundColor:'white', marginTop: 30,marginRight:10}}>
+                                        <Text style={[{fontSize:12,},index==this.state.dataList.length-1?
+                                        {color:constants.UIActiveColor}:{color:constants.LabelColor}]}>{data.status_name}</Text>
+                                        <View style={{flex:1,flexDirection:'row',marginTop:3,paddingRight:10,}}>
+                                            <Text
+                                                style={{fontSize:12,color:constants.PointColor}}>{data.time_name}</Text>
+                                            <Text style={{flex:1,fontSize:12,color:constants.PointColor,textAlign:'right'}}
+                                                  numberOfLines={1}>{data.create_time_str}</Text>
+                                        </View>
+                                        <View style={{flex:1,flexDirection:'row',paddingRight:10,}}>
+                                            <Text
+                                                style={[{fontSize:12,color:constants.PointColor},data.box_no||data.seal_no?{}:{width:0}]}>{data.box_no ? '箱号' : '铅封号'}</Text>
+                                            <Text
+                                                style={[{flex:1,fontSize:12,textAlign:'right',color:constants.PointColor},data.box_no||data.seal_no?{}:{width:0}]}
+                                                numberOfLines={1}>{data.box_no ? data.box_no : data.seal_no}</Text>
+                                        </View>
+                                    </View>)
+                            })
+                            }
+                        </View>
+
+                    </View>
+                }
             </View>
 
         )
@@ -202,14 +226,14 @@ class Logistics extends Component {
 
             options.data = await this.gZip(options)
 
-            console.log(`_fetch_sendCode options:`, options)
+            //console.log(`_fetch_sendCode options:`, options)
 
             let resultData = await this.fetch(options)
 
             let result = await this.gunZip(resultData)
 
             result = JSON.parse(result)
-            console.log('gunZip:', result)
+            //console.log('gunZip:', result)
             if (result.code && result.code == -54) {
                 /**
                  * 发送事件去登录
@@ -236,14 +260,19 @@ class Logistics extends Component {
 
         }
         catch (error) {
-            console.log(error)
+            //console.log(error)
 
 
         }
         finally {
-            this.button2.setState({
-                loading: false,
-                //disabled: false
+            if (this.button2) {
+                this.button2.setState({
+                    loading: false,
+                    //disabled: false
+                })
+            }
+            this.setState({
+                showProgress: false,
             })
             //console.log(`SplashScreen.close(SplashScreen.animationType.scale, 850, 500)`)
             //SplashScreen.close(SplashScreen.animationType.scale, 850, 500)
@@ -260,6 +289,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'stretch',
         backgroundColor: constants.UIBackgroundColor,
+        paddingLeft: constants.MarginLeftRight,
+        paddingRight: constants.MarginLeftRight,
     },
     line: {
         width: 20,
@@ -267,12 +298,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: constants.UIBackgroundColor,
         justifyContent: 'flex-start',
-        paddingTop: 35,
+        paddingTop: 48,
 
     },
     tab: {
         flex: 1,
-
+        marginLeft: constants.MarginLeftRight,
         justifyContent: 'flex-start',
         alignItems: 'stretch',
     },

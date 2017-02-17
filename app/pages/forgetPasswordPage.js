@@ -58,14 +58,14 @@ class ForgetPassword extends Component {
         let currentRoute = this.props.navigator.navigationContext.currentRoute
         this.addAppEventListener(
             this.props.navigator.navigationContext.addListener('willfocus', (event) => {
-                console.log(`orderPage willfocus...`)
-                console.log(`currentRoute`, currentRoute)
+                //console.log(`orderPage willfocus...`)
+                //console.log(`currentRoute`, currentRoute)
                 //console.log(`event.data.route`, event.data.route)
                 if (event && currentRoute === event.data.route) {
-                    console.log("orderPage willAppear")
+                    //console.log("orderPage willAppear")
                     NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
                 } else {
-                    console.log("orderPage willDisappear, other willAppear")
+                    //console.log("orderPage willDisappear, other willAppear")
                 }
                 //
             })
@@ -92,9 +92,9 @@ class ForgetPassword extends Component {
                     <ValidateTextInput
                         ref={ component => this._input_phone = component }
                         style={[styles.textInput,{ paddingLeft:10,paddingRight:10,}]}
-
+                        clearButtonMode="while-editing"
                         placeholder='请输入您的手机号'
-                        maxLength={20}
+                        maxLength={13}
                         keyboardType='numeric'
                         underlineColorAndroid='transparent'
                         editable={true}
@@ -111,7 +111,8 @@ class ForgetPassword extends Component {
                             style={[{flex:2, paddingLeft:10,paddingRight:10,}]}
                             placeholder='请输入验证码'
                             keyboardType='numeric'
-                            maxLength={20}
+                            clearButtonMode="while-editing"
+                            maxLength={6}
                             underlineColorAndroid='transparent'
                             editable={true}
                             value={this.state.code}
@@ -288,18 +289,18 @@ class ForgetPassword extends Component {
             let resultData = await this.fetch(options)
 
             let result = await this.gunZip(resultData)
-            console.log('result:', result)
+            //console.log('result:', result)
             result = JSON.parse(result)
 
-            console.log('gunZip:', result)
+            //console.log('gunZip:', result)
             if (result.code && result.code == 10) {
                 if(nextPage=='forget'){
-                    console.log('forget')
+                    //console.log('forget')
                     AsyncStorage.setItem('ForMsgSerial',result.result)
                 }else{
-                    console.log('regist:',result.result)
+                    //console.log('regist:',result.result)
                     AsyncStorage.setItem('RegMsgSerial',result.result)
-                    console.log('AsyncStorage_segMsgSerial')
+                    //console.log('AsyncStorage_segMsgSerial')
                 }
 
                 this._toast.show({
@@ -325,7 +326,7 @@ class ForgetPassword extends Component {
 
 
         } catch (error) {
-            console.log(error)
+            //console.log(error)
 
 
         } finally {
@@ -352,7 +353,7 @@ class ForgetPassword extends Component {
 
             }
 
-            console.log(`send_no`,send_no)
+            //console.log(`send_no`,send_no)
             let options = {
                 method: 'post',
                 url: constants.api.service,
@@ -369,19 +370,19 @@ class ForgetPassword extends Component {
 
             options.data = await this.gZip(options)
 
-            console.log(`_fetch_sendCode options:`, options)
+            //console.log(`_fetch_sendCode options:`, options)
 
             let resultData = await this.fetch(options)
 
             let result = await this.gunZip(resultData)
-            console.log('result:', result)
+            //console.log('result:', result)
             result = JSON.parse(result)
 
-            console.log('gunZip:', result)
+            //console.log('gunZip:', result)
             if (result.code && result.code == 10) {
-                console.log('nextPage:',nextPage)
+                //console.log('nextPage:',nextPage)
                 if(nextPage=='forget'){
-                    this.props.navigator.replace({
+                    this.props.navigator.push({
                         title: '忘记密码',
                         component: SetPassword,
                         passProps:{
@@ -390,7 +391,7 @@ class ForgetPassword extends Component {
                     });
                 }else {
                     //跳转注册
-                    this.props.navigator.replace({
+                    this.props.navigator.push({
                         title: '注册',
                         component: RegisterPage,
                         passProps: {
@@ -408,7 +409,7 @@ class ForgetPassword extends Component {
 
 
         } catch (error) {
-            console.log(error)
+            //console.log(error)
 
 
         } finally {

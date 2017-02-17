@@ -13,7 +13,6 @@ import {
 
 
 import constants from  '../constants/constant';
-import PullToRefreshListView from 'react-native-smart-pull-to-refresh-listview';
 import OrderListPage from './orderListPage';
 import ServiceListPage from './serviceListPage';
 import navigatorStyle from '../styles/navigatorStyle'       //navigationBar样式
@@ -43,15 +42,15 @@ class Order extends Component {
         let currentRoute = this.props.navigator.navigationContext.currentRoute
         this.addAppEventListener(
         this.props.navigator.navigationContext.addListener('willfocus', (event) => {
-            console.log(`orderPage willfocus...`)
-            console.log(`currentRoute`, currentRoute)
-            console.log(`event.data.route`, event.data.route)
+            //console.log(`orderPage willfocus...`)
+            //console.log(`currentRoute`, currentRoute)
+            //console.log(`event.data.route`, event.data.route)
             if (currentRoute === event.data.route) {
-                console.log("orderPage willAppear")
+                //console.log("orderPage willAppear")
                 //NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
                 NativeAppEventEmitter.emit('setRootPageNavigationBar.index')
             } else {
-                console.log("orderPage willDisappear, other willAppear")
+                //console.log("orderPage willDisappear, other willAppear")
             }
             //
         })
@@ -66,7 +65,7 @@ class Order extends Component {
         return (
             <ScrollableTabView
             locked={true}
-            renderTabBar={ ()=><MyDefaultTabBar textStyle={{fontSize:17}} tabNames={tabNames} tabIconNames={tabIconNames} tabNums={tabNums}/> }>
+            renderTabBar={ ()=><MyDefaultTabBar textStyle={{fontSize:13}} tabNames={tabNames} tabIconNames={tabIconNames} tabNums={tabNums}/> }>
             <OrderListPage navigator={this.props.navigator} tabLabel="委托单" />
             <ServiceListPage navigator={this.props.navigator} tabLabel="服务单" />
             </ScrollableTabView>);

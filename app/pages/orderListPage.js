@@ -86,6 +86,7 @@ class OrderList extends Component {
                 viewType={PullToRefreshListView.constants.viewType.listView}
                 contentContainerStyle={{backgroundColor: 'transparent', }}
                 initialListSize={10}
+                showsVerticalScrollIndicator={false}
                 pageSize={10}
                 enableEmptySections={true}
                 dataSource={this.state.dataSource}
@@ -124,7 +125,6 @@ class OrderList extends Component {
 
         return (
             <TouchableOpacity
-                ref={`ref-${rowID}`}
                 key={`item-${rowID}`}
                 style={{flex:1,}}
                 onPress={ ()=>{
@@ -210,34 +210,38 @@ class OrderList extends Component {
                     <HeaderView name='md-arrow-round-down'  // 图标
                                 size={constants.IconSize}
                                 title='上拉加载更多...'
-                                degree={degree}/>
+                                degree={degree}
+                                isFoot={true}/>
                 )
             case load_more_idle:
                 return (
                     <HeaderView name='md-arrow-round-up'  // 图标
                                 size={constants.IconSize}
                                 title='上拉加载更多...'
-                                degree={degree}/>
+                                degree={degree}
+                                isFoot={true}/>
                 )
             case will_load_more:
                 return (
                     <HeaderView name='md-arrow-round-up'  // 图标
                                 size={constants.IconSize}
                                 title='释放加载更多...'
-                                degree={degree}/>
+                                degree={degree}
+                                isFoot={true}/>
                 )
             case loading_more:
                 return (
                     <HeaderView name='Circle' // spinkit
                                 size={constants.IconSize}
                                 title='加载中...'
-                                isRefresh={true}/>
+                                isRefresh={true}
+                                isFoot={true}/>
                 )
             case loaded_all:
                 return (
                     <View
                         style={{height: 35, justifyContent: 'center', alignItems: 'center', backgroundColor: 'transparent',}}>
-                        <Text>没有更多信息</Text>
+                        <Text style={{color:constants.PointColor,fontSize:constants.DefaultFontSize}}>没有更多信息</Text>
                     </View>
                 )
         }
@@ -353,14 +357,14 @@ class OrderList extends Component {
 
             options.data = await this.gZip(options)
 
-            console.log(`_fetch_sendCode options:`, options)
+            //console.log(`_fetch_sendCode options:`, options)
 
             let resultData = await this.fetch(options)
 
             let result = await this.gunZip(resultData)
 
             result = JSON.parse(result)
-            console.log('gunZip:', result)
+            //console.log('gunZip:', result)
             if (result.code && result.code == -54) {
                 /**
                  * 发送事件去登录
@@ -384,7 +388,7 @@ class OrderList extends Component {
             }
         }
         catch (error) {
-            console.log(error)
+            //console.log(error)
 
             //..调用toast插件, show出错误信息...
 
@@ -426,14 +430,14 @@ class OrderList extends Component {
 
             options.data = await this.gZip(options)
 
-            console.log(`_fetch_sendCode options:`, options)
+            //console.log(`_fetch_sendCode options:`, options)
 
             let resultData = await this.fetch(options)
 
             let result = await this.gunZip(resultData)
 
             result = JSON.parse(result)
-            console.log('gunZip:', result)
+            //console.log('gunZip:', result)
             if (result.code && result.code == -54) {
                 /**
                  * 发送事件去登录

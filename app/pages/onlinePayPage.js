@@ -58,14 +58,14 @@ class OnLinePay extends Component {
         let currentRoute = this.props.navigator.navigationContext.currentRoute
         this.addAppEventListener(
             this.props.navigator.navigationContext.addListener('willfocus', (event) => {
-                console.log(`orderPage willfocus...`)
-                console.log(`currentRoute`, currentRoute)
+                //console.log(`orderPage willfocus...`)
+                //console.log(`currentRoute`, currentRoute)
                 //console.log(`event.data.route`, event.data.route)
                 if (event && currentRoute === event.data.route) {
-                    console.log("orderPage willAppear")
+                    //console.log("orderPage willAppear")
                     NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
                 } else {
-                    console.log("orderPage willDisappear, other willAppear")
+                    //console.log("orderPage willDisappear, other willAppear")
                 }
                 //
             })
@@ -78,14 +78,14 @@ class OnLinePay extends Component {
     _onPaymentResult = (result) => {
         //console.log(`result -> `)
         //console.log(result)
-        console.log(`result.resultStatus = ${result.resultStatus}`)
-        console.log(`result.memo = ${result.memo}`)
-        console.log(`result.result = ${result.result}`)
+        //console.log(`result.resultStatus = ${result.resultStatus}`)
+        //console.log(`result.memo = ${result.memo}`)
+        //console.log(`result.result = ${result.result}`)
         this._button_alipay.setState({
             loading: false,
         })
         Alert.alert(
-            '',
+            '温馨提醒',
             `${result.resultStatus == 9000 ? '支付成功' : '支付失败'} `
         )
     }
@@ -112,7 +112,7 @@ class OnLinePay extends Component {
                             style={[styles.textIcon]}>
                             <Icon
                                 name={this._payType=='union'?
-                                'md-checkmark-circle':'ios-close-circle-outline'}  // 图标
+                                'md-checkmark-circle':'ios-radio-button-off-outline'}  // 图标
                                 size={constants.IconSize}
                                 color={this._payType=='union'?
                                 constants.UIActiveColor:constants.UIInActiveColor}/>
@@ -132,7 +132,7 @@ class OnLinePay extends Component {
                                 style={[styles.textIcon]}>
                                 <Icon
                                     name={this._payType=='alipay'?
-                                    'md-checkmark-circle':'ios-close-circle-outline'}  // 图标
+                                    'md-checkmark-circle':'ios-radio-button-off-outline'}  // 图标
                                     size={constants.IconSize}
                                     color={this._payType=='alipay'?
                                     constants.UIActiveColor:constants.UIInActiveColor}/>
@@ -152,7 +152,7 @@ class OnLinePay extends Component {
                             style={[styles.textIcon]}>
                             <Icon
                                 name={this._payType=='tencent'?
-                                    'md-checkmark-circle':'ios-close-circle-outline'}  // 图标
+                                    'md-checkmark-circle':'ios-radio-button-off-outline'}  // 图标
                                 size={constants.IconSize}
                                 color={this._payType=='tencent'?
                                     constants.UIActiveColor:constants.UIInActiveColor}/>
@@ -217,14 +217,14 @@ class OnLinePay extends Component {
 
             options.data = await this.gZip(options)
 
-            console.log(`_fetch_sendCode options:`, options)
+            //console.log(`_fetch_sendCode options:`, options)
 
             let resultData = await this.fetch(options)
 
             let result = await this.gunZip(resultData)
 
             result = JSON.parse(result)
-            console.log('gunZip:', result)
+            //console.log('gunZip:', result)
             if (result.code && result.code == -54) {
                 /**
                  * 发送事件去登录
@@ -234,7 +234,7 @@ class OnLinePay extends Component {
             }
             if (result.code && result.code == 10) {
                 //正式支付
-                console.log(`获取支付宝参数成功, decodeURIComponent -> orderText = ${result.result}`);
+                //console.log(`获取支付宝参数成功, decodeURIComponent -> orderText = ${result.result}`);
                 //let appScheme = 'ios对应URL Types中的URL Schemes的值, 会影响支付成功后是否能正确的返回app'
                 let appScheme = 'scs'
                 let orderText = result.result
@@ -257,7 +257,7 @@ class OnLinePay extends Component {
 
         }
         catch (error) {
-            console.log(error)
+            //console.log(error)
 
 
         }

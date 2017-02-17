@@ -28,7 +28,6 @@ export default class PayTabView extends Component {
             showCost_2: this.props.showCost_2,
             selected: this.props.selected,
             payList: this.props.payList,
-            selectedAll: this.props.selectedAll,
             pageType: this.props.pageType,
 
         };
@@ -39,10 +38,31 @@ export default class PayTabView extends Component {
 
         let selectedAll = nextProps.selectedAll
         if (selectedAll) {
-            console.log(`_selectTab:` + selectedAll)
-            this.setState({
-                selected: true,
-            })
+
+            if(!this.props.selectedAll) {
+                console.log(`_selectTab:` + this.props.selectedAll)
+                this.setState({
+                    selected: true,
+                })
+            }else{
+                //已经全选过一次了
+                console.log(`this.props.selectedAll:` + this.props.selectedAll)
+                //判断所有项是否有选中
+                let flag=false
+                for(data of this.props.child){
+                    if(this.props.payList.indexOf(data.id)!=-1&&!data.is_pay){
+                        //包含
+                        flag=false
+                        break
+                    }else {
+                        //不包含
+                        flag=true
+                    }
+                }
+                this.setState({
+                    selected: !flag,
+                })
+            }
         }
     }
 
@@ -112,14 +132,13 @@ export default class PayTabView extends Component {
         }
         return (
             <View
-                ref={ (component) => this._TabView = component }
                 style={{flex:1,flexDirection: 'column'}}>
                 <View style={styles.viewItem}>
                     <TouchableOpacity
                         style={[{flexDirection:'row',justifyContent:'center'},
                             this.state.pageType=='pay'?{width:30,}:{width:0}]}
                         onPress={()=>{
-                         console.log(`child.length:`+this.props.child.length)
+                         //console.log(`child.length:`+this.props.child.length)
                             if(!allSelected){
                             // 已经全选了
                             return
@@ -145,16 +164,18 @@ export default class PayTabView extends Component {
                                 }else{
                                 //全部取消
                                     for(data of this.props.child){
+
                                         if(!data.is_pay&&this.props.payList.indexOf(data.id)==-1){
                                             //不包含
+
                                         }else if((!data.is_pay&&this.props.payList.indexOf(data.id)!=-1)){
                                          //包含
                                         this.props.payList.splice(this.props.payList.indexOf(data.id), 1)
-                                        }else if(data.is_pay){
+                                        }/*else if(data.is_pay){
                                         //是已支付的项
                                             flag=false
                                             break
-                                        }
+                                        }*/
 
                                     }
                                 }
@@ -164,7 +185,8 @@ export default class PayTabView extends Component {
                                 showChild:showChild,
                                 payList:this.props.payList
                                 })
-                                console.log(`payList:`,this.props.payList.length)
+                                this.props.selectedAll=!flag
+                                //console.log(`payList:`,this.props.payList.length)
                                  //统计总价
                                  NativeAppEventEmitter.emit('in_payPage_need_set_total',false)
                               }}>
@@ -181,26 +203,27 @@ export default class PayTabView extends Component {
                                 showChild:!this.state.showChild,})
                               }}>
                         <View style={{flexDirection:'column',justifyContent:'center'}}>
-                            <Text style={{textAlign:'center',}}>{this.props.child[0].first_cost_name}</Text>
+                            <Text style={[styles.labelText,{textAlign:'center',}]}>{this.props.child[0].first_cost_name}</Text>
                         </View>
                         <View
                             style={{flex:1,flexDirection:'row',justifyContent:'flex-end',marginRight:5,alignItems:'center'}}>
-                            <Text style={{color:constants.UIActiveColor,marginRight:5}}>￥{total}</Text>
+                            <Text style={[styles.labelText,{color:constants.UIActiveColor,marginRight:5}]}>￥{total}</Text>
                             <Icon
                                 name={this.state.showChild?'ios-arrow-down':'ios-arrow-up'}  //上下
                                 size={constants.IconSize}
-                                color={constants.UIInActiveColor}/>
+                                color={constants.LineColor}/>
                         </View>
                     </TouchableOpacity>
 
                 </View>
-                <View style={[{flexDirection: 'column',},this.state.showChild?{flex:1}:{height:0}]}>
-                    {  this.props.child.map((item, index) => {
+                {this.state.showChild?
+                    <View style={[{flexDirection: 'column',},{flex:1,paddingLeft:30,paddingRight:5,}]}>
+                        {  this.props.child.map((item, index) => {
 
-                        return (
-                            <TouchableOpacity style={styles.textTitle}
-                                              key={`keyIndex${index}`}
-                                              onPress={()=>{
+                            return (
+                                <TouchableOpacity style={styles.textTitle}
+                                                  key={`keyIndex${index}`}
+                                                  onPress={()=>{
                                                   if(item.is_pay==1){
                                                   //已经支付此项
                                                     return
@@ -232,41 +255,44 @@ export default class PayTabView extends Component {
                                               }
 
                                             this.setState({payList:this.props.payList,selected:!flag})
-                                            console.log(`payList:`,this.props.payList.length)
+                                            //console.log(`payList:`,this.props.payList.length)
+                                            this.props.selectedAll=!flag
                                             //统计总价
+
                                             NativeAppEventEmitter.emit('in_payPage_need_set_total',false)}}>
 
-                                <View style={{flex:1,flexDirection:'column',alignItems:'stretch'}}>
-                                    <Text style={{flex:1}}>{item.cost_name}</Text>
-                                    <View style={styles.textDetail}>
-                                        <Text>{this.props.cost_1_title}</Text>
-                                        <Text>￥{item.estimate_cost}</Text>
-                                        <View style={{marginLeft:15,flexDirection:'row'}}>
-                                            <Text>{this.props.cost_2_title}</Text>
-                                            <Text style={{color:constants.UIActiveColor}}>￥{item.cost}</Text>
-                                            <Text
-                                                style={{marginLeft:15,color:constants.UIActiveColor}}>
-                                                {item.is_pay == 0 ? '未支付' : '已支付'}</Text>
+                                    <View style={{flex:1,flexDirection:'column',alignItems:'stretch'}}>
+                                        <Text style={[styles.labelText,{flex:1,fontSize:12,}]}>{item.cost_name}</Text>
+                                        <View style={styles.textDetail}>
+                                            <Text style={[styles.labelText,{fontSize:12,}]}>{this.props.cost_1_title}</Text>
+                                            <Text style={[styles.labelText,{fontSize:12,}]}>￥{item.estimate_cost}</Text>
+                                            <View style={{marginLeft:15,flexDirection:'row'}}>
+                                                <Text style={[styles.labelText,{fontSize:12,}]}>{this.props.cost_2_title}</Text>
+                                                <Text style={[styles.labelText,{fontSize:12,color:constants.UIActiveColor}]}>￥{item.cost}</Text>
+                                                <Text
+                                                    style={[styles.labelText,{marginLeft:15,color:constants.UIActiveColor,fontSize:12,}]}>
+                                                    {item.is_pay == 0 ? '未支付' : '已支付'}</Text>
+                                            </View>
                                         </View>
                                     </View>
-                                </View>
-                                <View
-                                    style={[{flexDirection: 'row',justifyContent:'center',alignItems:'center',},
+                                    <View
+                                        style={[{flexDirection: 'row',justifyContent:'center',alignItems:'center',},
                                         this.state.pageType=='pay'&&item.is_pay == 0?{width:30,}:{width:0}]}>
-                                    <Icon
-                                        name={this.state.payList.indexOf(item.id)==-1?
+                                        <Icon
+                                            name={this.state.payList.indexOf(item.id)==-1?
                                             'ios-radio-button-off':'ios-radio-button-on'}  // 图标
-                                        size={constants.IconSize-5}
-                                        color={this.state.payList.indexOf(item.id)==-1?
+                                            size={constants.IconSize-5}
+                                            color={this.state.payList.indexOf(item.id)==-1?
                                             constants.UIInActiveColor:constants.UIActiveColor}/>
-                                </View>
-                            </TouchableOpacity>
+                                    </View>
+                                </TouchableOpacity>
 
-                        )
-                    })
+                            )
+                        })
 
-                    }
-                </View>
+                        }
+                    </View>:null
+                }
             </View>
         )
     }
@@ -275,20 +301,20 @@ export default class PayTabView extends Component {
 
 var styles = StyleSheet.create({
     viewItem: {
-        height: 50,
+        height: 40,
         flexDirection: 'row',
         justifyContent: 'flex-start',
         alignItems: 'center',
-        paddingLeft: constants.MarginLeftRight,
+        paddingLeft: 5,
         paddingRight: constants.MarginLeftRight,
-
+        overflow:'hidden',//极大提高显示效率,
         backgroundColor: 'white',
         borderBottomWidth: StyleSheet.hairlineWidth,
-        borderTopWidth: StyleSheet.hairlineWidth,
-        borderColor: constants.UIInActiveColor
+        //borderTopWidth: StyleSheet.hairlineWidth,
+        borderColor: constants.LineColor
     },
     tabItem: {
-        height: 50,
+        height: 40,
         margin: 0,
         paddingRight: constants.MarginLeftRight,
         paddingLeft: constants.MarginLeftRight,
@@ -307,7 +333,7 @@ var styles = StyleSheet.create({
         justifyContent: 'flex-start',
         alignItems: 'stretch',
         //borderBottomWidth: StyleSheet.hairlineWidth,
-        borderColor: constants.UIInActiveColor,
+        borderColor: constants.LineColor,
         paddingLeft: constants.MarginLeftRight,
     },
     textDetail: {
@@ -315,6 +341,10 @@ var styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'flex-start',
         alignItems: 'center',
+    },
+    labelText: {
+        fontSize: 14,
+        color: constants.LabelColor,
     },
 
 

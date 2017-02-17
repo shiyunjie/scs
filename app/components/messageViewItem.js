@@ -31,12 +31,14 @@ export default class ListItemView extends Component {
         do_ret:PropTypes.bool,
         time:PropTypes.string,
         content:PropTypes.string,
+        showIcon:PropTypes.bool,
 
 
     }
 
     static defaultProps = {
         show: false,
+        showIcon: true,
         do_ret:false,
         size:constants.IconSize,
         color: constants.UIInActiveColor,
@@ -51,23 +53,27 @@ export default class ListItemView extends Component {
         return (
             <View style={styles.itemView}>
                 <View style={styles.itemIcon}/>
+                {this.props.showIcon?
+                    <View style={styles.itemButton}>
+                        <Icon
+                            name={this.props.do_ret?'ios-mail-open-outline':'ios-mail'}  // 图标
+                            size={this.props.size}
+                            color={this.props.color}/>
+                    </View>:null
+                }
+
 
                 <View style={styles.itemText}>
                     <View style={styles.TextView}>
-                        <Text style={[styles.TabText,this.props.do_ret?{color:constants.UIInActiveColor}:{color:'black'}]}>{this.props.title}</Text>
-                        <Text style={[styles.TabText,{marginLeft:10},this.props.do_ret?{color:constants.UIInActiveColor}:{color:'black'}]}>{this.props.time}</Text>
+                        <Text style={[styles.TabText,this.props.do_ret?{color:constants.UIInActiveColor}:{}]}>{this.props.title}</Text>
+                        <Text style={[styles.TabText,{marginLeft:10,fontSize:12,color:constants.PointColor},
+                        this.props.do_ret?{color:constants.UIInActiveColor}:{}]}>{this.props.time}</Text>
                     </View>
                     <View style={styles.TextView}>
-                        <Text style={[styles.TabText,{color:constants.UIInActiveColor,}]} numberOfLines={1}>{this.props.content}</Text>
+                        <Text style={[styles.TabText,{fontSize:12,color:constants.PointColor}]} numberOfLines={1}>{this.props.content}</Text>
                     </View>
 
 
-                </View>
-                <View style={styles.itemButton}>
-                    <Icon
-                        name='ios-arrow-forward'  // 图标
-                        size={this.props.size}
-                        color={this.props.color}/>
                 </View>
 
             </View>
@@ -116,8 +122,9 @@ var styles = StyleSheet.create({
     },
     TabText: {
         margin: 0,
-        fontSize: 15,
+        fontSize: 14,
         marginLeft: 10,
+        color:constants.LabelColor,
 
     },
 

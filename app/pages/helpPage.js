@@ -63,14 +63,14 @@ class Help extends Component {
         let currentRoute = this.props.navigator.navigationContext.currentRoute
         this.addAppEventListener(
         this.props.navigator.navigationContext.addListener('willfocus', (event) => {
-            console.log(`OrderDetail willfocus...`)
-            console.log(`currentRoute`, currentRoute)
-            console.log(`event.data.route`, event.data.route)
+            //console.log(`OrderDetail willfocus...`)
+            //console.log(`currentRoute`, currentRoute)
+            //console.log(`event.data.route`, event.data.route)
             if (currentRoute === event.data.route) {
-                console.log("OrderDetail willAppear")
+                //console.log("OrderDetail willAppear")
                 NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
             } else {
-                console.log("OrderDetail willDisappear, other willAppear")
+                //console.log("OrderDetail willDisappear, other willAppear")
             }
             //
         })
@@ -212,34 +212,38 @@ class Help extends Component {
                     <HeaderView name='md-arrow-round-down'  // 图标
                                 size={constants.IconSize}
                                 title='上拉加载更多...'
-                                degree={degree}/>
+                                degree={degree}
+                                isFoot={true}/>
                 )
             case load_more_idle:
                 return (
                     <HeaderView name='md-arrow-round-up'  // 图标
                                 size={constants.IconSize}
                                 title='上拉加载更多...'
-                                degree={degree}/>
+                                degree={degree}
+                                isFoot={true}/>
                 )
             case will_load_more:
                 return (
                     <HeaderView name='md-arrow-round-up'  // 图标
                                 size={constants.IconSize}
                                 title='释放加载更多...'
-                                degree={degree}/>
+                                degree={degree}
+                                isFoot={true}/>
                 )
             case loading_more:
                 return (
                     <HeaderView name='Circle' // spinkit
                                 size={constants.IconSize}
                                 title='加载中...'
-                                isRefresh={true}/>
+                                isRefresh={true}
+                                isFoot={true}/>
                 )
             case loaded_all:
                 return (
                     <View
                         style={{height: 35, justifyContent: 'center', alignItems: 'center', backgroundColor: 'transparent',}}>
-                        <Text>没有更多信息</Text>
+                        <Text style={{color:constants.PointColor,fontSize:constants.DefaultFontSize}}>没有更多信息</Text>
                     </View>
                 )
         }
@@ -276,10 +280,10 @@ class Help extends Component {
             let result = await this.fetch(options)
             result = JSON.parse(result)
 
-            console.log(`result list`, JSON.stringify(result.result.list));
+            //console.log(`result list`, JSON.stringify(result.result.list));
             let dataList = result.result.list
 
-            console.log(`dataList`, JSON.stringify(dataList));
+            //console.log(`dataList`, JSON.stringify(dataList));
             this.setState({
                 dataList: dataList,
                 dataSource: this._dataSource.cloneWithRows(dataList),
@@ -287,7 +291,7 @@ class Help extends Component {
 
         }
         catch (error) {
-            console.log(error)
+            //console.log(error)
             //..调用toast插件, show出错误信息...
 
         }
@@ -339,7 +343,7 @@ class Help extends Component {
 
         }
         catch (error) {
-            console.log(error)
+            //console.log(error)
             //..调用toast插件, show出错误信息...
 
             pageIndex--;
@@ -360,7 +364,8 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         marginTop: Platform.OS == 'ios' ? 64 : 56,
-        backgroundColor: constants.UIBackgroundColor,
+        //backgroundColor: constants.UIBackgroundColor,
+        backgroundColor: 'white',
     },
     progress: {
         margin: 3,
