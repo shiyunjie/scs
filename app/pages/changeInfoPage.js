@@ -32,7 +32,7 @@ import Button from 'react-native-smart-button';
 import Icon from 'react-native-vector-icons/Ionicons';
 import navigatorStyle from '../styles/navigatorStyle'       //navigationBar样式
 import ValidatePage from './validateInputPage';
-import ProgressView from '../components/modalProgress'
+import ProgressView from '../components/ModalProgress'
 
 import {getDeviceID,getToken,getPhone} from '../lib/User'
 import XhrEnhance from '../lib/XhrEnhance' //http

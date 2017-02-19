@@ -29,7 +29,7 @@ import LoadingSpinnerOverlay from 'react-native-smart-loading-spinner-overlay'
 import {getDeviceID,getToken} from '../lib/User'
 import XhrEnhance from '../lib/XhrEnhance' //http
 import Toast from 'react-native-smart-toast'
-import ProgressView from '../components/modalProgress'
+import ProgressView from '../components/ModalProgress'
 //import ModalDialog from '../components/modalDialog'
 
 let service_id

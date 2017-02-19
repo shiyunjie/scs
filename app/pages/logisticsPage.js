@@ -21,7 +21,7 @@ import constants from  '../constants/constant';
 import Button from 'react-native-smart-button';
 import Icon from 'react-native-vector-icons/Ionicons';
 import navigatorStyle from '../styles/navigatorStyle'       //navigationBar样式
-import ProgressView from '../components/modalProgress'
+import ProgressView from '../components/ModalProgress'
 import XhrEnhance from '../lib/XhrEnhance' //http
 //import { sysInfo_feedBack,errorXhrMock } from '../mock/xhr-mock'   //mock data
 

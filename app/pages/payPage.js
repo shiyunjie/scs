@@ -33,7 +33,7 @@ import LoadingSpinnerOverlay from 'react-native-smart-loading-spinner-overlay'
 import {getDeviceID,getToken} from '../lib/User'
 import XhrEnhance from '../lib/XhrEnhance' //http
 import Toast from 'react-native-smart-toast'
-import ProgressView from '../components/modalProgress'
+import ProgressView from '../components/ModalProgress'
 let firstDataList = []
 /*let firstDataList = [[{
  first_cost_name: '一级费用名称',

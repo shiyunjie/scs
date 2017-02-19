@@ -103,10 +103,7 @@ var styles = StyleSheet.create({
         color: constants.UIActiveColor,
     },
     view: {
-        flex: 1,
-
-
-
+        width:15,
     },
 
 });

@@ -27,7 +27,7 @@ import {getDeviceID,getToken,getPhone,getRealName} from '../lib/User'
 import XhrEnhance from '../lib/XhrEnhance' //http
 import Toast from 'react-native-smart-toast'
 
-import ProgressView from '../components/modalProgress'
+import ProgressView from '../components/ModalProgress'
 import ModalDialog from '../components/modalDialog'
 import LoadingSpinnerOverlay from 'react-native-smart-loading-spinner-overlay'
 

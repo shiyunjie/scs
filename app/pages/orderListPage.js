@@ -12,6 +12,9 @@ import {
     Image,
     TouchableOpacity,
     NativeAppEventEmitter,
+    ActivityIndicator,
+    ProgressBarAndroid,
+    ActivityIndicatorIOS,
 } from 'react-native';
 
 import constants from  '../constants/constant';
@@ -94,6 +97,7 @@ class OrderList extends Component {
                 renderFooter={this._renderFooter}
                 renderRow={this._renderRow}
                 onRefresh={this._onRefresh}
+                autoLoadMore={true}
                 pullUpDistance={100}
                 pullUpStayDistance={constants.pullDownStayDistance}
                 pullDownDistance={100}
@@ -194,7 +198,7 @@ class OrderList extends Component {
         }
     }
 
-    _renderFooter = (viewState) => {
+/*    _renderFooter = (viewState) => {
         let {pullState, pullDistancePercent} = viewState
         let {load_more_none, load_more_idle, will_load_more, loading_more, loaded_all, } = PullToRefreshListView.constants.viewState
         //pullDistancePercent = Math.round(pullDistancePercent * 100)
@@ -245,6 +249,58 @@ class OrderList extends Component {
                     </View>
                 )
         }
+    }*/
+
+    _renderFooter = (viewState) => {
+        let {pullState, pullDistancePercent} = viewState
+        let {load_more_none, load_more_idle, will_load_more, loading_more, loaded_all, } = PullToRefreshListView.constants.viewState
+        pullDistancePercent = Math.round(pullDistancePercent * 100)
+        switch (pullState) {
+            case load_more_none:
+                return (
+                    <View
+                        style={{height: 35, justifyContent: 'center', alignItems: 'center', backgroundColor: 'transparent',}}>
+                        <Text style={{color:constants.PointColor,fontSize:constants.DefaultFontSize}}>上拉加载更多...</Text>
+                    </View>
+                )
+            case loading_more:
+                return (
+                    <View
+                        style={{flexDirection: 'row', height: 35, justifyContent: 'center', alignItems: 'center', backgroundColor: 'transparent',}}>
+                        {this._renderActivityIndicator()}<Text style={{color:constants.PointColor,fontSize:constants.DefaultFontSize}}>加载中...</Text>
+                    </View>
+                )
+            case loaded_all:
+                return (
+                    <View
+                        style={{height: 35, justifyContent: 'center', alignItems: 'center', backgroundColor: 'transparent',}}>
+                        <Text style={{color:constants.PointColor,fontSize:constants.DefaultFontSize}}>没有更多信息</Text>
+                    </View>
+                )
+        }
+    }
+
+    _renderActivityIndicator () {
+        return ActivityIndicator ? (
+            <ActivityIndicator
+                style={{marginRight: 10,}}
+                animating={true}
+                color={'#ff0000'}
+                size={'small'}/>
+        ) : Platform.OS == 'android' ?
+            (
+                <ProgressBarAndroid
+                    style={{marginRight: 10,}}
+                    color={'#ff0000'}
+                    styleAttr={'Small'}/>
+
+            ) : (
+            <ActivityIndicatorIOS
+                style={{marginRight: 10,}}
+                animating={true}
+                color={'#ff0000'}
+                size={'small'}/>
+        )
     }
 
     _onRefresh = () => {
