@@ -114,7 +114,7 @@ class ServiceList extends Component {
                     renderFooter={this._renderFooter}
                     renderRow={this._renderRow}
                     onRefresh={this._onRefresh}
-                    autoLoadMore={true}
+                    //autoLoadMore={true}
                     pullUpDistance={100}
                     pullUpStayDistance={constants.pullDownStayDistance}
                     pullDownDistance={100}
@@ -225,7 +225,7 @@ total_cost 服务费总计
         }
     }
 
-/*    _renderFooter = (viewState) => {
+    _renderFooter = (viewState) => {
         let {pullState, pullDistancePercent} = viewState
         let {load_more_none, load_more_idle, will_load_more, loading_more, loaded_all, } = PullToRefreshListView.constants.viewState
         //pullDistancePercent = Math.round(pullDistancePercent * 100)
@@ -276,9 +276,9 @@ total_cost 服务费总计
                     </View>
                 )
         }
-    }*/
+    }
 
-    _renderFooter = (viewState) => {
+ /*   _renderFooter = (viewState) => {
         let {pullState, pullDistancePercent} = viewState
         let {load_more_none, load_more_idle, will_load_more, loading_more, loaded_all, } = PullToRefreshListView.constants.viewState
         pullDistancePercent = Math.round(pullDistancePercent * 100)
@@ -305,7 +305,7 @@ total_cost 服务费总计
                     </View>
                 )
         }
-    }
+    }*/
 
     _renderActivityIndicator () {
         return ActivityIndicator ? (
@@ -516,11 +516,11 @@ total_cost 服务费总计
                         dataList: dataList,
                         dataSource: this._dataSource.cloneWithRows(dataList),
                     })
-                    this._pullToRefreshServiceListView.endLoadMore(loadedAll)
+                    //this._pullToRefreshServiceListView.endLoadMore(loadedAll)
                 } else {
 
                     loadedAll = true
-                    this._pullToRefreshServiceListView.endLoadMore(loadedAll)
+                    //this._pullToRefreshServiceListView.endLoadMore(loadedAll)
                     pageIndex--;
                     if (pageIndex < 1) {
                         pageIndex = 1;

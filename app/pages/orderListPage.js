@@ -97,7 +97,7 @@ class OrderList extends Component {
                 renderFooter={this._renderFooter}
                 renderRow={this._renderRow}
                 onRefresh={this._onRefresh}
-                autoLoadMore={true}
+                //autoLoadMore={true}
                 pullUpDistance={100}
                 pullUpStayDistance={constants.pullDownStayDistance}
                 pullDownDistance={100}
@@ -198,7 +198,7 @@ class OrderList extends Component {
         }
     }
 
-/*    _renderFooter = (viewState) => {
+    _renderFooter = (viewState) => {
         let {pullState, pullDistancePercent} = viewState
         let {load_more_none, load_more_idle, will_load_more, loading_more, loaded_all, } = PullToRefreshListView.constants.viewState
         //pullDistancePercent = Math.round(pullDistancePercent * 100)
@@ -249,9 +249,9 @@ class OrderList extends Component {
                     </View>
                 )
         }
-    }*/
+    }
 
-    _renderFooter = (viewState) => {
+/*    _renderFooter = (viewState) => {
         let {pullState, pullDistancePercent} = viewState
         let {load_more_none, load_more_idle, will_load_more, loading_more, loaded_all, } = PullToRefreshListView.constants.viewState
         pullDistancePercent = Math.round(pullDistancePercent * 100)
@@ -278,7 +278,7 @@ class OrderList extends Component {
                     </View>
                 )
         }
-    }
+    }*/
 
     _renderActivityIndicator () {
         return ActivityIndicator ? (
@@ -518,11 +518,11 @@ class OrderList extends Component {
                         dataList: dataList,
                         dataSource: this._dataSource.cloneWithRows(dataList),
                     })
-                    this._PullToRefreshListView.endLoadMore(loadedAll)
+                    //this._PullToRefreshListView.endLoadMore(loadedAll)
                 } else {
 
                     loadedAll = true
-                    this._PullToRefreshListView.endLoadMore(loadedAll)
+                    //this._PullToRefreshListView.endLoadMore(loadedAll)
                     pageIndex--;
                     if (pageIndex < 1) {
                         pageIndex = 1;
