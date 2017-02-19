@@ -97,9 +97,14 @@ class OrderDetail extends Component {
                 //
             })
         )
-        setTimeout(() => {
-            this._fetchData()
-        }, 510)
+        this.addAppEventListener(
+            this.props.navigator.navigationContext.addListener('didfocus', (event) => {
+                //console.log(`payPage didfocus...`)
+                this._fetchData()
+
+            })
+        )
+
     }
 
 

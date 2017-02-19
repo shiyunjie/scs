@@ -181,8 +181,7 @@ class Login extends Component {
 
                          AsyncStorage.setItem('account',this.state.phone)
                          this._fetch_Login()
-                        /*
-                        setTimeout( () => {
+                        /* setTimeout( () => {
                             this.button2.setState({
                                 loading: false,
                                 //disabled: false

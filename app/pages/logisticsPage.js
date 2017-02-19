@@ -107,9 +107,11 @@ class Logistics extends Component {
                 //
             })
         )
-        setTimeout(() => {
-            this._fetch_logistics()
-        }, 510)
+
+    }
+
+    componentDidMount(){
+        this._fetch_logistics()
     }
 
 
@@ -158,7 +160,7 @@ class Logistics extends Component {
                                 <Icon
                                     name='ios-boat'
                                     color={this.state.dataList.length==1?constants.UIActiveColor:constants.UIInActiveColor}
-                                    size={constants.IconSize}/>:null
+                                    size={constants.IconSize}/>
 
                             {this.state.dataList.map((data, index)=> {
                                 if (index == this.state.dataList.length - 1) {

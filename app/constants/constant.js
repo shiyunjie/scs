@@ -14,7 +14,7 @@ export const constant = {
     IconSize:25,
     MarginLeftRight:15,
     Tel:'tel:10086',
-    pullDownStayDistance:40,  //下拉刷新后停留的高度
+    pullDownStayDistance:50,  //下拉刷新后停留的高度
 
     CompName:'润码网络科技',
     CompTel:'021-52990900',

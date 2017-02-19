@@ -125,14 +125,14 @@ class ServiceDetail extends Component {
         let currentRoute = this.props.navigator.navigationContext.currentRoute
         this.addAppEventListener(
             this.props.navigator.navigationContext.addListener('willfocus', (event) => {
-                //console.log(`OrderDetail willfocus...`)
-                //console.log(`currentRoute`, currentRoute)
-                //console.log(`event.data.route`, event.data.route)
+                console.log(`OrderDetail willfocus...`)
+                console.log(`currentRoute`, currentRoute)
+                console.log(`event.data.route`, event.data.route)
                 if (currentRoute === event.data.route) {
-                    //console.log("OrderDetail willAppear")
+                    console.log("OrderDetail willAppear")
                     NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
                 } else {
-                    //console.log("OrderDetail willDisappear, other willAppear")
+                    console.log("OrderDetail willDisappear, other willAppear")
                 }
                 //
             })
@@ -145,9 +145,15 @@ class ServiceDetail extends Component {
                 }
             })
         )
-        setTimeout(() => {
-            this._fetchData()
-        }, 510)
+
+        this.addAppEventListener(
+            this.props.navigator.navigationContext.addListener('didfocus', (event) => {
+                //console.log(`payPage didfocus...`)
+                this._fetchData()
+
+            })
+        )
+
     }
 
 

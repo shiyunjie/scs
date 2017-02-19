@@ -771,14 +771,14 @@ class AddOrder extends Component {
 
             options.data = await this.gZip(options)
 
-            //console.log(`_fetch_sendCode options:`, options)
+            console.log(`_fetch_sendCode options:`, options)
 
             let resultData = await this.fetch(options)
 
             let result = await this.gunZip(resultData)
 
             result = JSON.parse(result)
-            //console.log('gunZip:', result)
+            console.log('gunZip:', result)
             if (result.code && result.code == -54) {
                 /**
                  * 发送事件去登录
@@ -797,7 +797,7 @@ class AddOrder extends Component {
                     duration: 255,
                     children: '发送成功'
                 })
-                this.props.navigator.pop()
+                this.props.navigator.popToTop()
 
             } else {
                 this._toast.show({

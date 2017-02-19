@@ -124,16 +124,24 @@ class PayPage extends Component {
         let currentRoute = this.props.navigator.navigationContext.currentRoute
         this.addAppEventListener(
             this.props.navigator.navigationContext.addListener('willfocus', (event) => {
-                //console.log(`OrderDetail willfocus...`)
-                //console.log(`currentRoute`, currentRoute)
-                //console.log(`event.data.route`, event.data.route)
+                console.log(`PayPage willfocus...`)
+                console.log(`currentRoute`, currentRoute)
+                console.log(`event.data.route`, event.data.route)
                 if (currentRoute === event.data.route) {
-                    //console.log("OrderDetail willAppear")
+                    console.log("PayPage willAppear")
                     NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
                 } else {
-                    //console.log("OrderDetail willDisappear, other willAppear")
+                    console.log("PayPage willDisappear, other willAppear")
                 }
                 //
+            })
+        )
+
+        this.addAppEventListener(
+            this.props.navigator.navigationContext.addListener('didfocus', (event) => {
+                //console.log(`payPage didfocus...`)
+                this._fetchData()
+
             })
         )
 
@@ -192,12 +200,12 @@ class PayPage extends Component {
          hasPayList=[]
          this.setState({payList:payList})*/
         //if (firstDataList.length == 0) {
-        setTimeout(() => {
-            this._fetchData()
-        }, 255)
+
 
         //}
     }
+
+
 
 
     async _fetchData() {
@@ -341,9 +349,7 @@ class PayPage extends Component {
 
     }
 
-    _onRequestClose() {
-        this.props.navigator.pop()
-    }
+
 
     _renderRow = (data, sectionID, rowID) => {
         //console.log('sectionID = ' + sectionID + ' | rowID = ' + rowID)
@@ -420,13 +426,12 @@ class PayPage extends Component {
                         showProgress={this.state.showProgress}
                         showReload={this.state.showReload}
                         fetchData={()=>{
-                    this.setState({
-                    showProgress:true,//显示加载
-                    showReload:false,//显示加载更多
-                     })
-                    this._fetchData()
-                    }}
-                        onRequestClose={this._onRequestClose.bind(this)}/> :
+                        this.setState({
+                        showProgress:true,//显示加载
+                        showReload:false,//显示加载更多
+                         })
+                        this._fetchData()
+                        }}/> :
 
                     <View style={{flex:1,flexDirection:'column'}}>
                         <View style={[{marginTop: Platform.OS == 'ios' ? 64 : 56,flexDirection:'row',alignItems:'center',
@@ -464,9 +469,9 @@ class PayPage extends Component {
                             renderRow={this._renderRow}
                             style={styles.container}
                             showsVerticalScrollIndicator={false}
-                            initialListSize={10}
+                            initialListSize={20}
                             onEndReachedThreshold={30}
-                            pageSize={10}
+                            pageSize={20}
                         />
                         <View style={styles.line}/>
 
@@ -499,6 +504,14 @@ class PayPage extends Component {
                          this._fetch_confirm()
 
                          }else if(pageType=='pay'){
+                         if(this.state.total<=0){
+                         this._toast.show({
+                                position: Toast.constants.gravity.center,
+                                duration: 255,
+                                children: '请选择需要支付的项目'
+                            })
+                         return;
+                         }
                          this.props.navigator.push({
                             title: '在线支付',
                             component: OnlinePayPage,
@@ -509,14 +522,17 @@ class PayPage extends Component {
                             total:this.state.total,
                             },
                             });
+                            this.button2.setState({
+                                loading: false,
+                                //disabled: false
+                            })
                          }else{
                           this.button2.setState({
                                 loading: false,
                                 //disabled: false
                             })
                          }
-                        /*
-                        setTimeout( () => {
+                        /* setTimeout( () => {
                             this.button2.setState({
                                 loading: false,
                                 //disabled: false

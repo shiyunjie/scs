@@ -77,11 +77,13 @@ class MessageList extends Component {
                 //
             })
         )
-        if (this.state.dataList.length == 0) {
-            setTimeout( ()=>this._PullToRefreshListView.beginRefresh(),510)
 
-        }
     }
+
+    componentDidMount(){
+        this._PullToRefreshListView.beginRefresh()
+    }
+
 
 
 

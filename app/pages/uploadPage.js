@@ -138,7 +138,14 @@ class UploadPage extends Component {
                 this._fetch_finish()
             })
         )
-        setTimeout(()=>this._fetchData(), 510);
+        this.addAppEventListener(
+            this.props.navigator.navigationContext.addListener('didfocus', (event) => {
+                //console.log(`payPage didfocus...`)
+                this._fetchData()
+
+            })
+        )
+
 
     }
 
@@ -677,6 +684,7 @@ class UploadPage extends Component {
 
 
     async _fetch_finish() {
+
         try {
             let token = await getToken()
             let deviceID = await getDeviceID()
@@ -749,7 +757,7 @@ class UploadPage extends Component {
     }
 
     async _fetchData() {
-        //console.log(`upload_fetchData`)
+        console.log(`upload_fetchData`)
         try {
             let token = await getToken()
             let deviceID = await getDeviceID()
@@ -774,7 +782,7 @@ class UploadPage extends Component {
             let result = await this.gunZip(resultData)
 
             result = JSON.parse(result)
-            //console.log('gunZip:', result)
+            console.log('gunZip:', result)
             if (result.code && result.code == 10) {
 
                 //console.log('token', result.result)

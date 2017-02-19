@@ -70,7 +70,7 @@ export const testMock = fetchMock.mock(/\/app\/gateway/, (url, opts) => {
                                 },
                             }
                         } else {
-                            result = {code: -10, msg: '用户名火密码错误'}
+                            result = {code: -10, msg: '用户名或者密码错误'}
                         }
                         break;
                     //查询询价单列表
@@ -1128,11 +1128,6 @@ export const testMock = fetchMock.mock(/\/app\/gateway/, (url, opts) => {
                     case 231:
                         //console.log(`requestData.data:`,requestData.data)
                         if(requestData.data.import_clearance
-                            &&requestData.data.international_logistics
-                            &&requestData.data.export_country_land
-                            &&!requestData.data.booking_service
-                            &&requestData.data.domestic_logistics
-                            &&requestData.data.credit_letter
                             &&requestData.data.trade_terms
                             &&requestData.data.departure_id
                             &&requestData.data.departure_name
@@ -1152,7 +1147,54 @@ export const testMock = fetchMock.mock(/\/app\/gateway/, (url, opts) => {
                                 result: {},
                             }
                         }
-
+                    break;
+                    //修改委托
+                    case 237:
+                        //console.log(`requestData.data:`,requestData.data)
+                        if(requestData.data.import_clearance
+                            &&requestData.data.trade_terms
+                            &&requestData.data.departure_id
+                            &&requestData.data.departure_name
+                            &&requestData.data.destination_id
+                            &&requestData.data.destination_name
+                            &&requestData.data.client_name
+                            &&requestData.data.client_phone) {
+                            result = {
+                                code: 10,
+                                msg: '修改成功',
+                                result:{}
+                            }
+                        }else{
+                            result = {
+                                code: -10,
+                                msg: '系统错误',
+                                result: {},
+                            }
+                        }
+                        break;
+                    //查询上传图片
+                    case 632:
+                        //console.log(`requestData.data:`,requestData.data)
+                        if(requestData.data.id) {
+                            result = {
+                                code: 10,
+                                msg: '查询成功',
+                                result:[{
+                                    file_url:'http://o2o.doorto.cn/upload/yun-o2o/ff8080814f2ab654014f2b9ad24b063a.jpg',
+                                    id: '1998276354421',
+                                    filename:'Imagedemo',
+                                    height: 400,
+                                    big_uri: 'http://o2o.doorto.cn/upload/yun-o2o/ff8080814f2ab654014f2b9ad24b063a.jpg',
+                                    width: 400,}]
+                            }
+                        }else{
+                            result = {
+                                code: -10,
+                                msg: '系统错误',
+                                result: {},
+                            }
+                        }
+                        break;
                 }
 
                 resolve(JSON.stringify(JSON.stringify(result)))

@@ -44,6 +44,7 @@ export default class PayTabView extends Component {
                 this.setState({
                     selected: true,
                 })
+                this.props.selectedAll=false
             }else{
                 //已经全选过一次了
                 console.log(`this.props.selectedAll:` + this.props.selectedAll)
@@ -185,7 +186,7 @@ export default class PayTabView extends Component {
                                 showChild:showChild,
                                 payList:this.props.payList
                                 })
-                                this.props.selectedAll=!flag
+                                //this.props.selectedAll=!flag
                                 //console.log(`payList:`,this.props.payList.length)
                                  //统计总价
                                  NativeAppEventEmitter.emit('in_payPage_need_set_total',false)
@@ -256,7 +257,7 @@ export default class PayTabView extends Component {
 
                                             this.setState({payList:this.props.payList,selected:!flag})
                                             //console.log(`payList:`,this.props.payList.length)
-                                            this.props.selectedAll=!flag
+                                            //this.props.selectedAll=!flag
                                             //统计总价
 
                                             NativeAppEventEmitter.emit('in_payPage_need_set_total',false)}}>
