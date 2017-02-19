@@ -144,7 +144,6 @@ var styles = StyleSheet.create({
 
     },*/
     HeaderView: {
-        flex:1,
         height: constants.pullDownStayDistance,
         alignItems: 'center',
         backgroundColor: 'transparent',
