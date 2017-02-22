@@ -125,13 +125,15 @@ class Login extends Component {
                         <View style={{flex:1,flexDirection: 'row',marginRight:5,marginLeft:5}}>
                             <TouchableOpacity
                                 onPress={this._onRegister}
-                            ><Text style={{fontSize:13,color:constants.UIActiveColor}}>立即注册</Text>
+                            >
+                                <Text style={{fontSize:13,color:constants.UIActiveColor}}>立即注册</Text>
                             </TouchableOpacity>
-                            <View style={{flex:1,}}></View>
+                                <View style={{flex:1,}}></View>
                             <TouchableOpacity
                                 onPress={this._onForgetPassword}
-                            ><Text style={{fontSize:13,color:constants.UIActiveColor}}
-                            >忘记密码</Text>
+                            >
+                                <Text style={{fontSize:13,color:constants.UIActiveColor}}
+                                >忘记密码</Text>
                             </TouchableOpacity>
                         </View>
                         <View style={{flex:1,}}></View>
@@ -145,7 +147,9 @@ class Login extends Component {
                             textStyle={{fontSize: 17, color: 'white'}}
                             loadingComponent={
                             <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                                {this._renderActivityIndicator()}
+                                {
+                                //this._renderActivityIndicator()
+                                }
                                 <Text style={{fontSize: 17, color: 'white', fontWeight: 'bold', fontFamily: '.HelveticaNeueInterface-MediumP4',}}>登录中...</Text>
                             </View>
                     }
@@ -181,7 +185,7 @@ class Login extends Component {
 
                          AsyncStorage.setItem('account',this.state.phone)
                          this._fetch_Login()
-                        /* setTimeout( () => {
+                         /*setTimeout( () => {
                             this.button2.setState({
                                 loading: false,
                                 //disabled: false
@@ -232,6 +236,17 @@ class Login extends Component {
 
             result = JSON.parse(result)
             //console.log('gunZip:', result)
+            if(this._modalLoadingSpinnerOverLay){
+                this._modalLoadingSpinnerOverLay.hide({duration: 0,})
+            }
+            if(!result){
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: '服务器打盹了,稍后再试试吧'
+                })
+                return
+            }
             if (result.code && result.code == 10) {
                 /* Alert.alert('提示', '注册成功', () => {
                  this.props.navigator.popToTop()
@@ -247,8 +262,11 @@ class Login extends Component {
                     duration: 255,
                     children: '登录成功'
                 })
-                this.props.navigator.pop()
-                NativeAppEventEmitter.emit('setRootPageNavigationBar.index')
+                setTimeout(()=>{
+                    this.props.navigator.popToTop()
+                    NativeAppEventEmitter.emit('setRootPageNavigationBar.index')
+                },1000)
+
 
             } else {
                 this._toast.show({
@@ -279,8 +297,9 @@ class Login extends Component {
             this._input_phone.editable=true
             this._input_password.editable=true
             if(this._modalLoadingSpinnerOverLay){
-                this._modalLoadingSpinnerOverLay.hide()
+                this._modalLoadingSpinnerOverLay.hide({duration: 0,})
             }
+
             //console.log(`SplashScreen.close(SplashScreen.animationType.scale, 850, 500)`)
             //SplashScreen.close(SplashScreen.animationType.scale, 850, 500)
         }

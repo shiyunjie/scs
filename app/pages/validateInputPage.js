@@ -99,24 +99,29 @@ class ValidatePage extends Component {
                         textStyle={{fontSize: 17, color: 'white'}}
                         loadingComponent={
                             <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                                {this._renderActivityIndicator()}
+                                {
+                                //this._renderActivityIndicator()
+                                }
                                 <Text style={{fontSize: 17, color: 'white', fontWeight: 'bold', fontFamily: '.HelveticaNeueInterface-MediumP4',}}>
                                 {this.state.ButtonText}</Text>
                             </View>
                     }
                         onPress={ () => {
 
-                        if(!this._input_context.validate&&!this.props.multiline){
-                            this._input_context.setState({
-                            backgroundColor:constants.UIInputErrorColor,
-                            })
+                        if(this.state.context!=this.props.context){
 
-                            this._toast.show({
-                                position: Toast.constants.gravity.center,
-                                duration: 255,
-                                children: `${this.props.label}格式验证不正确`
-                            })
-                            return
+                            if(!this._input_context.validate&&!this.props.multiline){
+                                this._input_context.setState({
+                                backgroundColor:constants.UIInputErrorColor,
+                                })
+
+                                this._toast.show({
+                                    position: Toast.constants.gravity.center,
+                                    duration: 255,
+                                    children: `${this.props.label}格式验证不正确`
+                                })
+                                return
+                            }
                         }
 
                         this._button_2.setState({

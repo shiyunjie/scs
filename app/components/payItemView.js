@@ -124,7 +124,7 @@ export default class PayTabView extends Component {
         let allSelected = false;
         for (data of this.props.child) {
 
-            if (data.is_pay == 0) {
+            if (data.is_pay == 0&&data.cost!=0) {
                 //未支付了
                 allSelected = true
                 break
@@ -135,10 +135,11 @@ export default class PayTabView extends Component {
             <View
                 style={{flex:1,flexDirection: 'column'}}>
                 <View style={styles.viewItem}>
-                    <TouchableOpacity
-                        style={[{flexDirection:'row',justifyContent:'center'},
-                            this.state.pageType=='pay'?{width:30,}:{width:0}]}
-                        onPress={()=>{
+                    {this.state.pageType=='pay'?
+                        <TouchableOpacity
+                            style={[{flexDirection:'row',justifyContent:'center'},
+                            {width:30,}]}
+                            onPress={()=>{
                          //console.log(`child.length:`+this.props.child.length)
                             if(!allSelected){
                             // 已经全选了
@@ -153,7 +154,7 @@ export default class PayTabView extends Component {
                                 if(!this.state.selected){
                                 //全部选中
                                     for(data of this.props.child){
-                                        if(!data.is_pay&&this.props.payList.indexOf(data.id)==-1){
+                                        if(data.cost!=0&&!data.is_pay&&this.props.payList.indexOf(data.id)==-1){
                                            //不包含
                                             this.props.payList.push(data.id)
                                         }
@@ -191,14 +192,15 @@ export default class PayTabView extends Component {
                                  //统计总价
                                  NativeAppEventEmitter.emit('in_payPage_need_set_total',false)
                               }}>
-                        {   allSelected ?
-                            <Icon
-                                name={this.state.selected?'ios-radio-button-on':'ios-radio-button-off'}  // 图标
-                                size={constants.IconSize-5}
-                                color={this.state.selected?constants.UIActiveColor:constants.UIInActiveColor}/> : null
-                        }
-                    </TouchableOpacity>
-                    <TouchableOpacity style={{flex:1,marginLeft:5,flexDirection:'row',alignItems:'stretch',}}
+                            {   allSelected ?
+                                <Icon
+                                    name={this.state.selected?'ios-radio-button-on':'ios-radio-button-off'}  // 图标
+                                    size={constants.IconSize-5}
+                                    color={this.state.selected?constants.UIActiveColor:constants.UIInActiveColor}/> : null
+                            }
+                        </TouchableOpacity>:<View style={{width:30}}/>
+                    }
+                    <TouchableOpacity style={{flex:1,flexDirection:'row',alignItems:'stretch',}}
                                       onPress={()=>{
                                 this.setState({
                                 showChild:!this.state.showChild,})
@@ -207,25 +209,25 @@ export default class PayTabView extends Component {
                             <Text style={[styles.labelText,{textAlign:'center',}]}>{this.props.child[0].first_cost_name}</Text>
                         </View>
                         <View
-                            style={{flex:1,flexDirection:'row',justifyContent:'flex-end',marginRight:5,alignItems:'center'}}>
-                            <Text style={[styles.labelText,{color:constants.UIActiveColor,marginRight:5}]}>￥{total}</Text>
+                            style={{flex:1,flexDirection:'row',justifyContent:'flex-end',marginRight:10,alignItems:'center'}}>
+                            <Text style={[styles.labelText,{color:constants.UIActiveColor,marginRight:10}]}>￥{total}</Text>
                             <Icon
                                 name={this.state.showChild?'ios-arrow-down':'ios-arrow-up'}  //上下
-                                size={constants.IconSize}
+                                size={constants.IconSize-5}
                                 color={constants.LineColor}/>
                         </View>
                     </TouchableOpacity>
 
                 </View>
                 {this.state.showChild?
-                    <View style={[{flexDirection: 'column',},{flex:1,paddingLeft:30,paddingRight:5,}]}>
+                    <View style={[{flexDirection: 'column',},{flex:1,paddingRight:5,}]}>
                         {  this.props.child.map((item, index) => {
 
                             return (
                                 <TouchableOpacity style={styles.textTitle}
                                                   key={`keyIndex${index}`}
                                                   onPress={()=>{
-                                                  if(item.is_pay==1){
+                                                  if(item.is_pay==1||item.cost==0){
                                                   //已经支付此项
                                                     return
                                                   }
@@ -265,27 +267,33 @@ export default class PayTabView extends Component {
                                     <View style={{flex:1,flexDirection:'column',alignItems:'stretch'}}>
                                         <Text style={[styles.labelText,{flex:1,fontSize:12,}]}>{item.cost_name}</Text>
                                         <View style={styles.textDetail}>
-                                            <Text style={[styles.labelText,{fontSize:12,}]}>{this.props.cost_1_title}</Text>
-                                            <Text style={[styles.labelText,{fontSize:12,}]}>￥{item.estimate_cost}</Text>
-                                            <View style={{marginLeft:15,flexDirection:'row'}}>
-                                                <Text style={[styles.labelText,{fontSize:12,}]}>{this.props.cost_2_title}</Text>
-                                                <Text style={[styles.labelText,{fontSize:12,color:constants.UIActiveColor}]}>￥{item.cost}</Text>
-                                                <Text
-                                                    style={[styles.labelText,{marginLeft:15,color:constants.UIActiveColor,fontSize:12,}]}>
-                                                    {item.is_pay == 0 ? '未支付' : '已支付'}</Text>
+                                            <View style={{flex:1,flexDirection:'row'}}>
+                                                <Text style={[styles.contentText,{fontSize:12,}]}>{this.props.cost_1_title}</Text>
+                                                <Text style={[styles.contentText,{fontSize:12,}]}>￥{item.estimate_cost}</Text>
                                             </View>
+                                            <View style={{flex:1,flexDirection:'row'}}>
+                                                <Text style={[styles.contentText,{fontSize:12,color:constants.UIActiveColor}]}>{this.props.cost_2_title}</Text>
+                                                <Text style={[styles.contentText,{fontSize:12,color:constants.UIActiveColor}]}>￥{item.cost}</Text>
+
+                                            </View>
+                                            <Text
+                                                style={[styles.contentText,{color:constants.UIActiveColor,fontSize:12,}]}>
+                                                {item.is_pay == 0 ? '未支付' : '已支付'}</Text>
+                                            <View style={{flex:1}}/>
                                         </View>
                                     </View>
-                                    <View
-                                        style={[{flexDirection: 'row',justifyContent:'center',alignItems:'center',},
-                                        this.state.pageType=='pay'&&item.is_pay == 0?{width:30,}:{width:0}]}>
-                                        <Icon
-                                            name={this.state.payList.indexOf(item.id)==-1?
+                                    {this.state.pageType=='pay'&&item.is_pay == 0&&item.cost!=0?
+                                        <View
+                                            style={[{flexDirection: 'row',justifyContent:'center',alignItems:'center',},
+                                        {width:30,}]}>
+                                            <Icon
+                                                name={this.state.payList.indexOf(item.id)==-1?
                                             'ios-radio-button-off':'ios-radio-button-on'}  // 图标
-                                            size={constants.IconSize-5}
-                                            color={this.state.payList.indexOf(item.id)==-1?
+                                                size={constants.IconSize-5}
+                                                color={this.state.payList.indexOf(item.id)==-1?
                                             constants.UIInActiveColor:constants.UIActiveColor}/>
-                                    </View>
+                                        </View>:<View style={{width:30,}}/>
+                                    }
                                 </TouchableOpacity>
 
                             )
@@ -333,9 +341,9 @@ var styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'flex-start',
         alignItems: 'stretch',
-        //borderBottomWidth: StyleSheet.hairlineWidth,
+        borderBottomWidth: StyleSheet.hairlineWidth,
         borderColor: constants.LineColor,
-        paddingLeft: constants.MarginLeftRight,
+        paddingLeft:30+constants.MarginLeftRight,
     },
     textDetail: {
         flex: 1,
@@ -346,6 +354,11 @@ var styles = StyleSheet.create({
     labelText: {
         fontSize: 14,
         color: constants.LabelColor,
+    },
+    contentText: {
+        fontSize: 12,
+        color: constants.PointColor,
+        paddingRight:5,
     },
 
 

@@ -29,6 +29,7 @@ export default class ListItemView extends Component {
         name:PropTypes.string,
         title: PropTypes.string.isRequired,
         rightText: PropTypes.string,
+        titleColor: PropTypes.string,
         show: PropTypes.bool,
         hasCheckBox: PropTypes.bool,
         hasLine: PropTypes.bool,
@@ -58,7 +59,8 @@ export default class ListItemView extends Component {
                 <View style={styles.itemView}>
                     <View style={styles.itemIcon}/>
                     <View style={[styles.itemText,this.props.hasLine?{borderBottomWidth:StyleSheet.hairlineWidth}:{borderBottomWidth:0}]}>
-                        <Text style={[styles.TabText,this.props.isChose?styles.contextText:styles.labelText]}>{this.props.title}</Text>
+                        <Text style={[styles.TabText,this.props.isChose?styles.contextText:styles.labelText,
+                        this.props.titleColor?{color:this.props.titleColor}:{}]}>{this.props.title}</Text>
                     </View>
                     <View style={[styles.itemButton,this.props.hasLine?{borderBottomWidth:StyleSheet.hairlineWidth}:{borderBottomWidth:0},
                     this.props.showRightText?{}:{flex:2}]}>

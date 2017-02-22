@@ -144,10 +144,13 @@ class PicturePicker extends Component {
                     </TouchableOpacity>
                 </View>
                 <CameraRollPicker
+                    style={{flex:1}}
+                    selected={this.state.selected}
                     initialListSize={30}
                     pageSize={30}
                     fetchSize={90}
-                    onSelect={this._getSelectedImages}/>
+                    onSelect={this._getSelectedImages}
+                    onEndReachedThreshold={100}/>
             </View>)
 
     }

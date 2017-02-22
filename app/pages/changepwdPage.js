@@ -122,7 +122,9 @@ class SetPassword extends Component {
                     textStyle={{fontSize: 17, color: 'white'}}
                     loadingComponent={
                             <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                                {this._renderActivityIndicator()}
+                                {
+                                //this._renderActivityIndicator()
+                                }
                                 <Text style={{fontSize: 17, color: 'white', fontWeight: 'bold', fontFamily: '.HelveticaNeueInterface-MediumP4',}}>
                                 保存中...</Text>
                             </View>
@@ -253,6 +255,17 @@ class SetPassword extends Component {
 
             result = JSON.parse(result)
             //console.log('gunZip:', result)
+            if(this._modalLoadingSpinnerOverLay) {
+                this._modalLoadingSpinnerOverLay.hide({duration: 0,})
+            }
+            if(!result){
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: '服务器打盹了,稍后再试试吧'
+                })
+                return
+            }
             if (result.code && result.code == -54) {
                 /*AsyncStorage.removeItem('token')
                 AsyncStorage.removeItem('realName')
@@ -281,7 +294,8 @@ class SetPassword extends Component {
                     title: '用户登录',
                     component: LoginPage,
                 })*/
-                NativeAppEventEmitter.emit('getMsg_202_code_need_login')
+                setTimeout(()=>NativeAppEventEmitter.emit('getMsg_202_code_need_login'),1000)
+
 
             } else {
                 this._toast.show({
@@ -312,8 +326,8 @@ class SetPassword extends Component {
             this._input_old_password.editable=true
             this._input_new_password.editable=true
             this._input_conform_password.editable=true
-            if(this._modalLoadingSpinnerOverLay){
-                this._modalLoadingSpinnerOverLay.hide()
+            if(this._modalLoadingSpinnerOverLay) {
+                this._modalLoadingSpinnerOverLay.hide({duration: 0,})
             }
         }
     }

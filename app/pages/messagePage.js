@@ -42,6 +42,7 @@ import XhrEnhance from '../lib/XhrEnhance' //http
 
 
 let pageIndex = 1;//当前页码
+let pageLength=20;//每页条数
 let firstDataList = [];
 
 class MessageList extends Component {
@@ -57,6 +58,7 @@ class MessageList extends Component {
             dataList: firstDataList,
             dataSource: this._dataSource.cloneWithRows(firstDataList),
         }
+        this.firstFetch = true;
     }
 
 
@@ -78,10 +80,29 @@ class MessageList extends Component {
             })
         )
 
+        this.addAppEventListener(
+            this.props.navigator.navigationContext.addListener('didfocus', (event) => {
+                //console.log(`payPage didfocus...`)
+                if (event && currentRoute === event.data.route) {
+                    console.log("upload didAppear")
+                    if (this.firstFetch) {
+                        this._PullToRefreshListView.beginRefresh()
+                        this.firstFetch = false;
+                    }
+
+                }else {
+                    //console.log("orderPage willDisappear, other willAppear")
+                }
+
+
+            })
+        )
+
+
     }
 
     componentDidMount(){
-        this._PullToRefreshListView.beginRefresh()
+        //this._PullToRefreshListView.beginRefresh()
     }
 
 
@@ -162,8 +183,13 @@ class MessageList extends Component {
                     <SwipeRow
                         style={{flex:1}}
                         onRowPress={ ()=>{
+                         this.props.navigator.push({
+                         title: '消息',
+                         component: MessageDetail,
+                         passProps: rowData,
+                         });
                                         //已读
-                         this._fetchData_read(rowData.id)
+                         //this._fetchData_read(rowData.id)
                          rowData.do_ret = true
 
                        /* let dataList = this.state.dataList
@@ -176,14 +202,10 @@ class MessageList extends Component {
                         }*/
                         //console.log(`dataList`, dataList);
 
-                        this.setState({
+                        /*this.setState({
                             dataSource: this._dataSource.cloneWithRows(this.state.dataList),
-                        })
-                         this.props.navigator.push({
-                         title: '消息',
-                         component: MessageDetail,
-                         passProps: rowData,
-                         });
+                        })*/
+
                          } }
                         stopRightSwipe={-100}
                         rightOpenValue={-70}
@@ -194,6 +216,7 @@ class MessageList extends Component {
                             <View style={{flex:1}}/>
                             <TouchableOpacity
                                 onPress={ ()=>{
+
                                 this._fetchData_delete(rowData.id)
                                 } }
                                 style={{width:100,justifyContent:'center',
@@ -336,6 +359,14 @@ class MessageList extends Component {
         try {
             let token = await getToken()
             let deviceID = await getDeviceID()
+            let start=0;
+            if(pageIndex==1){
+                start=0
+            }else if(pageIndex==2){
+                start=pageLength
+            }else{
+                start=(pageIndex-1)*pageLength+1
+            }
 
             let options = {
                 method: 'post',
@@ -344,7 +375,9 @@ class MessageList extends Component {
                     iType: constants.iType.findSysInfoShow,
                     current_page: pageIndex,
                     deviceId: deviceID,
+                    length:pageLength,
                     token: token,
+                    start:start,
                 }
             }
             options.data = await this.gZip(options)
@@ -354,6 +387,14 @@ class MessageList extends Component {
             let result = await this.gunZip(resultData)
 
             result = JSON.parse(result)
+            if(!result){
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: '服务器打盹了,稍后再试试吧'
+                })
+                return
+            }
             if (result.code && result.code == -54) {
                 /**
                  * 发送事件去登录
@@ -405,6 +446,14 @@ class MessageList extends Component {
         try {
             let token = await getToken()
             let deviceID = await getDeviceID()
+            let start=0;
+            if(pageIndex==1){
+                start=pageLength
+            }else if(pageIndex==2){
+                start=pageLength
+            }else{
+                start=(pageIndex-1)*pageLength+1
+            }
             let options = {
                 method: 'post',
                 url: constants.api.service,
@@ -412,7 +461,9 @@ class MessageList extends Component {
                     iType: constants.iType.findSysInfoShow,
                     current_page: pageIndex,
                     deviceId: deviceID,
+                    length:pageLength,
                     token: token,
+                    start:start,
                 }
             }
 
@@ -425,6 +476,14 @@ class MessageList extends Component {
             result = JSON.parse(result)
             //console.log(`fetch result -> `, typeof result)
             //console.log(`result`, result.result)
+            if(!result){
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: '服务器打盹了,稍后再试试吧'
+                })
+                return
+            }
             if (result.code && result.code == -54) {
                 /**
                  * 发送事件去登录
@@ -511,6 +570,14 @@ class MessageList extends Component {
             let result = await this.gunZip(resultData)
 
             result = JSON.parse(result)
+            if(!result){
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: '服务器打盹了,稍后再试试吧'
+                })
+                return
+            }
             if (result.code && result.code == -54) {
                 /**
                  * 发送事件去登录
@@ -593,6 +660,14 @@ class MessageList extends Component {
             let result = await this.gunZip(resultData)
 
             result = JSON.parse(result)
+            if(!result){
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: '服务器打盹了,稍后再试试吧'
+                })
+                return
+            }
             if (result.code && result.code == -54) {
                 /**
                  * 发送事件去登录

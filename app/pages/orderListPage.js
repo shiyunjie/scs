@@ -34,7 +34,7 @@ import AppEventListenerEnhance from 'react-native-smart-app-event-listener-enhan
 
 
 let pageIndex = 1;//当前页码
-let pageLength=6;//每页条数
+let pageLength=10;//每页条数
 let firstDataList = [];
 
 class OrderList extends Component {
@@ -67,6 +67,23 @@ class OrderList extends Component {
                     if(data.id==event){
                         data.order_status=100
                         data.order_status_name='已取消'
+                        break
+                    }
+                }
+                this.setState({
+                    dataList: DataList,
+                    dataSource: this._dataSource.cloneWithRows(DataList),
+                })
+            })
+        )
+
+        this.addAppEventListener(
+            NativeAppEventEmitter.addListener('orderDetail_hasUpdate_should_resetState', (event) => {
+                let DataList=this.state.dataList
+                for(let data of DataList){
+                    if(data.id==event){
+                        data.order_status=10
+                        data.order_status_name='待报价'
                         break
                     }
                 }
@@ -421,6 +438,14 @@ class OrderList extends Component {
 
             result = JSON.parse(result)
             //console.log('gunZip:', result)
+            if(!result){
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: '服务器打盹了,稍后再试试吧'
+                })
+                return
+            }
             if (result.code && result.code == -54) {
                 /**
                  * 发送事件去登录
@@ -500,6 +525,14 @@ class OrderList extends Component {
 
             result = JSON.parse(result)
             //console.log('gunZip:', result)
+            if(!result){
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: '服务器打盹了,稍后再试试吧'
+                })
+                return
+            }
             if (result.code && result.code == -54) {
                 /**
                  * 发送事件去登录

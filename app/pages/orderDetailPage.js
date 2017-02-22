@@ -77,6 +77,7 @@ class OrderDetail extends Component {
 
             commission_content: '',//委托内容
         };
+        this.firstFetch = true;
     }
 
 
@@ -100,7 +101,17 @@ class OrderDetail extends Component {
         this.addAppEventListener(
             this.props.navigator.navigationContext.addListener('didfocus', (event) => {
                 //console.log(`payPage didfocus...`)
-                this._fetchData()
+                if (event && currentRoute === event.data.route) {
+                    console.log("upload didAppear")
+
+                    if (this.firstFetch) {
+                        this._fetchData()
+                        this.firstFetch = false;
+                    }
+                }else {
+                    //console.log("orderPage willDisappear, other willAppear")
+                }
+
 
             })
         )
@@ -108,9 +119,7 @@ class OrderDetail extends Component {
     }
 
 
-    _onRequestClose() {
-        this.props.navigator.pop()
-    }
+
 
     render() {
         return (
@@ -126,8 +135,7 @@ class OrderDetail extends Component {
                         showReload:false,//显示加载更多
                          })
                         this._fetchData()
-                        }}
-                        onRequestClose={this._onRequestClose.bind(this)}/> :
+                        }}/> :
                     <ScrollView style={styles.container}
                                 showsVerticalScrollIndicator={false}>
                         <View style={[{marginTop:10,flexDirection:'row',alignItems:'center',
@@ -263,20 +271,22 @@ class OrderDetail extends Component {
                             </Text>
                         </View>
 
+                        {this.state.order_status == 30 ?
+                            <Text
+                                style={[styles.contentText,{
+                            paddingTop:5,paddingBottom:5,fontSize:12},
+                            ]}>拒绝原因</Text>:null
+                        }
+                        {this.state.order_status == 30 ?
+                            <View style={[styles.viewItem,{flex:1}]}>
+                                <Text style={[{height:100},styles.contentText]}
+                                      multiline={true}//多行输入
+                                      numberOfLines={8}>
+                                    {this.state.remark}
+                                </Text>
 
-                        <Text
-                            style={[styles.contentText,this.state.order_status==30?{
-                            paddingTop:5,paddingBottom:5,fontSize:12}:{height:0},
-                            ]}>拒绝原因</Text>
-
-                        <View style={[styles.viewItem,this.state.order_status==30?{flex:1}:{height:0}]}>
-                            <Text style={[{height:100},styles.contentText]}
-                                  multiline={true}//多行输入
-                                  numberOfLines={8}>
-                                {this.state.remark}
-                            </Text>
-
-                        </View>
+                            </View>:null
+                        }
 
                     </ScrollView>
                 }
@@ -320,6 +330,14 @@ class OrderDetail extends Component {
 
             result = JSON.parse(result)
             //console.log('gunZip:', result)
+            if(!result){
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: '服务器打盹了,稍后再试试吧'
+                })
+                return
+            }
             if (result.code && result.code == -54) {
                 /**
                  * 发送事件去登录
@@ -434,7 +452,18 @@ class OrderDetail extends Component {
             let result = await this.gunZip(resultData)
 
             result = JSON.parse(result)
-            console.log('gunZip:', result)
+            //console.log('gunZip:', result)
+            if(this._modalLoadingSpinnerOverLay) {
+                this._modalLoadingSpinnerOverLay.hide({duration: 0,})
+            }
+            if(!result){
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: '服务器打盹了,稍后再试试吧'
+                })
+                return
+            }
             if (result.code && result.code == -54) {
                 /**
                  * 发送事件去登录
@@ -447,9 +476,18 @@ class OrderDetail extends Component {
                 })
             }
             if (result.code && result.code == 10) {
-                //修改订单状态
-                NativeAppEventEmitter.emit('orderDetail_hasCancel_should_resetState', this.state.id)
-                this.props.navigator.pop()
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: '取消订单成功'
+                })
+
+                setTimeout(()=>{
+                    //修改订单状态
+                    NativeAppEventEmitter.emit('orderDetail_hasCancel_should_resetState', this.state.id)
+                    this.props.navigator.pop()
+
+                },1000)
 
             } else {
                 this._toast.show({
@@ -473,7 +511,7 @@ class OrderDetail extends Component {
         }
         finally {
             if(this._modalLoadingSpinnerOverLay) {
-                this._modalLoadingSpinnerOverLay.hide()
+                this._modalLoadingSpinnerOverLay.hide({duration: 0,})
             }
             //console.log(`SplashScreen.close(SplashScreen.animationType.scale, 850, 500)`)
             //SplashScreen.close(SplashScreen.animationType.scale, 850, 500)
