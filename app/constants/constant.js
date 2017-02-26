@@ -97,7 +97,7 @@ export const constant = {
 
 
 
-    }
+    },
 }
 
 export default constant;

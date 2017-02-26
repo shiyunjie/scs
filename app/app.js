@@ -21,15 +21,13 @@ import AppEventListenerEnhance from 'react-native-smart-app-event-listener-enhan
 import CodePush from "react-native-code-push";
 import SplashScreen from 'react-native-smart-splash-screen'
 
-let codePushOptions = {checkFrequency: CodePush.CheckFrequency.ON_APP_RESUME};
+let codePushOptions = { checkFrequency: CodePush.CheckFrequency.ON_APP_RESUME };
 //let codePushOptions = { checkFrequency: CodePush.CheckFrequency.MANUAL };
-
 
 const HttpRSAModule = NativeModules.HttpRSAModule;
 
-
 class Root extends Component {
-    constructor(props, context) {
+    constructor (props, context) {
         super(props);
         this.state = {
             navigationBar: NavigationBarRouteMapper,
@@ -68,7 +66,7 @@ class Root extends Component {
 
      }*/
 
-    codePushStatusDidChange(status) {
+    codePushStatusDidChange (status) {
         switch (status) {
             case CodePush.SyncStatus.CHECKING_FOR_UPDATE:
                 console.log("Checking for updates.");
@@ -88,11 +86,11 @@ class Root extends Component {
         }
     }
 
-    codePushDownloadDidProgress(progress) {
+    codePushDownloadDidProgress (progress) {
         console.log(progress.receivedBytes + " of " + progress.totalBytes + " received.");
     }
 
-    componentWillMount() {
+    componentWillMount () {
         CodePush.disallowRestart();//页面加载的禁止重启，在加载完了可以允许重启
         //检查版本更新
         /* if(Platform.OS=='android'){
@@ -101,20 +99,19 @@ class Root extends Component {
          }else{
          HttpRSAModule.UpdateApp('https://itunes.apple.com/cn/app/dao-tu-sheng-huo-chao-shi/id1037683195?mt=8')
          }*/
-
-
     }
 
-    componentWillUnmount() {
+    componentWillUnmount () {
         // Reallow restarts, and optionally trigger
         // a restart if one was currently pending.
         CodePush.allowRestart();
     }
 
-    componentDidMount() {
+    componentDidMount () {
 
         //this.addAppEventListener(
-        this._listener1 =NativeAppEventEmitter.addListener('setNavigationBar.index', (navigationBar) => {
+        this._listener1 = NativeAppEventEmitter.addListener('setNavigationBar.index', (navigationBar) => {
+            console.log(`setNavigationBar.index navigationBar -> `, navigationBar)
             this.setState({
                 navigationBar: navigationBar,
             })
@@ -128,22 +125,23 @@ class Root extends Component {
         })
     }
 
-    componentWillUnmount() {
+    componentWillUnmount () {
         //移除监听返回键
         if (this._listener1) {
+            this._listener1.remove();
+        }
+        if (this._listener2) {
+            this._listener2.remove()
+        }
 
-        this._listener1.remove();
     }
 
-    }
-
-
-    render() {
+    render () {
         return (
             <Navigator style={styles.container}
                        initialRoute={{
               component: Index,
-                  title: '首页'
+                  title: '首页',
             }}
                        sceneStyle={styles.navigatorBg}
                        renderScene={(route, navigator) => {
@@ -174,7 +172,6 @@ class Root extends Component {
     }
 }
 
-
 let NavigationBarRouteMapper = {
 
     LeftButton: function (route, navigator, index, navState) {
@@ -182,7 +179,7 @@ let NavigationBarRouteMapper = {
             return null;
         }
 
-        var previousRoute = navState.routeStack[index - 1];
+        var previousRoute = navState.routeStack[ index - 1 ];
         return (
             <TouchableOpacity
                 onPress={() => navigator.pop()}
@@ -212,7 +209,6 @@ let NavigationBarRouteMapper = {
     },
 
 };
-
 
 const styles = StyleSheet.create({
     navigatorBg: {
