@@ -92,29 +92,29 @@ class Index extends Component {
 
     componentWillMount() {
         //NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
-        let currentRoute = this.props.navigator.navigationContext.currentRoute
-        this.addAppEventListener(
-            this.props.navigator.navigationContext.addListener('willfocus', (event) => {
-                //console.log(`indexPage willfocus...`)
-                //console.log(`currentRoute`, currentRoute)
-                //console.log(`event.data.route`, event.data.route)
-                if (currentRoute === event.data.route) {
-                    //console.log("indexPage willAppear")
-                    //this._pullToRefreshListView.beginRefresh()
-                    let { refreshBackAnimating, loadMoreBackAnimating, _scrollView, _scrollY, } = this._pullToRefreshListView
-                    if (!refreshBackAnimating && !loadMoreBackAnimating) {
-                        _scrollView.scrollTo({y: _scrollY - 5, animated: true,})
-                        _scrollView.scrollTo({y: _scrollY + 5, animated: true,})
-                        //console.log(`_scrollY + StyleSheet.hairlineWidth`, _scrollY + StyleSheet.hairlineWidth)
-                    }
-                    //NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
-                    NativeAppEventEmitter.emit('setRootPageNavigationBar.index')
-                } else {
-                    //console.log("indexPage willDisappear, other willAppear")
-                }
-                //
-            })
-        )
+        //let currentRoute = this.props.navigator.navigationContext.currentRoute
+        //this.addAppEventListener(
+        //    this.props.navigator.navigationContext.addListener('willfocus', (event) => {
+        //        //console.log(`indexPage willfocus...`)
+        //        //console.log(`currentRoute`, currentRoute)
+        //        //console.log(`event.data.route`, event.data.route)
+        //        if (currentRoute === event.data.route) {
+        //            //console.log("indexPage willAppear")
+        //            //this._pullToRefreshListView.beginRefresh()
+        //            let { refreshBackAnimating, loadMoreBackAnimating, _scrollView, _scrollY, } = this._pullToRefreshListView
+        //            if (!refreshBackAnimating && !loadMoreBackAnimating) {
+        //                _scrollView.scrollTo({y: _scrollY - 5, animated: true,})
+        //                _scrollView.scrollTo({y: _scrollY + 5, animated: true,})
+        //                //console.log(`_scrollY + StyleSheet.hairlineWidth`, _scrollY + StyleSheet.hairlineWidth)
+        //            }
+        //            //NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
+        //            NativeAppEventEmitter.emit('setRootPageNavigationBar.index')
+        //        } else {
+        //            //console.log("indexPage willDisappear, other willAppear")
+        //        }
+        //        //
+        //    })
+        //)
 
     }
 

@@ -50,23 +50,23 @@ class UserPage extends Component {
       }
 
     componentWillMount() {
-        //NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
-        let currentRoute = this.props.navigator.navigationContext.currentRoute
-        this.addAppEventListener(
-        this.props.navigator.navigationContext.addListener('willfocus', (event) => {
-            //console.log(`orderPage willfocus...`)
-            //console.log(`currentRoute`, currentRoute)
-            //console.log(`event.data.route`, event.data.route)
-            if (event&&currentRoute === event.data.route) {
-                //console.log("orderPage willAppear")
-                //NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
-                NativeAppEventEmitter.emit('setRootPageNavigationBar.index')
-            } else {
-                //console.log("orderPage willDisappear, other willAppear")
-            }
-            //
-        })
-        )
+        ////NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
+        //let currentRoute = this.props.navigator.navigationContext.currentRoute
+        //this.addAppEventListener(
+        //this.props.navigator.navigationContext.addListener('willfocus', (event) => {
+        //    //console.log(`orderPage willfocus...`)
+        //    //console.log(`currentRoute`, currentRoute)
+        //    //console.log(`event.data.route`, event.data.route)
+        //    if (event&&currentRoute === event.data.route) {
+        //        //console.log("orderPage willAppear")
+        //        //NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
+        //        NativeAppEventEmitter.emit('setRootPageNavigationBar.index')
+        //    } else {
+        //        //console.log("orderPage willDisappear, other willAppear")
+        //    }
+        //    //
+        //})
+        //)
         this._getUserName()
     }
     async _getUserName(){
