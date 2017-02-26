@@ -30,7 +30,7 @@ import Toast from 'react-native-smart-toast'
 import ProgressView from '../components/modalProgress'
 import ModalDialog from '../components/modalDialog'
 import LoadingSpinnerOverlay from 'react-native-smart-loading-spinner-overlay'
-
+import { tabBarConfig } from '../constants/sharedConfig'
 
 class OrderDetail extends Component {
     // 构造
@@ -586,13 +586,17 @@ const navigationBarRouteMapper = {
     },
 
     Title: function (route, navigator, index, navState) {
+        let routeTitle = route.title
+        if (routeTitle == '首页') {
+            routeTitle = tabBarConfig.selectedTab
+        }
         return (
             Platform.OS == 'ios' ?
                 <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText,{fontSize:14}]}>
-                    {route.title}
+                    {routeTitle}
                 </Text> : <View style={navigatorStyle.navBarTitleAndroid}>
                 <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText]}>
-                    {route.title}
+                    {routeTitle}
                 </Text>
             </View>
         )

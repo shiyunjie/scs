@@ -31,6 +31,9 @@ import DeviceInfo from 'react-native-device-info'
 
 import constants from  './constants/constant'
 import TabView from './components/tabView'
+
+import { tabBarConfig } from './constants/sharedConfig'
+
 let backFirstClick = 0//判断一次点击回退键
 
 class Root extends Component {
@@ -39,7 +42,7 @@ class Root extends Component {
         super(props);
         // 初始状态
         this.state = {
-            selectedTab: '首页',
+            selectedTab: tabBarConfig.selectedTab,
             hasBadge: false,
             //modalVisible:false,
         };
@@ -71,7 +74,30 @@ class Root extends Component {
 
         }
         //NativeAppEventEmitter.sendEvent('getMsg_202_code_need_login')
+
+        NativeAppEventEmitter.emit('setNavigationBar.index', NavigationBarRouteMapperList[0])
+
+        let currentRoute = this.props.navigator.navigationContext.currentRoute
+
         this.addAppEventListener(
+            this.props.navigator.navigationContext.addListener('willfocus', (event) => {
+                //console.log(`indexPage willfocus...`)
+                //console.log(`currentRoute`, currentRoute)
+                //console.log(`event.data.route`, event.data.route)
+                if (currentRoute === event.data.route) {
+                    if(this.state.selectedTab === '首页'){
+                        NativeAppEventEmitter.emit('setNavigationBar.index', NavigationBarRouteMapperList[0])
+                    }else if(this.state.selectedTab === '订单'){
+                        NativeAppEventEmitter.emit('setNavigationBar.index', NavigationBarRouteMapperList[1])
+                    }else if(this.state.selectedTab === '我的'){
+                        NativeAppEventEmitter.emit('setNavigationBar.index', NavigationBarRouteMapperList[2])
+                    }else if(this.state.selectedTab === '更多'){
+                        NativeAppEventEmitter.emit('setNavigationBar.index', NavigationBarRouteMapperList[3])
+                    }
+                } else {
+                    console.log("indexPage willDisappear, other willAppear")
+                }
+            }),
             NativeAppEventEmitter.addListener('getMsg_202_code_need_login', () => {
                 //需要登录
                 AsyncStorage.removeItem('token')
@@ -80,17 +106,14 @@ class Root extends Component {
                 this.setState({selectedTab: '首页',})
                 //NativeAppEventEmitter.emit('setNavigationBar.index', NavigationBarRouteMapperList[0])
 
-            })
-        )
-
-        this.addAppEventListener(
+            }),
             NativeAppEventEmitter.addListener('setRootPageNavigationBar.index', () => {
                 if(this.state.selectedTab === '首页'){
-                 NativeAppEventEmitter.emit('setNavigationBar.index', NavigationBarRouteMapperList[0])
+                    NativeAppEventEmitter.emit('setNavigationBar.index', NavigationBarRouteMapperList[0])
                 }else if(this.state.selectedTab === '订单'){
-                 NativeAppEventEmitter.emit('setNavigationBar.index', NavigationBarRouteMapperList[1])
+                    NativeAppEventEmitter.emit('setNavigationBar.index', NavigationBarRouteMapperList[1])
                 }else if(this.state.selectedTab === '我的'){
-                 NativeAppEventEmitter.emit('setNavigationBar.index', NavigationBarRouteMapperList[2])
+                    NativeAppEventEmitter.emit('setNavigationBar.index', NavigationBarRouteMapperList[2])
                 }else if(this.state.selectedTab === '更多'){
                     NativeAppEventEmitter.emit('setNavigationBar.index', NavigationBarRouteMapperList[3])
                 }
@@ -138,10 +161,12 @@ class Root extends Component {
                                             title='首页'
                                             selected={ this.state.selectedTab === '首页' }/> }
                     onPress={ () => {
-
-                        this.setState({selectedTab: '首页',})
-                         //NativeAppEventEmitter.emit('setNavigationBar.index', NavigationBarRouteMapperList[0])
-                         NativeAppEventEmitter.emit('setRootPageNavigationBar.index')
+                        this.setState({
+                            selectedTab: '首页',
+                        }, () => {
+                            tabBarConfig.selectedTab = this.state.selectedTab
+                            NativeAppEventEmitter.emit('setRootPageNavigationBar.index')
+                        })
                     } }>
                     <IndexPage navigator={this.props.navigator}/>
                 </TabNavigator.Item>
@@ -191,9 +216,12 @@ class Root extends Component {
 
         //console.log('token', token)
         if (token && token != '') {
-            this.setState({selectedTab: '我的',})
-            //NativeAppEventEmitter.emit('setNavigationBar.index', NavigationBarRouteMapperList[2])
-            NativeAppEventEmitter.emit('setRootPageNavigationBar.index')
+            this.setState({
+                selectedTab: '我的',
+            }, () => {
+                tabBarConfig.selectedTab = this.state.selectedTab
+                NativeAppEventEmitter.emit('setRootPageNavigationBar.index')
+            })
         }
         else {
 
@@ -207,9 +235,12 @@ class Root extends Component {
 
         //console.log('token', token)
         if (token && token != '') {
-            this.setState({selectedTab: '更多',})
-            //NativeAppEventEmitter.emit('setNavigationBar.index', NavigationBarRouteMapperList[3])
-            NativeAppEventEmitter.emit('setRootPageNavigationBar.index')
+            this.setState({
+                selectedTab: '更多',
+            }, () => {
+                tabBarConfig.selectedTab = this.state.selectedTab
+                NativeAppEventEmitter.emit('setRootPageNavigationBar.index')
+            })
         }
         else {
 
@@ -224,9 +255,13 @@ class Root extends Component {
 
         //console.log('token', token)
         if (token && token != '') {
-            this.setState({selectedTab: '订单',})
-            //NativeAppEventEmitter.emit('setNavigationBar.index', NavigationBarRouteMapperList[1])
-            NativeAppEventEmitter.emit('setRootPageNavigationBar.index')
+            this.setState({
+                selectedTab: '订单',
+            }, () => {
+                tabBarConfig.selectedTab = this.state.selectedTab
+                console.log(`change tabBarConfig.selectedTab = `,tabBarConfig.selectedTab)
+                NativeAppEventEmitter.emit('setRootPageNavigationBar.index')
+            })
         }
         else {
 
@@ -295,20 +330,7 @@ let NavigationBarRouteMapperList = [
     {
 
         LeftButton: function (route, navigator, index, navState) {
-            if (index === 0) {
-                return null;
-            }
 
-            var previousRoute = navState.routeStack[ index - 1 ];
-            return (
-                <TouchableOpacity
-                    onPress={() => navigator.pop()}
-                    style={navigatorStyle.navBarLeftButton}>
-                    <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarButtonText]}>
-
-                    </Text>
-                </TouchableOpacity>
-            );
         },
 
         RightButton: function (route, navigator, index, navState) {
@@ -316,13 +338,17 @@ let NavigationBarRouteMapperList = [
         },
 
         Title: function (route, navigator, index, navState) {
+            let routeTitle = route.title
+            if (routeTitle == '首页') {
+                routeTitle = tabBarConfig.selectedTab
+            }
             return (
                 Platform.OS == 'ios' ?
                     <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText]}>
-                        首页
+                        {routeTitle}
                     </Text> : <View style={{alignSelf: 'center', position: 'relative', left: -35,}}>
                     <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText]}>
-                        首页
+                        {routeTitle}
                     </Text>
                 </View>
             )
@@ -332,20 +358,7 @@ let NavigationBarRouteMapperList = [
     {
 
         LeftButton: function (route, navigator, index, navState) {
-            if (index === 0) {
-                return null;
-            }
 
-            var previousRoute = navState.routeStack[ index - 1 ];
-            return (
-                <TouchableOpacity
-                    onPress={() => navigator.pop()}
-                    style={navigatorStyle.navBarLeftButton}>
-                    <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarButtonText]}>
-
-                    </Text>
-                </TouchableOpacity>
-            );
         },
 
         RightButton: function (route, navigator, index, navState) {
@@ -353,13 +366,17 @@ let NavigationBarRouteMapperList = [
         },
 
         Title: function (route, navigator, index, navState) {
+            let routeTitle = route.title
+            if (routeTitle == '首页') {
+                routeTitle = tabBarConfig.selectedTab
+            }
             return (
                 Platform.OS == 'ios' ?
                     <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText]}>
-                        订单
+                        {routeTitle}
                     </Text> : <View style={{alignSelf: 'center', position: 'relative', left: -35,}}>
                     <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText]}>
-                        订单
+                        {routeTitle}
                     </Text>
                 </View>
             )
@@ -369,20 +386,7 @@ let NavigationBarRouteMapperList = [
     {
 
         LeftButton: function (route, navigator, index, navState) {
-            if (index === 0) {
-                return null;
-            }
 
-            var previousRoute = navState.routeStack[ index - 1 ];
-            return (
-                <TouchableOpacity
-                    onPress={() => navigator.pop()}
-                    style={navigatorStyle.navBarLeftButton}>
-                    <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarButtonText]}>
-
-                    </Text>
-                </TouchableOpacity>
-            );
         },
 
         RightButton: function (route, navigator, index, navState) {
@@ -390,13 +394,17 @@ let NavigationBarRouteMapperList = [
         },
 
         Title: function (route, navigator, index, navState) {
+            let routeTitle = route.title
+            if (routeTitle == '首页') {
+                routeTitle = tabBarConfig.selectedTab
+            }
             return (
                 Platform.OS == 'ios' ?
                     <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText]}>
-                        个人中心
+                        {routeTitle}
                     </Text> : <View style={{alignSelf: 'center', position: 'relative', left: -35,}}>
                     <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText]}>
-                        个人中心
+                        {routeTitle}
                     </Text>
                 </View>
             )
@@ -406,20 +414,7 @@ let NavigationBarRouteMapperList = [
     {
 
         LeftButton: function (route, navigator, index, navState) {
-            if (index === 0) {
-                return null;
-            }
 
-            var previousRoute = navState.routeStack[ index - 1 ];
-            return (
-                <TouchableOpacity
-                    onPress={() => navigator.pop()}
-                    style={navigatorStyle.navBarLeftButton}>
-                    <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarButtonText]}>
-
-                    </Text>
-                </TouchableOpacity>
-            );
         },
 
         RightButton: function (route, navigator, index, navState) {
@@ -427,17 +422,21 @@ let NavigationBarRouteMapperList = [
         },
 
         Title: function (route, navigator, index, navState) {
+            let routeTitle = route.title
+            if (routeTitle == '首页') {
+                routeTitle = tabBarConfig.selectedTab
+            }
             return (
                 Platform.OS == 'ios' ?
                     <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText]}>
-                        更多
+                        {routeTitle}
                     </Text> : <View style={{alignSelf: 'center', position: 'relative', left: -35,}}>
                     <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText]}>
-                        更多
+                        {routeTitle}
                     </Text>
                 </View>
             )
         },
 
     },
-];
+]
