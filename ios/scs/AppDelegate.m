@@ -29,7 +29,6 @@
     JPUSHRegisterEntity * entity = [[JPUSHRegisterEntity alloc] init];
      entity.types = UNAuthorizationOptionAlert|UNAuthorizationOptionBadge|UNAuthorizationOptionSound;
      [JPUSHService registerForRemoteNotificationConfig:entity delegate:self];
- 
 #endif
 } else if ([[UIDevice currentDevice].systemVersion floatValue] >= 8.0) {
     [JPUSHService registerForRemoteNotificationTypes:(UIUserNotificationTypeBadge |

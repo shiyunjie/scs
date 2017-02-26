@@ -202,9 +202,9 @@ class MessageList extends Component {
                         }*/
                         //console.log(`dataList`, dataList);
 
-                        /*this.setState({
+                        this.setState({
                             dataSource: this._dataSource.cloneWithRows(this.state.dataList),
-                        })*/
+                        })
 
                          } }
                         stopRightSwipe={-100}
