@@ -124,16 +124,33 @@ class PayPage extends Component {
         let currentRoute = this.props.navigator.navigationContext.currentRoute
         this.addAppEventListener(
             this.props.navigator.navigationContext.addListener('willfocus', (event) => {
-                //console.log(`OrderDetail willfocus...`)
-                //console.log(`currentRoute`, currentRoute)
-                //console.log(`event.data.route`, event.data.route)
+                console.log(`PayPage willfocus...`)
+                console.log(`currentRoute`, currentRoute)
+                console.log(`event.data.route`, event.data.route)
                 if (currentRoute === event.data.route) {
-                    //console.log("OrderDetail willAppear")
+                    console.log("PayPage willAppear")
                     NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
                 } else {
-                    //console.log("OrderDetail willDisappear, other willAppear")
+                    console.log("PayPage willDisappear, other willAppear")
                 }
                 //
+            })
+        )
+
+        this.addAppEventListener(
+            this.props.navigator.navigationContext.addListener('didfocus', (event) => {
+                //console.log(`payPage didfocus...`)
+                if (event && currentRoute === event.data.route) {
+                    console.log("upload didAppear")
+                        this.setState({ showProgress: true,//显示加载
+                             })
+                        this._fetchData()
+
+                }else {
+                    //console.log("orderPage willDisappear, other willAppear")
+                }
+
+
             })
         )
 
@@ -192,12 +209,12 @@ class PayPage extends Component {
          hasPayList=[]
          this.setState({payList:payList})*/
         //if (firstDataList.length == 0) {
-        setTimeout(() => {
-            this._fetchData()
-        }, 255)
+
 
         //}
     }
+
+
 
 
     async _fetchData() {
@@ -225,6 +242,14 @@ class PayPage extends Component {
 
             result = JSON.parse(result)
             //console.log('gunZip:', result)
+            if(!result){
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: '服务器打盹了,稍后再试试吧'
+                })
+                return
+            }
             if (result.code && result.code == -54) {
                 /**
                  * 发送事件去登录
@@ -244,16 +269,24 @@ class PayPage extends Component {
                 let serviceTotalAndFax = 0
                 let total = 0
                 //开始循环收到数据
+                console.log(`dataList:`,dataList.length)
                 for (let data of dataList) {
+                    //console.log(`first_cost_name:`,data)
+                    //console.log(`pageType:`,pageType)
+
                     if (data.first_cost_name == '服务费总金额') {
+                        console.log(`first_cost_name:`,data)
                         serviceTotal = pageType == 'pay' ? data.cost : data.estimate_cost
-                        break
+                        continue
                     } else if (data.first_cost_name == '服务费税额') {
+                        console.log(`first_cost_name:`,data)
+
                         fax = pageType == 'pay' ? data.cost : data.estimate_cost
-                        break
+                        continue
                     } else if (data.first_cost_name == '服务费价税合计') {
+                        console.log(`first_cost_name:`,data)
                         serviceTotalAndFax = pageType == 'pay' ? data.cost : data.estimate_cost
-                        break
+                        continue
                     }
 
                     if (data.is_pay == 1 && payList.indexOf(data.id) == -1) {
@@ -290,7 +323,7 @@ class PayPage extends Component {
                 }
                 //console.log(`firstData:`, firstDataList)
                 //console.log(`payList:`, payList.length)
-
+                firstDataList
                 //计算总价
                 for (let data of firstDataList) {
                     for (let item of data) {
@@ -341,9 +374,7 @@ class PayPage extends Component {
 
     }
 
-    _onRequestClose() {
-        this.props.navigator.pop()
-    }
+
 
     _renderRow = (data, sectionID, rowID) => {
         //console.log('sectionID = ' + sectionID + ' | rowID = ' + rowID)
@@ -420,13 +451,12 @@ class PayPage extends Component {
                         showProgress={this.state.showProgress}
                         showReload={this.state.showReload}
                         fetchData={()=>{
-                    this.setState({
-                    showProgress:true,//显示加载
-                    showReload:false,//显示加载更多
-                     })
-                    this._fetchData()
-                    }}
-                        onRequestClose={this._onRequestClose.bind(this)}/> :
+                        this.setState({
+                        showProgress:true,//显示加载
+                        showReload:false,//显示加载更多
+                         })
+                        this._fetchData()
+                        }}/> :
 
                     <View style={{flex:1,flexDirection:'column'}}>
                         <View style={[{marginTop: Platform.OS == 'ios' ? 64 : 56,flexDirection:'row',alignItems:'center',
@@ -464,16 +494,16 @@ class PayPage extends Component {
                             renderRow={this._renderRow}
                             style={styles.container}
                             showsVerticalScrollIndicator={false}
-                            initialListSize={10}
+                            initialListSize={15}
                             onEndReachedThreshold={30}
-                            pageSize={10}
+                            pageSize={15}
                         />
                         <View style={styles.line}/>
 
                         <View style={{height:40,flexDirection:'row',backgroundColor:'white',alignItems:'center'}}>
                             <Text
-                                style={[styles.contentText,{flex:2,fontSize:12,borderBottomWidth: StyleSheet.hairlineWidth,
-                                borderColor: constants.LineColor}]}>由于不可估计因素,预估和实际价格可能略有出入,请以实际价格为准</Text>
+                                style={[styles.contentText,{flex:2,fontSize:12,}]}>
+                                由于不可估计因素,预估和实际价格可能略有出入,请以实际价格为准</Text>
                             {this.state.order_status==10||this.state.order_status==30
                             ||this.state.order_status==70||this.state.order_status==100?null:
                             <Button
@@ -483,7 +513,9 @@ class PayPage extends Component {
                                 textStyle={{fontSize: 12, color: 'white'}}
                                 loadingComponent={
                             <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                                {this._renderActivityIndicator()}
+                                {
+                                //this._renderActivityIndicator()
+                                }
                                 <Text style={{fontSize: 12, color: 'white', fontWeight: 'bold',
                                 fontFamily: '.HelveticaNeueInterface-MediumP4',}}>确认中...</Text>
                             </View>
@@ -499,6 +531,18 @@ class PayPage extends Component {
                          this._fetch_confirm()
 
                          }else if(pageType=='pay'){
+                         if(this.state.total<=0){
+                         this._toast.show({
+                                position: Toast.constants.gravity.center,
+                                duration: 255,
+                                children: '支付金额为0'
+                            })
+                            this.button2.setState({
+                                loading: false,
+                                //disabled: false
+                            })
+                         return;
+                         }
                          this.props.navigator.push({
                             title: '在线支付',
                             component: OnlinePayPage,
@@ -506,24 +550,27 @@ class PayPage extends Component {
                             id:this.state.service_id,
                             payList:payList,
                             hasPayList:hasPayList,
-                            total:this.state.total,
+                            total:this._toDecimal(this.state.total),
                             },
                             });
+                            this.button2.setState({
+                                loading: false,
+                                //disabled: false
+                            })
                          }else{
                           this.button2.setState({
                                 loading: false,
                                 //disabled: false
                             })
                          }
-                        /*
-                        setTimeout( () => {
+                        /* setTimeout( () => {
                             this.button2.setState({
                                 loading: false,
                                 //disabled: false
                             })
                         }, 3000)*/
                     }}>
-                                {pageType == 'show' ? `确认报价` : `支付￥${this.state.total}`}
+                                {pageType == 'show' ? `确认报价` : `支付￥${this._toDecimal(this.state.total)}`}
                             </Button>
                             }
                         </View>
@@ -538,6 +585,21 @@ class PayPage extends Component {
                     ref={ component => this._modalLoadingSpinnerOverLay = component }/>
             </View>
         );
+    }
+
+    _toDecimal(x) {
+
+        let f = Math.round(x*100)/100;
+        let s = f.toString();
+        let rs = s.indexOf('.');
+        if (rs < 0) {
+            rs = s.length;
+            s += '.';
+        }
+        while (s.length <= rs + 2) {
+            s += '0';
+        }
+        return s;
     }
 
     _renderActivityIndicator() {
@@ -594,6 +656,17 @@ class PayPage extends Component {
 
             result = JSON.parse(result)
             //console.log('gunZip:', result)
+            if(this._modalLoadingSpinnerOverLay) {
+                this._modalLoadingSpinnerOverLay.hide({duration: 0,})
+            }
+            if(!result){
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: '服务器打盹了,稍后再试试吧'
+                })
+                return
+            }
             if (result.code && result.code == -54) {
                 /**
                  * 发送事件去登录
@@ -606,9 +679,18 @@ class PayPage extends Component {
                 })
             }
             if (result.code && result.code == 10) {
-                //确认账单
-                NativeAppEventEmitter.emit('bill_has_be_conform_should_refresh', this.state.service_id)
-                this.props.navigator.pop()
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: '账单已确认'
+                })
+
+                setTimeout(()=>{
+                    //确认账单
+                    NativeAppEventEmitter.emit('bill_has_be_conform_should_refresh', this.state.service_id)
+                    this.props.navigator.pop()
+                },1000)
+
 
             } else {
                 this._toast.show({
@@ -637,7 +719,7 @@ class PayPage extends Component {
                 //disabled: false
             })
             if(this._modalLoadingSpinnerOverLay) {
-                this._modalLoadingSpinnerOverLay.hide()
+                this._modalLoadingSpinnerOverLay.hide({duration: 0,})
             }
             //console.log(`SplashScreen.close(SplashScreen.animationType.scale, 850, 500)`)
             //SplashScreen.close(SplashScreen.animationType.scale, 850, 500)
@@ -717,7 +799,7 @@ const navigationBarRouteMapper = {
         if (pageType == 'pay') {
             return (
                 <TouchableOpacity
-                    onPress={() => {
+                    onPress={ ()=> {
                     //全选逻辑
                     for(data of firstDataList){
                         for(item of data){
@@ -728,8 +810,7 @@ const navigationBarRouteMapper = {
                         }
                         //统计总价
                          NativeAppEventEmitter.emit('in_payPage_need_set_total',true)
-                    }
-                    }
+                    } }
                     style={navigatorStyle.navBarRightButton}>
                     <View style={navigatorStyle.navBarLeftButtonAndroid}>
                         <Text

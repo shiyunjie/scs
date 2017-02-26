@@ -7,6 +7,7 @@ import {
     Text,
     View,
     Image,
+    Alert,
     Platform,
     TouchableOpacity,
     Dimensions,
@@ -142,6 +143,7 @@ class UserPage extends Component {
     }
 
     _onProfile=()=>{
+        Alert.alert('温馨提醒','该功能尚未开放')
     };
 
     _onSingOut=()=>{

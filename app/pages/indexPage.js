@@ -38,7 +38,7 @@ import AppEventListenerEnhance from 'react-native-smart-app-event-listener-enhan
 
 import image_banner from '../images/banner.png'
 import image_button from '../images/button.png'
-import image_logo from '../images/icon.png'
+import image_logo from '../images/horse.png'
 import {getDeviceID,getToken} from '../lib/User'
 
 
@@ -193,7 +193,14 @@ class Index extends Component {
             let result = await this.gunZip(resultData)
             //console.log('gunZip:', result)
             result = JSON.parse(result)
-
+            if(!result){
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: '服务器打盹了,稍后再试试吧'
+                })
+                return
+            }
 
             if (result.code && result.code == 10) {
                 let dataList = [
@@ -286,7 +293,7 @@ class Index extends Component {
             <View
                 style={{flexDirection: 'column',height: 60, justifyContent: 'center', alignItems: 'center', backgroundColor: 'transparent',}}>
                 <Image source={image_logo} style={{width:30,height:30}}/>
-                <Text>胖马贸服</Text>
+                <Text style={{color:constants.PointColor,fontSize:constants.DefaultFontSize}}>胖马贸服</Text>
             </View>
         )
     }

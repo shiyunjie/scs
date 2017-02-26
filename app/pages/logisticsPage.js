@@ -107,9 +107,26 @@ class Logistics extends Component {
                 //
             })
         )
-        setTimeout(() => {
-            this._fetch_logistics()
-        }, 510)
+
+        this.addAppEventListener(
+            this.props.navigator.navigationContext.addListener('didfocus', (event) => {
+                //console.log(`payPage didfocus...`)
+                if (event && currentRoute === event.data.route) {
+                    console.log("upload didAppear")
+
+                        this._fetch_logistics()
+
+                }else {
+                    //console.log("orderPage willDisappear, other willAppear")
+                }
+
+            })
+        )
+
+    }
+
+    componentDidMount(){
+        //this._fetch_logistics()
     }
 
 
@@ -158,7 +175,7 @@ class Logistics extends Component {
                                 <Icon
                                     name='ios-boat'
                                     color={this.state.dataList.length==1?constants.UIActiveColor:constants.UIInActiveColor}
-                                    size={constants.IconSize}/>:null
+                                    size={constants.IconSize}/>
 
                             {this.state.dataList.map((data, index)=> {
                                 if (index == this.state.dataList.length - 1) {
@@ -238,7 +255,7 @@ class Logistics extends Component {
                 url: constants.api.service,
                 data: {
                     iType: constants.iType.LogisticsLog,
-                    service_id: this.state.service_id,
+                    id: this.state.service_id,
                     deviceId: deviceID,
                     token: token,
                 }
@@ -254,6 +271,14 @@ class Logistics extends Component {
 
             result = JSON.parse(result)
             //console.log('gunZip:', result)
+            if(!result){
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: '服务器打盹了,稍后再试试吧'
+                })
+                return
+            }
             if (result.code && result.code == -54) {
                 /**
                  * 发送事件去登录

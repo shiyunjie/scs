@@ -92,7 +92,7 @@ class Register extends Component {
         const routers = this.props.navigator.getCurrentRoutes();
         if (routers.length > 1) {
             Alert.alert('温馨提醒','确定退出吗?',[
-                {text:'确定',onPress:()=>this.props.navigator.popToTop()},
+                {text:'确定',onPress:()=>this.props.navigator.popToRoute(routes[1])},
                 {text:'取消',onPress:()=>{}},
 
             ])
@@ -202,7 +202,9 @@ class Register extends Component {
                     textStyle={{fontSize: 17, color: 'white'}}
                     loadingComponent={
                             <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                                {this._renderActivityIndicator()}
+                                {
+                                //this._renderActivityIndicator()
+                                }
                                 <Text style={{fontSize: 17, color: 'white',
                                 fontWeight: 'bold', fontFamily: '.HelveticaNeueInterface-MediumP4',}}>
                                 注册中...</Text>
@@ -367,6 +369,17 @@ class Register extends Component {
 
             result=JSON.parse(result)
             //console.log('gunZip:',result)
+            if(this._modalLoadingSpinnerOverLay) {
+                this._modalLoadingSpinnerOverLay.hide({duration: 0,})
+            }
+            if(!result){
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: '服务器打盹了,稍后再试试吧'
+                })
+                return
+            }
             if(result.code&&result.code==10){
                /* Alert.alert('提示', '注册成功', () => {
                     this.props.navigator.popToTop()
@@ -381,7 +394,8 @@ class Register extends Component {
                     duration: 255,
                     children: '注册成功'
                 })
-                this.props.navigator.popToTop()
+                setTimeout(()=>this.props.navigator.popToRoute(routes[1]),1000)
+
 
             }else{
                 this._toast.show({
@@ -410,7 +424,7 @@ class Register extends Component {
             })
             this.setState({editable:true})
             if(this._modalLoadingSpinnerOverLay) {
-                this._modalLoadingSpinnerOverLay.hide()
+                this._modalLoadingSpinnerOverLay.hide({duration: 0,})
             }
             //console.log(`SplashScreen.close(SplashScreen.animationType.scale, 850, 500)`)
             //SplashScreen.close(SplashScreen.animationType.scale, 850, 500)
@@ -461,7 +475,7 @@ const navigationBarRouteMapper = {
             <TouchableOpacity
                 onPress={() => Alert.alert('温馨提醒','确定退出吗?',[
              {text:'取消',onPress:()=>{}},
-             {text:'确定',onPress:()=>this.props.navigator.popToTop()}
+             {text:'确定',onPress:()=>this.props.navigator.popToRoute(routes[1])}
              ])}
                 style={navigatorStyle.navBarLeftButton}>
                 <View style={navigatorStyle.navBarLeftButtonAndroid}>

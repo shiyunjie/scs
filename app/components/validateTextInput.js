@@ -111,10 +111,10 @@ export default class InputView extends Component {
         return (
             <View style={[this.props.style]} onLayout={this._onLayout}>
                 <View  style={[{backgroundColor:this.state.backgroundColor},
-                    {flex:1,paddingLeft:0,paddingRight:0,margin:0},styles.groupView]}>
+                    {flex:1,paddingLeft:0,paddingRight:0,margin:0},]}>
                     <TextInput
-                        style={[{flex:5,paddingLeft:0,paddingRight:0,margin:0,
-                        color:constants.PointColor,fontSize:14,},]}
+                        style={[{flex:5,paddingLeft:0,paddingRight:0,margin:0,textAlignVertical:'top',
+                        color:constants.PointColor,fontSize:14,},styles.groupView]}
                         clearButtonMode={this.props.clearButtonMode}
                         placeholder={this.props.placeholder}
                         maxLength={this.props.maxLength}

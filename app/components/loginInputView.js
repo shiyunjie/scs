@@ -100,7 +100,7 @@ var styles = StyleSheet.create({
     },
     textInput: {
         flex: 6,
-        color: constants.UIActiveColor,
+        color: constants.LabelColor,
     },
     view: {
         width:15,

@@ -90,6 +90,7 @@ class UploadPage extends Component {
         this._ids = [];
         this.ImgTemp = '';
         this._initCustomData()
+        this.firstFetch=true;
 
     }
 
@@ -138,7 +139,23 @@ class UploadPage extends Component {
                 this._fetch_finish()
             })
         )
-        setTimeout(()=>this._fetchData(), 510);
+        this.addAppEventListener(
+            this.props.navigator.navigationContext.addListener('didfocus', (event) => {
+                //console.log(`payPage didfocus...`)
+
+                if (event && currentRoute === event.data.route) {
+                    console.log("upload didAppear")
+
+                    if (this.firstFetch) {
+                        this._fetchData()
+                        this.firstFetch = false;
+                    }
+                }else {
+                    //console.log("orderPage willDisappear, other willAppear")
+                }
+            })
+        )
+
 
     }
 
@@ -512,6 +529,10 @@ class UploadPage extends Component {
                 this.gunZip(xhr.responseText).then((response)=> {
 
                     let result = JSON.parse(response)
+                    if(!result){
+
+                        return
+                    }
                     if (result.code == '10' && result.result) {
                         //console.log(`response.result:`, result.result)
                         //id加入集合
@@ -677,6 +698,7 @@ class UploadPage extends Component {
 
 
     async _fetch_finish() {
+
         try {
             let token = await getToken()
             let deviceID = await getDeviceID()
@@ -706,6 +728,17 @@ class UploadPage extends Component {
 
             result = JSON.parse(result)
             //console.log('gunZip:', result)
+            if(this._modalLoadingSpinnerOverLay) {
+                this._modalLoadingSpinnerOverLay.hide({duration: 0,})
+            }
+            if(!result){
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: '服务器打盹了,稍后再试试吧'
+                })
+                return
+            }
             if (result.code && result.code == 10) {
 
                 //console.log('token', result.result)
@@ -715,7 +748,8 @@ class UploadPage extends Component {
                     duration: 255,
                     children: '上传成功'
                 })
-                this.props.navigator.pop()
+                setTimeout(()=>this.props.navigator.pop(),1000)
+
 
             } else {
                 this._toast.show({
@@ -740,8 +774,8 @@ class UploadPage extends Component {
 
         }
         finally {
-            if(this._modalLoadingSpinnerOverLay){
-                this._modalLoadingSpinnerOverLay.hide()
+            if(this._modalLoadingSpinnerOverLay) {
+                this._modalLoadingSpinnerOverLay.hide({duration: 0,})
             }
             //console.log(`SplashScreen.close(SplashScreen.animationType.scale, 850, 500)`)
             //SplashScreen.close(SplashScreen.animationType.scale, 850, 500)
@@ -749,7 +783,7 @@ class UploadPage extends Component {
     }
 
     async _fetchData() {
-        //console.log(`upload_fetchData`)
+        console.log(`upload_fetchData`)
         try {
             let token = await getToken()
             let deviceID = await getDeviceID()
@@ -775,6 +809,14 @@ class UploadPage extends Component {
 
             result = JSON.parse(result)
             //console.log('gunZip:', result)
+            if(!result){
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: '服务器打盹了,稍后再试试吧'
+                })
+                return
+            }
             if (result.code && result.code == 10) {
 
                 //console.log('token', result.result)

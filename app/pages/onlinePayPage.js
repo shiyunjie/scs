@@ -105,10 +105,11 @@ class OnLinePay extends Component {
                                       onPress={()=>{
                                         //this._payType = 'union'
                                        }}>
-                        <Image style={{height:30,width:45}}
-                               source={image_union} />
+                        <Image style={{height:30,width:45,opacity: 0.2}}
+                               source={image_union}
+                               />
                         <View style={styles.textContent}>
-                            <Text style={{color:constants.UIInActiveColor,
+                            <Text style={{color:constants.UIBackgroundColor,
                             marginLeft:constants.MarginLeftRight}}>银联支付</Text>
                         </View>
                         <View
@@ -118,7 +119,7 @@ class OnLinePay extends Component {
                                 'md-checkmark-circle':'ios-radio-button-off-outline'}  // 图标
                                 size={constants.IconSize}
                                 color={this._payType=='union'?
-                                constants.UIActiveColor:constants.UIInActiveColor}/>
+                                constants.UIActiveColor:constants.UIBackgroundColor}/>
                         </View>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.textTitle}
@@ -145,10 +146,11 @@ class OnLinePay extends Component {
                                       onPress={()=>{
                                             //this._payType = 'tencent'
                                           }}>
-                        <Image style={{height:35,width:35,marginRight:5,marginLeft:5,}}
-                               source={image_tencent} />
+                        <Image style={{height:35,width:35,marginRight:5,marginLeft:5,opacity: 0.2}}
+                               source={image_tencent}
+                               />
                         <View style={styles.textContent}>
-                            <Text style={{color:constants.UIInActiveColor,
+                            <Text style={{color:constants.UIBackgroundColor,
                                 marginLeft:constants.MarginLeftRight}}>微信支付</Text>
                         </View>
                         <View
@@ -158,7 +160,7 @@ class OnLinePay extends Component {
                                     'md-checkmark-circle':'ios-radio-button-off-outline'}  // 图标
                                 size={constants.IconSize}
                                 color={this._payType=='tencent'?
-                                    constants.UIActiveColor:constants.UIInActiveColor}/>
+                                    constants.UIActiveColor:constants.UIBackgroundColor}/>
                         </View>
                     </TouchableOpacity>
                     <Button
@@ -168,7 +170,9 @@ class OnLinePay extends Component {
                         textStyle={{fontSize: 17, color: 'white'}}
                         loadingComponent={
                             <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                                {this._renderActivityIndicator()}
+                                {
+                                //this._renderActivityIndicator()
+                                }
                                 <Text style={{fontSize: 17, color: 'white',
                                 fontWeight: 'bold', fontFamily: '.HelveticaNeueInterface-MediumP4',}}>提交中...</Text>
                             </View>
@@ -187,7 +191,7 @@ class OnLinePay extends Component {
                             })
                             }, 3000)*/
                     }}>
-                        确认支付{this.props.total}
+                        确认支付￥{this.props.total}
                     </Button>
                 </View>
                 <Toast
@@ -209,13 +213,21 @@ class OnLinePay extends Component {
             let token = await getToken()
             let deviceID = await getDeviceID()
 
+            let ids=''
+            for(let data of this.state.payList){
+                if(this.state.hasPayList.indexOf(data)==-1){
+                    ids+=data
+                    ids+=','
+                }
+            }
+
 
             let options = {
                 method: 'post',
                 url: constants.api.service,
                 data: {
                     iType: constants.iType.serviceCost_payCost,
-                    ids: this.props.ids, //(String 账单ids),
+                    ids: ids, //(String 账单ids),
                     total: this.props.total,//(String 支付的金额),
                     payType: this._payType,//(支付方式 微信,支付宝)
                     deviceId: deviceID,
@@ -233,6 +245,17 @@ class OnLinePay extends Component {
 
             result = JSON.parse(result)
             //console.log('gunZip:', result)
+            if(this._modalLoadingSpinnerOverLay) {
+                this._modalLoadingSpinnerOverLay.hide({duration: 0,})
+            }
+            if(!result){
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: '服务器打盹了,稍后再试试吧'
+                })
+                return
+            }
             if (result.code && result.code == -54) {
                 /**
                  * 发送事件去登录
@@ -250,16 +273,15 @@ class OnLinePay extends Component {
                     orderText,
                     appScheme,
                 });
+
+                setTimeout(()=>this.props.navigator.pop(),1000)
             } else {
                 this._toast.show({
                     position: Toast.constants.gravity.center,
                     duration: 255,
                     children: result.msg
                 })
-                this._button_alipay.setState({
-                    loading: false,
-                    //disabled: false
-                })
+
             }
 
 
@@ -276,8 +298,13 @@ class OnLinePay extends Component {
 
 
         }finally {
+
+            this._button_alipay.setState({
+                loading: false,
+                //disabled: false
+            })
             if(this._modalLoadingSpinnerOverLay) {
-                this._modalLoadingSpinnerOverLay.hide()
+                this._modalLoadingSpinnerOverLay.hide({duration: 0,})
             }
         }
 
@@ -321,7 +348,7 @@ const styles = StyleSheet.create({
     button: {
         height: 40,
         backgroundColor: constants.UIActiveColor,
-        borderRadius: 3, borderWidth: StyleSheet.hairlineWidth,
+        borderWidth: StyleSheet.hairlineWidth,
         borderColor: constants.UIActiveColor,
         justifyContent: 'center',
         borderRadius: 30,

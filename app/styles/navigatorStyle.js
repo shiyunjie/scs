@@ -3,6 +3,7 @@
  */
 import {
     StyleSheet,
+    Platform,
 
 } from 'react-native';
 
@@ -31,8 +32,10 @@ const navigatorStyles = StyleSheet.create({
     },
 
     navBarLeftButton: {
-        paddingLeft: 15,
-        width:40,
+        //paddingLeft: 10,
+        marginTop: Platform.OS == 'ios' ? 0 : 4,
+        height:50,
+        width:60,
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'flex-start',

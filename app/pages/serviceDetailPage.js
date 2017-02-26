@@ -86,7 +86,7 @@ class ServiceDetail extends Component {
 
             ship_company_name: '',// 船公司名称
 
-            potcd: '', //申报口岸
+            pot_cd: '', //申报口岸
 
             ship_name_english: '',// 英文船名
 
@@ -118,6 +118,8 @@ class ServiceDetail extends Component {
             logistics_status_name: '',//物流状态
         }
         service_id = this.props.id
+        this.firstFetch = true;
+
     }
 
     componentWillMount() {
@@ -125,14 +127,14 @@ class ServiceDetail extends Component {
         let currentRoute = this.props.navigator.navigationContext.currentRoute
         this.addAppEventListener(
             this.props.navigator.navigationContext.addListener('willfocus', (event) => {
-                //console.log(`OrderDetail willfocus...`)
-                //console.log(`currentRoute`, currentRoute)
-                //console.log(`event.data.route`, event.data.route)
+                console.log(`OrderDetail willfocus...`)
+                console.log(`currentRoute`, currentRoute)
+                console.log(`event.data.route`, event.data.route)
                 if (currentRoute === event.data.route) {
-                    //console.log("OrderDetail willAppear")
+                    console.log("OrderDetail willAppear")
                     NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
                 } else {
-                    //console.log("OrderDetail willDisappear, other willAppear")
+                    console.log("OrderDetail willDisappear, other willAppear")
                 }
                 //
             })
@@ -145,9 +147,24 @@ class ServiceDetail extends Component {
                 }
             })
         )
-        setTimeout(() => {
-            this._fetchData()
-        }, 510)
+
+        this.addAppEventListener(
+            this.props.navigator.navigationContext.addListener('didfocus', (event) => {
+                //console.log(`payPage didfocus...`)
+                if (event && currentRoute === event.data.route) {
+                    console.log("upload didAppear")
+
+                    if (this.firstFetch) {
+                        this._fetchData()
+                        this.firstFetch = false;
+                    }
+                }else {
+                    //console.log("orderPage willDisappear, other willAppear")
+                }
+
+            })
+        )
+
     }
 
 
@@ -177,6 +194,14 @@ class ServiceDetail extends Component {
 
             result = JSON.parse(result)
             //console.log('gunZip:', result)
+            if(!result){
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: '服务器打盹了,稍后再试试吧'
+                })
+                return
+            }
             if (result.code && result.code == -54) {
                 /**
                  * 发送事件去登录
@@ -235,7 +260,7 @@ class ServiceDetail extends Component {
                         ship_company_code: result.result.ship_company_code,// 船公司代码
 
                         ship_company_name: result.result.ship_company_name,// 船公司名称
-                        potcd: result.result.potcd,// 申报口岸
+                        pot_cd: result.result.pot_cd,// 申报口岸
 
                         ship_name_english: result.result.ship_name_english,// 英文船名
 
@@ -329,6 +354,17 @@ class ServiceDetail extends Component {
 
             result = JSON.parse(result)
             //console.log('gunZip:', result)
+            if(this._modalLoadingSpinnerOverLay) {
+                this._modalLoadingSpinnerOverLay.hide({duration: 0,})
+            }
+            if(!result){
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: '服务器打盹了,稍后再试试吧'
+                })
+                return
+            }
             if (result.code && result.code == -54) {
                 /**
                  * 发送事件去登录
@@ -341,10 +377,20 @@ class ServiceDetail extends Component {
                 })
             }
             if (result.code && result.code == 10) {
-                //统计总价
-                NativeAppEventEmitter.emit('serviceDetail_hasCancel_should_resetState', this.state.id)
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: '取消订单成功'
+                })
 
-                this.props.navigator.pop()
+                setTimeout(()=>{
+                    //更改订单状态
+                    NativeAppEventEmitter.emit('serviceDetail_hasCancel_should_resetState', this.state.id)
+
+                    this.props.navigator.pop()
+                },1000)
+
+
 
             } else {
                 this._toast.show({
@@ -369,16 +415,13 @@ class ServiceDetail extends Component {
         }
         finally {
             if(this._modalLoadingSpinnerOverLay) {
-                this._modalLoadingSpinnerOverLay.hide()
+                this._modalLoadingSpinnerOverLay.hide({duration: 0,})
             }
             //console.log(`SplashScreen.close(SplashScreen.animationType.scale, 850, 500)`)
             //SplashScreen.close(SplashScreen.animationType.scale, 850, 500)
         }
     }
 
-    _onRequestClose() {
-        this.props.navigator.pop()
-    }
 
     /**
      *                       <View
@@ -402,7 +445,7 @@ class ServiceDetail extends Component {
                      })
                     this._fetchData()
                     }}
-                        onRequestClose={this._onRequestClose.bind(this)}/> :
+                     /> :
 
 
                     <ScrollView style={styles.container}
@@ -595,7 +638,7 @@ class ServiceDetail extends Component {
 
                         <View style={[styles.viewItem,]}>
                             <Text style={[{flex:1},styles.labelText]}>申报口岸</Text>
-                            <Text style={[{flex:3},styles.contentText]}>{this.state.potcd}</Text>
+                            <Text style={[{flex:3},styles.contentText]}>{this.state.pot_cd}</Text>
                         </View>
 
                         <View style={[styles.viewItem,]}>
@@ -715,11 +758,12 @@ class ServiceDetail extends Component {
                             <Text style={[{flex:3},styles.contentText]}>{this.state.consignor_name}</Text>
 
                         </View>
-
-                        <Text
-                            style={[styles.contentText,{paddingTop:5,paddingBottom:5,fontSize:12}
-                            ]}>拒绝原因</Text>
-
+                        {this.state.order_status == 30 || this.state.order_status == 70 ?
+                            <Text
+                                style={[styles.contentText,{paddingTop:5,paddingBottom:5,fontSize:12}
+                            ]}>拒绝原因</Text>:null
+                        }
+                        {this.state.order_status == 30 || this.state.order_status == 70 ?
                         <View style={[styles.viewItem,]}>
                             <Text style={[{height:100},styles.contentText]}
                                   multiline={true}//多行输入
@@ -727,8 +771,8 @@ class ServiceDetail extends Component {
                                 {this.state.remark}
                             </Text>
 
-                        </View>
-
+                        </View>:null
+                        }
                     </ScrollView>}
                 <Toast
                     ref={ component => this._toast = component }

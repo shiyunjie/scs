@@ -305,7 +305,7 @@ let NavigationBarRouteMapperList = [
                     onPress={() => navigator.pop()}
                     style={navigatorStyle.navBarLeftButton}>
                     <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarButtonText]}>
-                        back
+
                     </Text>
                 </TouchableOpacity>
             );
@@ -342,7 +342,7 @@ let NavigationBarRouteMapperList = [
                     onPress={() => navigator.pop()}
                     style={navigatorStyle.navBarLeftButton}>
                     <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarButtonText]}>
-                        back
+
                     </Text>
                 </TouchableOpacity>
             );
@@ -379,7 +379,7 @@ let NavigationBarRouteMapperList = [
                     onPress={() => navigator.pop()}
                     style={navigatorStyle.navBarLeftButton}>
                     <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarButtonText]}>
-                        back
+
                     </Text>
                 </TouchableOpacity>
             );
@@ -416,7 +416,7 @@ let NavigationBarRouteMapperList = [
                     onPress={() => navigator.pop()}
                     style={navigatorStyle.navBarLeftButton}>
                     <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarButtonText]}>
-                        back
+
                     </Text>
                 </TouchableOpacity>
             );

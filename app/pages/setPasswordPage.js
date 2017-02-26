@@ -18,6 +18,7 @@ import {
     Platform,
     BackAndroid,
     AsyncStorage,
+    Alert,
 } from 'react-native';
 
 import {getDeviceID,getToken} from '../lib/User'
@@ -74,7 +75,7 @@ class SetPassword extends Component {
         const routers = this.props.navigator.getCurrentRoutes();
         if (routers.length > 1) {
             Alert.alert('温馨提醒', '确定退出吗?', [
-                {text: '确定', onPress: ()=>this.props.navigator.popToTop()},
+                {text: '确定', onPress: ()=>this.props.navigator.popToRoute(routes[1])},
                 {text: '取消', onPress: ()=> {}},
             ])
 
@@ -120,7 +121,9 @@ class SetPassword extends Component {
                     textStyle={{fontSize: 17, color: 'white'}}
                     loadingComponent={
                             <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                                {this._renderActivityIndicator()}
+                                {
+                                //this._renderActivityIndicator()
+                                }
                                 <Text style={{fontSize: 17, color: 'white', fontWeight: 'bold', fontFamily: '.HelveticaNeueInterface-MediumP4',}}>
                                 保存中...</Text>
                             </View>
@@ -209,6 +212,17 @@ class SetPassword extends Component {
 
             result = JSON.parse(result)
             //console.log('gunZip:', result)
+            if(this._modalLoadingSpinnerOverLay) {
+                this._modalLoadingSpinnerOverLay.hide({duration: 0,})
+            }
+            if(!result){
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: '服务器打盹了,稍后再试试吧'
+                })
+                return
+            }
             if (result.code && result.code == 10) {
                 /* Alert.alert('提示', '注册成功', () => {
                  this.props.navigator.popToTop()
@@ -218,8 +232,12 @@ class SetPassword extends Component {
                     duration: 255,
                     children: '保存成功'
                 })
-                let routes = this.props.navigator.getCurrentRoutes();
-                this.props.navigator.popToRoute(routes[routes.length - 3])
+
+                setTimeout(()=>{
+                    let routes = this.props.navigator.getCurrentRoutes();
+                    this.props.navigator.popToRoute(routes[routes.length - 3])
+                },1000)
+
 
             } else {
                 this._toast.show({
@@ -250,8 +268,8 @@ class SetPassword extends Component {
             })
             this._input_new_password.editable=true
             this._input_conform_password=true
-            if(this._modalLoadingSpinnerOverLay){
-                this._modalLoadingSpinnerOverLay.hide()
+            if(this._modalLoadingSpinnerOverLay) {
+                this._modalLoadingSpinnerOverLay.hide({duration: 0,})
             }
         }
     }
@@ -294,7 +312,7 @@ const navigationBarRouteMapper = {
             <TouchableOpacity
                 onPress={() => Alert.alert('温馨提醒','确定退出吗?',[
              {text:'取消',onPress:()=>{}},
-             {text:'确定',onPress:()=>this.props.navigator.popToTop()}
+             {text:'确定',onPress:()=>this.props.navigator.popToRoute(routes[1])}
              ])}
                 style={navigatorStyle.navBarLeftButton}>
                 <View style={navigatorStyle.navBarLeftButtonAndroid}>

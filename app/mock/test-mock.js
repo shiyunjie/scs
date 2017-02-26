@@ -37,7 +37,7 @@ export const testMock = fetchMock.mock(/\/app\/gateway/, (url, opts) => {
                 //console.log(`parameter:`, parameter)
                 let requestData = JSON.parse(parameter)
                 //console.log(`parameter_itype:`, requestData.itype)
-                //console.log(`fetchMock parameter:`, requestData)
+                console.log(`fetchMock parameter:`, requestData)
                 switch (requestData.itype) {
                     //首页轮播
                     case 111:
@@ -70,7 +70,7 @@ export const testMock = fetchMock.mock(/\/app\/gateway/, (url, opts) => {
                                 },
                             }
                         } else {
-                            result = {code: -10, msg: '用户名火密码错误'}
+                            result = {code: -10, msg: '用户名或者密码错误'}
                         }
                         break;
                     //查询询价单列表
@@ -593,7 +593,7 @@ export const testMock = fetchMock.mock(/\/app\/gateway/, (url, opts) => {
                                     ship_company_code: 'UASC',// 船公司代码
 
                                     ship_company_name: '阿拉伯船公司',// 船公司名称
-                                    potcd: '宁波',// 申报口岸
+                                    pot_cd: '宁波',// 申报口岸
 
                                     ship_name_english: 'UASC NINGBO',// 英文船名
 
@@ -636,7 +636,7 @@ export const testMock = fetchMock.mock(/\/app\/gateway/, (url, opts) => {
                         break;
                     //物流状态
                     case 334:
-                        if (requestData.data.service_id) {
+                        if (requestData.data.id) {
                             result = {
                                 code: 10,
                                 msg: '查询成功',
@@ -836,14 +836,14 @@ export const testMock = fetchMock.mock(/\/app\/gateway/, (url, opts) => {
                                     { first_cost_name: '仓储',
                                         cost_name: '整改仓储费',
                                         estimate_cost: 1,
-                                        cost: 1,
+                                        cost: 0,
                                         id: '402881665986f1fe015986f5792f002c',
                                         is_cal: 0,
                                         is_pay: 0 },
                                     { first_cost_name: '仓储',
                                         cost_name: '海关仓库仓储费（散货）',
-                                        estimate_cost: 11,
-                                        cost: 1,
+                                        estimate_cost: 0,
+                                        cost: 0,
                                         id: '402881665986f1fe015986f57931002d',
                                         is_cal: 0,
                                         is_pay: 0 },]
@@ -951,7 +951,7 @@ export const testMock = fetchMock.mock(/\/app\/gateway/, (url, opts) => {
                         break;
                     //修改用户信息
                     case 133:
-                        if(requestData.data.qq) {
+                        if(requestData.data.qq){
                             result = {
                                 code: 10,
                                 msg: '修改信息成功',
@@ -1186,11 +1186,6 @@ export const testMock = fetchMock.mock(/\/app\/gateway/, (url, opts) => {
                     case 231:
                         //console.log(`requestData.data:`,requestData.data)
                         if(requestData.data.import_clearance
-                            &&requestData.data.international_logistics
-                            &&requestData.data.export_country_land
-                            &&!requestData.data.booking_service
-                            &&requestData.data.domestic_logistics
-                            &&requestData.data.credit_letter
                             &&requestData.data.trade_terms
                             &&requestData.data.departure_id
                             &&requestData.data.departure_name
@@ -1210,7 +1205,54 @@ export const testMock = fetchMock.mock(/\/app\/gateway/, (url, opts) => {
                                 result: {},
                             }
                         }
-
+                    break;
+                    //修改委托
+                    case 237:
+                        //console.log(`requestData.data:`,requestData.data)
+                        if(requestData.data.import_clearance
+                            &&requestData.data.trade_terms
+                            &&requestData.data.departure_id
+                            &&requestData.data.departure_name
+                            &&requestData.data.destination_id
+                            &&requestData.data.destination_name
+                            &&requestData.data.client_name
+                            &&requestData.data.client_phone) {
+                            result = {
+                                code: 10,
+                                msg: '修改成功',
+                                result:{}
+                            }
+                        }else{
+                            result = {
+                                code: -10,
+                                msg: '系统错误',
+                                result: {},
+                            }
+                        }
+                        break;
+                    //查询上传图片
+                    case 632:
+                        //console.log(`requestData.data:`,requestData.data)
+                        if(requestData.data.id) {
+                            result = {
+                                code: 10,
+                                msg: '查询成功',
+                                result:[{
+                                    file_url:'http://o2o.doorto.cn/upload/yun-o2o/ff8080814f2ab654014f2b9ad24b063a.jpg',
+                                    id: '1998276354421',
+                                    filename:'Imagedemo',
+                                    height: 400,
+                                    big_url: 'http://o2o.doorto.cn/upload/yun-o2o/ff8080814f2ab654014f2b9ad24b063a.jpg',
+                                    width: 400,}]
+                            }
+                        }else{
+                            result = {
+                                code: -10,
+                                msg: '系统错误',
+                                result: {},
+                            }
+                        }
+                        break;
                 }
 
                 resolve(JSON.stringify(JSON.stringify(result)))

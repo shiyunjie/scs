@@ -18,6 +18,7 @@ import {
     Platform,
     BackAndroid,
     NativeAppEventEmitter,
+    DeviceEventEmitter,
     KeyboardAvoidingView,
 } from 'react-native';
 /**
@@ -97,6 +98,7 @@ class AddOrder extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            keyboardSpace: 0,//键盘弹出时滑动的距离
             showProgress: true,//显示加载
             showReload: false,//显示加载更多
             phone: '',
@@ -118,6 +120,9 @@ class AddOrder extends Component {
         this._realName = /^[A-Za-z]{2,20}$|^[\u4E00-\u9FA5]{2,8}$/
 
         this._phoneReg = /^1[34578]\d{9}$/;//手机号码
+
+        this._scrollY=0
+        this._showKeyboard=true;
     }
 
     componentWillMount() {
@@ -150,8 +155,37 @@ class AddOrder extends Component {
         this.addAppEventListener(
             BackAndroid.addEventListener('hardwareBackPress', this.onBackAndroid)
         )
-        this._getPhoneAndName()
+
+
     }
+
+
+    onKeyboardWillShow(frames) {
+
+        const keyboardSpace = frames.endCoordinates.height//获取键盘高度
+        console.log('Keyboard is shown',keyboardSpace);
+        if(this._showKeyboard) {
+            this.setState({
+                keyboardSpace: keyboardSpace,
+            })
+            this._scrollView.scrollTo({y: this._scrollY + this.state.keyboardSpace, animated: true})
+            this._showKeyboard=false;
+        }
+    }
+
+    onKeyboardWillHide() {
+        console.log('Keyboard is hide');
+
+        this._scrollView.scrollTo({ y: this._scrollY, animated: true});
+
+        this.setState({
+            keyboardSpace: 0,
+        })
+        this._showKeyboard=true;
+    }
+
+
+
 
     async _getPhoneAndName() {
         let phone = await getPhone();
@@ -178,12 +212,19 @@ class AddOrder extends Component {
                 countryShow.push(data.name)
             }
         }
+
+        this._getPhoneAndName()
     }
 
     componentWillUnmount() {
         if (Picker.isPickerShow) {
             Picker.hide()
         }
+    }
+
+    _onScroll(e){
+        this._scrollY = e.nativeEvent.contentOffset.y
+        console.log(`this._scrollY = ${this._scrollY}`)
     }
 
 
@@ -230,8 +271,15 @@ class AddOrder extends Component {
                         showReload={this.state.showReload}
                         fetchData={()=>{}}/> :
 
-                    <ScrollView style={styles.container}
-                                showsVerticalScrollIndicator={false}>
+                    <ScrollView
+                        ref={ (component) => this._scrollView = component}
+                        style={styles.container}
+                        showsVerticalScrollIndicator={false}
+                        onKeyboardWillShow={this.onKeyboardWillShow.bind(this)}
+                        onKeyboardWillHide={this.onKeyboardWillHide.bind(this)}
+                        onScroll={this._onScroll.bind(this)}
+                        scrollEventThrottle={100}
+                        >
                         <TouchableOpacity
                             style={[{marginTop:10,height:50,}]}
                             onPress={()=>{
@@ -462,11 +510,12 @@ class AddOrder extends Component {
                                  this.setState({sea_air:select});*/
                                   }}>
                                 <ItemView
-                                    color={this.state.sea_air==1?constants.UIActiveColor:constants.UIInActiveColor}
+                                    color={this.state.sea_air==1?constants.UIActiveColor:constants.UIBackgroundColor}
                                     name={this.state.sea_air==1?'md-checkmark-circle':'ios-radio-button-off-outline'}
                                     hasLine={false}
                                     showRightText={false}
                                     title='空运'
+                                    titleColor={constants.UIBackgroundColor}
                                     rightText=''
                                 />
                             </TouchableOpacity>
@@ -474,7 +523,7 @@ class AddOrder extends Component {
                         <TouchableOpacity
                             style={{height:50,}}
                             onPress={()=>{
-                        let select
+                                let select
                                  if (this.state.internal==1) {
 
 
@@ -489,6 +538,7 @@ class AddOrder extends Component {
                                 color={this.state.internal==1?constants.UIActiveColor:constants.UIInActiveColor}
                                 name={this.state.internal==1?'md-checkmark-circle':'ios-radio-button-off-outline'}
                                 title='国内物流'
+
                                 rightText=''
                                 hasLine={false}
                             />
@@ -514,11 +564,11 @@ class AddOrder extends Component {
                                 hasLine={false}
                             />
                         </TouchableOpacity>
-                        <KeyboardAvoidingView behavior='padding' style={{height:210}}>
 
-                            <View style={{height:150,marginTop:5,}}>
-                                <TextInput
-                                    style={[styles.labelText,{flex:1,
+
+                        <View style={{height:150,marginTop:5,}}>
+                            <TextInput
+                                style={[styles.labelText,{flex:1,
                                     fontSize:14,
                                     backgroundColor:'white',
                                     textAlignVertical:'top',
@@ -526,32 +576,35 @@ class AddOrder extends Component {
                                     borderColor: constants.UIInActiveColor,
                                     justifyContent:'flex-start',
                                     }]}
-                                    clearButtonMode="while-editing"
-                                    placeholder='委托内容'
-                                    maxLength={300}
-                                    underlineColorAndroid='transparent'
-                                    multiline={true}//多行输入
-                                    numberOfLines={6}
-                                    editable={true}
-                                    value={this.state.commission_content}
-                                    onChangeText={(text) => this.setState({commission_content:text})}/>
-                                <Text
-                                    style={{color:constants.UIInActiveColor,position:'absolute',bottom:5,right:5,backgroundColor:'transparent'}}>300字以内</Text>
-                            </View>
+                                clearButtonMode="while-editing"
+                                placeholder='委托内容'
+                                maxLength={300}
+                                underlineColorAndroid='transparent'
+                                multiline={true}//多行输入
+                                numberOfLines={6}
+                                editable={true}
+                                value={this.state.commission_content}
+                                onChangeText={(text) => this.setState({commission_content:text})}/>
+                            <Text
+                                style={{color:constants.UIInActiveColor,position:'absolute',bottom:5,right:5,backgroundColor:'transparent'}}>300字以内</Text>
+                        </View>
 
-                            <View style={{flex:1,padding:10}}>
-                                <Button
-                                    ref={ component => this.button2 = component }
-                                    touchableType={Button.constants.touchableTypes.fadeContent}
-                                    style={styles.button}
-                                    textStyle={{fontSize: 17, color: 'white'}}
-                                    loadingComponent={
+                        <View style={[{flex:1,paddingTop:10,paddingBottom:10,paddingLeft:constants.MarginLeftRight,paddingRight:constants.MarginLeftRight},
+                        this.state.keyboardSpace?{paddingBottom:this.state.keyboardSpace}:{}]}>
+                            <Button
+                                ref={ component => this.button2 = component }
+                                touchableType={Button.constants.touchableTypes.fadeContent}
+                                style={styles.button}
+                                textStyle={{fontSize: 17, color: 'white'}}
+                                loadingComponent={
                                         <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                                        {this._renderActivityIndicator()}
+                                        {
+                                //this._renderActivityIndicator()
+                                }
                                         <Text style={{fontSize: 17, color: 'white', fontWeight: 'bold', fontFamily: '.HelveticaNeueInterface-MediumP4',}}>委托中...</Text>
                                         </View>
                                         }
-                                    onPress={ () => {
+                                onPress={ () => {
                                         if(!this._phoneReg.test(this.state.phone)){
 
                                          this._toast.show({
@@ -597,10 +650,11 @@ class AddOrder extends Component {
                                                     this.props.navigator.pop();
                                                 }, 3000)*/
                                         }}>
-                                    发起委托
-                                </Button>
-                            </View>
-                        </KeyboardAvoidingView>
+                                发起委托
+                            </Button>
+                        </View>
+
+
                     </ScrollView>
                 }
 
@@ -674,6 +728,15 @@ class AddOrder extends Component {
 
             result = JSON.parse(result)
             //console.log('gunZip:', result)
+
+            if(!result){
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: '服务器打盹了,稍后再试试吧'
+                })
+                return
+            }
             if (result.code && result.code == -54) {
                 /**
                  * 发送事件去登录
@@ -710,7 +773,7 @@ class AddOrder extends Component {
         }
         catch (error) {
             //console.log(error)
-            if(this._toast) {
+            if (this._toast) {
                 this._toast.show({
                     position: Toast.constants.gravity.center,
                     duration: 255,
@@ -724,7 +787,7 @@ class AddOrder extends Component {
              //disabled: false
              })*/
             if(this._modalLoadingSpinnerOverLay) {
-                this._modalLoadingSpinnerOverLay.hide()
+                this._modalLoadingSpinnerOverLay.hide({duration: 0,})
             }
             //console.log(`SplashScreen.close(SplashScreen.animationType.scale, 850, 500)`)
             //SplashScreen.close(SplashScreen.animationType.scale, 850, 500)
@@ -771,14 +834,25 @@ class AddOrder extends Component {
 
             options.data = await this.gZip(options)
 
-            //console.log(`_fetch_sendCode options:`, options)
+            console.log(`_fetch_sendCode options:`, options)
 
             let resultData = await this.fetch(options)
 
             let result = await this.gunZip(resultData)
 
             result = JSON.parse(result)
+            if(this._modalLoadingSpinnerOverLay) {
+                this._modalLoadingSpinnerOverLay.hide({duration: 0,})
+            }
             //console.log('gunZip:', result)
+            if(!result){
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: '服务器打盹了,稍后再试试吧'
+                })
+                return
+            }
             if (result.code && result.code == -54) {
                 /**
                  * 发送事件去登录
@@ -797,7 +871,11 @@ class AddOrder extends Component {
                     duration: 255,
                     children: '发送成功'
                 })
-                this.props.navigator.pop()
+                //修改订单状态
+                NativeAppEventEmitter.emit('orderDetail_hasUpdate_should_resetState', this.state.id)
+
+                setTimeout(()=>this.props.navigator.popToTop(),1000)
+
 
             } else {
                 this._toast.show({
@@ -811,7 +889,7 @@ class AddOrder extends Component {
         }
         catch (error) {
             //console.log(error)
-            if(this._toast) {
+            if (this._toast) {
                 this._toast.show({
                     position: Toast.constants.gravity.center,
                     duration: 255,
@@ -825,7 +903,9 @@ class AddOrder extends Component {
              loading: false,
              //disabled: false
              })*/
-            this._modalLoadingSpinnerOverLay.hide()
+            if(this._modalLoadingSpinnerOverLay) {
+                this._modalLoadingSpinnerOverLay.hide({duration: 0,})
+            }
             //console.log(`SplashScreen.close(SplashScreen.animationType.scale, 850, 500)`)
             //SplashScreen.close(SplashScreen.animationType.scale, 850, 500)
         }
@@ -895,6 +975,7 @@ const styles = StyleSheet.create({
         alignItems: 'stretch',
         backgroundColor: 'white',
     },
+
 
 });
 

@@ -199,7 +199,9 @@ class ForgetPassword extends Component {
                         textStyle={{fontSize: 14, color: 'white'}}
                         loadingComponent={
                             <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                                {this._renderActivityIndicator()}
+                                {
+                                //this._renderActivityIndicator()
+                                }
                                 <Text style={{fontSize: 14, color: 'white', fontWeight: 'bold', fontFamily: '.HelveticaNeueInterface-MediumP4',}}>
                                 认证中</Text>
                             </View>
@@ -308,13 +310,24 @@ class ForgetPassword extends Component {
             result = JSON.parse(result)
 
             //console.log('gunZip:', result)
+            if(this._modalLoadingSpinnerOverLay) {
+                this._modalLoadingSpinnerOverLay.hide({duration: 0,})
+            }
+            if(!result){
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: '服务器打盹了,稍后再试试吧'
+                })
+                return
+            }
             if (result.code && result.code == 10) {
                 if(nextPage=='forget'){
                     //console.log('forget')
                     AsyncStorage.setItem('ForMsgSerial',result.result)
                 }else{
                     //console.log('regist:',result.result)
-                    this.props.navigator.pop()
+
                     AsyncStorage.setItem('RegMsgSerial',result.result)
                     //console.log('AsyncStorage_segMsgSerial')
                 }
@@ -358,8 +371,8 @@ class ForgetPassword extends Component {
             if(this._input_phone) {
                 this._input_phone.editable = true
             }
-            if(this._modalLoadingSpinnerOverLay){
-                this._modalLoadingSpinnerOverLay.hide()
+            if(this._modalLoadingSpinnerOverLay) {
+                this._modalLoadingSpinnerOverLay.hide({duration: 0,})
             }
         }
     }
@@ -403,6 +416,17 @@ class ForgetPassword extends Component {
             result = JSON.parse(result)
 
             //console.log('gunZip:', result)
+            if(this._modalLoadingSpinnerOverLay) {
+                this._modalLoadingSpinnerOverLay.hide({duration: 0,})
+            }
+            if(!result){
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: '服务器打盹了,稍后再试试吧'
+                })
+                return
+            }
             if (result.code && result.code == 10) {
                 //console.log('nextPage:',nextPage)
                 if(nextPage=='forget'){
@@ -449,8 +473,8 @@ class ForgetPassword extends Component {
                 loading: false,
                 //disabled: false
             })
-            if(this._modalLoadingSpinnerOverLay){
-                this._modalLoadingSpinnerOverLay.hide()
+            if(this._modalLoadingSpinnerOverLay) {
+                this._modalLoadingSpinnerOverLay.hide({duration: 0,})
             }
 
         }

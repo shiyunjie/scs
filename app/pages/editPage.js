@@ -13,6 +13,7 @@ import {
     Platform,
     NativeAppEventEmitter,
     TouchableOpacity,
+    Alert,
 } from 'react-native';
 
 
@@ -95,7 +96,9 @@ class Edit extends Component {
                         textStyle={{fontSize: 17, color: 'white'}}
                         loadingComponent={
                             <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                                {this._renderActivityIndicator()}
+                                {
+                                //this._renderActivityIndicator()
+                                }
                                 <Text style={{fontSize: 17, color: 'white',
                                 fontWeight: 'bold', fontFamily: '.HelveticaNeueInterface-MediumP4',}}>提交中...</Text>
                             </View>
@@ -157,14 +160,25 @@ class Edit extends Component {
 
         options.data=await this.gZip(options)
 
-        console.log(`_fetch_sendCode options:` ,options)
+        //console.log(`_fetch_sendCode options:` ,options)
 
         let resultData = await this.fetch(options)
 
         let result=await this.gunZip(resultData)
 
             result=JSON.parse(result)
-        console.log('gunZip:',result)
+        //console.log('gunZip:',result)
+            if(this._modalLoadingSpinnerOverLay) {
+                this._modalLoadingSpinnerOverLay.hide({duration: 0,})
+            }
+            if(!result){
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: '服务器打盹了,稍后再试试吧'
+                })
+                return
+            }
             if(result.code&&result.code==-54){
                 /**
                  * 发送事件去登录
@@ -181,8 +195,11 @@ class Edit extends Component {
                 duration: 255,
                 children: '提交成功'
             })
+           /* Alert.alert('温馨提醒','提交成功',
+                [{text:'确定',onPress:()=>this.props.navigator.pop()}]
+            )*/
+            setTimeout(()=>this.props.navigator.pop(),1000)
 
-            this.props.navigator.pop()
         }else{
             this._toast.show({
                 position: Toast.constants.gravity.center,
@@ -211,8 +228,8 @@ class Edit extends Component {
             //disabled: false
         })
             this._input_text.editable=true
-            if(this._modalLoadingSpinnerOverLay){
-                this._modalLoadingSpinnerOverLay.hide()
+            if(this._modalLoadingSpinnerOverLay) {
+                this._modalLoadingSpinnerOverLay.hide({duration: 0,})
             }
         //console.log(`SplashScreen.close(SplashScreen.animationType.scale, 850, 500)`)
         //SplashScreen.close(SplashScreen.animationType.scale, 850, 500)

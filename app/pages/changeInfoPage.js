@@ -17,6 +17,7 @@ import {
     ProgressBarAndroid,
     Platform,
     NativeAppEventEmitter,
+    Alert,
 } from 'react-native';
 /**
  * md-checkmark-circle
@@ -61,6 +62,7 @@ class ChangeInfo extends Component {
         }
         this._qqValidate = /^[0-9]*$/
         this._textValidate = /^.*$/
+        this.firstFetch = true;
     }
 
     componentWillMount() {
@@ -99,7 +101,25 @@ class ChangeInfo extends Component {
                 }
             })
         )
-        setTimeout(()=>this._fetchData_loadInfo(), 510)
+
+        this.addAppEventListener(
+            this.props.navigator.navigationContext.addListener('didfocus', (event) => {
+                //console.log(`payPage didfocus...`)
+                if (event && currentRoute === event.data.route) {
+                    console.log("upload didAppear")
+
+                    if (this.firstFetch) {
+                        this._fetchData_loadInfo()
+                        this.firstFetch = false;
+                    }
+                }else {
+                    //console.log("orderPage willDisappear, other willAppear")
+                }
+
+
+            })
+        )
+
     }
 
     render() {
@@ -261,7 +281,9 @@ class ChangeInfo extends Component {
                                 loadingComponent={
                             <View
                             style={{flexDirection: 'row', alignItems: 'center'}}>
-                                {this._renderActivityIndicator()}
+                                {
+                                //this._renderActivityIndicator()
+                                }
                                 <Text
                                 style={{fontSize: 17, color: 'white',
                                  fontWeight: 'bold', fontFamily: '.HelveticaNeueInterface-MediumP4',}}>保存中...</Text>
@@ -363,6 +385,14 @@ class ChangeInfo extends Component {
             //console.log('gunZip:', result)
             //console.log(`fetch result -> `, typeof result)
             //console.log(`result`, result.result)
+            if(!result){
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: '服务器打盹了,稍后再试试吧'
+                })
+                return
+            }
             if (result.code && result.code == -54) {
                 /**
                  * 发送事件去登录
@@ -439,13 +469,25 @@ class ChangeInfo extends Component {
 
             options.data = await this.gZip(options)
 
-            //console.log(`_fetch_sendCode options:`, options)
+            console.log(`_fetch_sendCode options:`, options)
 
             let resultData = await this.fetch(options)
 
             let result = await this.gunZip(resultData)
 
             result = JSON.parse(result)
+            //console.log(`gunZip:`, result)
+            if(this._modalLoadingSpinnerOverLay) {
+                this._modalLoadingSpinnerOverLay.hide({duration: 0,})
+            }
+            if(!result){
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: '服务器打盹了,稍后再试试吧'
+                })
+                return
+            }
             if (result.code && result.code == -54) {
                 /**
                  * 发送事件去登录
@@ -457,14 +499,18 @@ class ChangeInfo extends Component {
                 /* Alert.alert('提示', '注册成功', () => {
                  this.props.navigator.popToTop()
                  })*/
-                //console.log('result', result.result)
+
 
                 this._toast.show({
                     position: Toast.constants.gravity.center,
                     duration: 255,
                     children: '修改成功'
                 })
-                this.props.navigator.pop()
+               /* Alert.alert('温馨提醒','修改成功',
+                    [{text:'确定',onPress:()=>this.props.navigator.pop()}]
+                  )*/
+                setTimeout(()=>this.props.navigator.pop(),1000)
+
 
             } else {
                 this._toast.show({
@@ -492,8 +538,8 @@ class ChangeInfo extends Component {
                 loading: false,
                 //disabled: false
             })
-            if (this._modalLoadingSpinnerOverLay) {
-                this._modalLoadingSpinnerOverLay.hide()
+            if(this._modalLoadingSpinnerOverLay) {
+                this._modalLoadingSpinnerOverLay.hide({duration: 0,})
             }
             //console.log(`SplashScreen.close(SplashScreen.animationType.scale, 850, 500)`)
             //SplashScreen.close(SplashScreen.animationType.scale, 850, 500)
@@ -514,7 +560,7 @@ const styles = StyleSheet.create({
 
         height: 40,
         backgroundColor: constants.UIActiveColor,
-        borderRadius: 3, borderWidth: StyleSheet.hairlineWidth,
+        borderWidth: StyleSheet.hairlineWidth,
         borderColor: constants.UIActiveColor,
         justifyContent: 'center', borderRadius: 30,
     },
