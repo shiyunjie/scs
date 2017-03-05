@@ -92,7 +92,7 @@ export default class ModalProgress extends Component {
                                 }}
                                 animating={true}
                                 color={constants.UIInActiveColor}
-                                size={'large'}/>
+                                size={'small'}/>
                        : null
                 }
                 {

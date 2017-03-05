@@ -3,7 +3,7 @@
  * @since 17/1/2 10:40
  * @author chenyiqin
  */
-import {NativeModules,} from 'react-native'
+import {NativeModules,Alert,} from 'react-native'
 
 const HttpRSAModule = NativeModules.HttpRSAModule;
 import constants from '../constants/constant'
@@ -187,6 +187,10 @@ export default XhrEnhance = (ComposedComponent) => {
          * @returns {Promise}
          */
         gunZip = (data) => {
+            console.log(`data`,data)
+            if(!data){
+            }
+
             return new Promise((resolve, reject) => {
                 try {
                     if(constants.development){
@@ -196,6 +200,7 @@ export default XhrEnhance = (ComposedComponent) => {
                         resolve(responseData)
                     }
                 } catch (error) {
+
                     reject(error)
                 }
             })

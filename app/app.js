@@ -3,6 +3,7 @@
  */
 import React, { Component } from 'react';
 import {
+    StatusBar,
     AppRegistry,
     StyleSheet,
     Navigator,
@@ -116,6 +117,9 @@ class Root extends Component {
                 navigationBar: navigationBar,
             })
         })
+
+
+
         //)
         //SplashScreen.close(SplashScreen.animationType.scale,850,500)
         SplashScreen.close({
@@ -130,14 +134,19 @@ class Root extends Component {
         if (this._listener1) {
             this._listener1.remove();
         }
-        if (this._listener2) {
+        /*if (this._listener2) {
             this._listener2.remove()
-        }
+        }*/
 
     }
 
     render () {
         return (
+            <View style={{flex:1}}>
+                <StatusBar
+                    backgroundColor={constants.UIActiveColor}
+                    barStyle="light-content"
+                />
             <Navigator style={styles.container}
                        initialRoute={{
               component: Index,
@@ -168,6 +177,7 @@ class Root extends Component {
                     routeMapper={this.state.navigationBar}
                     style={styles.navBar} /> }
             />
+                </View>
         )
     }
 }

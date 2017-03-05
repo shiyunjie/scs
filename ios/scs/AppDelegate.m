@@ -117,6 +117,7 @@ completionHandler();
       //      NSLog(@"processOrderWithPaymentResult result = %@",resultDic);
       [[NSNotificationCenter defaultCenter] postNotificationName:@"RCTAliPay_Notification_processOrderWithPaymentResult" object:nil userInfo:resultDic];
     }];
+    
   }
   return YES;
 }

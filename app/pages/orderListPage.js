@@ -59,6 +59,16 @@ class OrderList extends Component {
     }
 
     componentWillMount() {
+        this.addAppEventListener(
+            NativeAppEventEmitter.addListener('user_login_out_orderList_need_reset', () => {
+
+                this.setState({
+                    dataList: firstDataList,
+                    dataSource: this._dataSource.cloneWithRows(firstDataList),
+                })
+            })
+        )
+
 
         this.addAppEventListener(
             NativeAppEventEmitter.addListener('orderDetail_hasCancel_should_resetState', (event) => {
@@ -435,7 +445,14 @@ class OrderList extends Component {
             let resultData = await this.fetch(options)
 
             let result = await this.gunZip(resultData)
-
+            if (!result) {
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: '服务器打盹了,稍后再试试吧'
+                })
+                return
+            }
             result = JSON.parse(result)
             //console.log('gunZip:', result)
             if(!result){
@@ -522,7 +539,14 @@ class OrderList extends Component {
             let resultData = await this.fetch(options)
 
             let result = await this.gunZip(resultData)
-
+            if (!result) {
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: '服务器打盹了,稍后再试试吧'
+                })
+                return
+            }
             result = JSON.parse(result)
             //console.log('gunZip:', result)
             if(!result){

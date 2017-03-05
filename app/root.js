@@ -10,12 +10,10 @@ import {
     Platform,
     NativeAppEventEmitter,
     TouchableOpacity,
-
     AsyncStorage,
 } from 'react-native';
 
 import IndexPage from './pages/indexPage'
-//import IndexPage from './pages/uploadPage'
 import UserPage from './pages/userPage'
 import OrderPage from './pages/orderPage'
 import MorePage from './pages/morePage'
@@ -119,6 +117,8 @@ class Root extends Component {
                 }
             })
         )
+
+
 
     }
 

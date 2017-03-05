@@ -725,7 +725,14 @@ class UploadPage extends Component {
             let resultData = await this.fetch(options)
 
             let result = await this.gunZip(resultData)
-
+            if (!result) {
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: '服务器打盹了,稍后再试试吧'
+                })
+                return
+            }
             result = JSON.parse(result)
             //console.log('gunZip:', result)
             if(this._modalLoadingSpinnerOverLay) {
@@ -806,7 +813,14 @@ class UploadPage extends Component {
             let resultData = await this.fetch(options)
 
             let result = await this.gunZip(resultData)
-
+            if (!result) {
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: '服务器打盹了,稍后再试试吧'
+                })
+                return
+            }
             result = JSON.parse(result)
             //console.log('gunZip:', result)
             if(!result){
@@ -934,30 +948,10 @@ const styles = StyleSheet.create({
 
 });
 
+import {navigationBar} from '../components/NavigationBarRouteMapper'
+
 const navigationBarRouteMapper = {
-
-    LeftButton: function (route, navigator, index, navState) {
-        if (index === 0) {
-            return null;
-        }
-
-        var previousRoute = navState.routeStack[index - 1];
-        return (
-            <TouchableOpacity
-                onPress={() => navigator.pop()}
-                style={navigatorStyle.navBarLeftButton}>
-                <View style={navigatorStyle.navBarLeftButtonAndroid}>
-                    <Icon
-                        style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText,{fontSize: 20,}]}
-                        name={'ios-arrow-back'}
-                        size={constants.IconSize}
-                        color={'white'}/>
-                </View>
-            </TouchableOpacity>
-
-        );
-    },
-
+    ...navigationBar,
     RightButton: function (route, navigator, index, navState) {
         return (
             <TouchableOpacity
@@ -971,18 +965,57 @@ const navigationBarRouteMapper = {
             </TouchableOpacity>
         )
     },
+};
 
-    Title: function (route, navigator, index, navState) {
-        return (
-            Platform.OS == 'ios' ?
-                <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText]}>
-                    {route.title}
-                </Text> : <View style={navigatorStyle.navBarTitleAndroid}>
-                <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText]}>
-                    {route.title}
-                </Text>
-            </View>
-        )
-    },
-
-}
+//const navigationBarRouteMapper = {
+//
+//    LeftButton: function (route, navigator, index, navState) {
+//        if (index === 0) {
+//            return null;
+//        }
+//
+//        var previousRoute = navState.routeStack[index - 1];
+//        return (
+//            <TouchableOpacity
+//                onPress={() => navigator.pop()}
+//                style={navigatorStyle.navBarLeftButton}>
+//                <View style={navigatorStyle.navBarLeftButtonAndroid}>
+//                    <Icon
+//                        style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText,{fontSize: 20,}]}
+//                        name={'ios-arrow-back'}
+//                        size={constants.IconSize}
+//                        color={'white'}/>
+//                </View>
+//            </TouchableOpacity>
+//
+//        );
+//    },
+//
+//    RightButton: function (route, navigator, index, navState) {
+//        return (
+//            <TouchableOpacity
+//                onPress={() => {
+//                NativeAppEventEmitter.emit('PicturePicker.finish.saveIds')
+//                }}
+//                style={navigatorStyle.navBarRightButton}>
+//                <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText]}>
+//                    完成
+//                </Text>
+//            </TouchableOpacity>
+//        )
+//    },
+//
+//    Title: function (route, navigator, index, navState) {
+//        return (
+//            Platform.OS == 'ios' ?
+//                <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText]}>
+//                    {route.title}
+//                </Text> : <View style={navigatorStyle.navBarTitleAndroid}>
+//                <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText]}>
+//                    {route.title}
+//                </Text>
+//            </View>
+//        )
+//    },
+//
+//}

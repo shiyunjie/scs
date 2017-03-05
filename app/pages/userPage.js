@@ -50,6 +50,11 @@ class UserPage extends Component {
       }
 
     componentWillMount() {
+        this.addAppEventListener(
+            NativeAppEventEmitter.addListener('user_login_in_need_reset_realname', () => {
+                this._getUserName()
+            })
+        )
         ////NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
         //let currentRoute = this.props.navigator.navigationContext.currentRoute
         //this.addAppEventListener(
@@ -60,7 +65,8 @@ class UserPage extends Component {
         //    if (event&&currentRoute === event.data.route) {
         //        //console.log("orderPage willAppear")
         //        //NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
-        //        NativeAppEventEmitter.emit('setRootPageNavigationBar.index')
+        //        //NativeAppEventEmitter.emit('setRootPageNavigationBar.index')
+        //        this._getUserName()
         //    } else {
         //        //console.log("orderPage willDisappear, other willAppear")
         //    }
@@ -148,13 +154,18 @@ class UserPage extends Component {
 
     _onSingOut=()=>{
         /**
+         * 退出更新掉两个订单列表
+         */
+        NativeAppEventEmitter.emit('user_login_out_serviceList_need_reset')
+        NativeAppEventEmitter.emit('user_login_out_orderList_need_reset')
+        /**
          * 发送事件去登录
          */
         NativeAppEventEmitter.emit('getMsg_202_code_need_login');
     };
     _onMessage=()=>{
         this.props.navigator.push({
-            title: '消息',
+            title: '消息列表',
             component: MessagePage,
             passProps:{
                 userID:this.state.userID,

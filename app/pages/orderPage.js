@@ -48,7 +48,7 @@ class Order extends Component {
         //    if (currentRoute === event.data.route) {
         //        //console.log("orderPage willAppear")
         //        //NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
-        //        NativeAppEventEmitter.emit('setRootPageNavigationBar.index')
+        //        //NativeAppEventEmitter.emit('setRootPageNavigationBar.index')
         //    } else {
         //        //console.log("orderPage willDisappear, other willAppear")
         //    }
@@ -87,40 +87,40 @@ const styles = StyleSheet.create({
     },
 });
 
-const navigationBarRouteMapper = {
-
-    LeftButton: function (route, navigator, index, navState) {
-    if (index === 0) {
-        return null;
-    }
-
-    var previousRoute = navState.routeStack[ index - 1 ];
-    return (
-        <TouchableOpacity
-            onPress={() => navigator.pop()}
-            style={navigatorStyle.navBarLeftButton}>
-            <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarButtonText]}>
-                back
-            </Text>
-        </TouchableOpacity>
-    );
-},
-
-RightButton: function (route, navigator, index, navState) {
-
-},
-
-Title: function (route, navigator, index, navState) {
-    return (
-        Platform.OS == 'ios' ?
-            <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText]}>
-                订单
-            </Text> : <View style={navigatorStyle.navBarTitleAndroid}>
-            <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText]}>
-                订单
-            </Text>
-        </View>
-    )
-},
-
-}
+//const navigationBarRouteMapper = {
+//
+//    LeftButton: function (route, navigator, index, navState) {
+//    if (index === 0) {
+//        return null;
+//    }
+//
+//    var previousRoute = navState.routeStack[ index - 1 ];
+//    return (
+//        <TouchableOpacity
+//            onPress={() => navigator.pop()}
+//            style={navigatorStyle.navBarLeftButton}>
+//            <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarButtonText]}>
+//                back
+//            </Text>
+//        </TouchableOpacity>
+//    );
+//},
+//
+//RightButton: function (route, navigator, index, navState) {
+//
+//},
+//
+//Title: function (route, navigator, index, navState) {
+//    return (
+//        Platform.OS == 'ios' ?
+//            <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText]}>
+//                订单
+//            </Text> : <View style={navigatorStyle.navBarTitleAndroid}>
+//            <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText]}>
+//                订单
+//            </Text>
+//        </View>
+//    )
+//},
+//
+//}

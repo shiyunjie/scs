@@ -27,7 +27,7 @@ import HeaderView from '../components/listViewheaderView'
 import addOrderPage from './addOrderPage'
 import navigatorStyle from '../styles/navigatorStyle'       //navigationBar样式
 import XhrEnhance from '../lib/XhrEnhance'
-
+import LoginPage from './loginPage'
 import Button from 'react-native-smart-button';
 
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -161,13 +161,26 @@ class Index extends Component {
     }
 
     _addOrder = ()=> {
-        this.props.navigator.push({
-            title: '发起委托',
-            component: addOrderPage,
-            passProps: {
-                action: 'add'
+        getToken().then((token)=>{
+            //console.log('token', token)
+            if (token && token != '') {
+
+                this.props.navigator.push({
+                    title: '发起委托',
+                    component: addOrderPage,
+                    passProps: {
+                        action: 'add'
+                    }
+                });
+            }else{
+                this.props.navigator.push({
+                    title: '用户登录',
+                    component: LoginPage,
+                });
             }
-        });
+        })
+
+
     }
 
 
@@ -191,8 +204,17 @@ class Index extends Component {
             let resultData = await this.fetch(options)
             //console.log('resultData:', resultData)
             let result = await this.gunZip(resultData)
+            if (!result) {
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: '服务器打盹了,稍后再试试吧'
+                })
+                return
+            }
             //console.log('gunZip:', result)
             result = JSON.parse(result)
+
             if(!result){
                 this._toast.show({
                     position: Toast.constants.gravity.center,
@@ -201,6 +223,8 @@ class Index extends Component {
                 })
                 return
             }
+
+
 
             if (result.code && result.code == 10) {
                 let dataList = [
@@ -235,7 +259,6 @@ class Index extends Component {
         }
         finally {
             this._pullToRefreshListView.endRefresh()
-            this.setState({showProgress: false,})
             //console.log(`SplashScreen.close(SplashScreen.animationType.scale, 850, 500)`)
             //SplashScreen.close(SplashScreen.animationType.scale, 850, 500)
         }
@@ -352,7 +375,6 @@ class Index extends Component {
     _onRefresh = () => {
 
         //setTimeout(() => {
-        this.setState({showProgress: true,})
         this._fetchData()
 
         //}, 1000)
@@ -400,7 +422,7 @@ const styles = StyleSheet.create({
     }
 });
 
-const navigationBarRouteMapper = {
+/*const navigationBarRouteMapper = {
 
     LeftButton: function (route, navigator, index, navState) {
         if (index === 0) {
@@ -441,4 +463,4 @@ const navigationBarRouteMapper = {
         )
     },
 
-}
+}*/

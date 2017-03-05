@@ -366,7 +366,14 @@ class Register extends Component {
             let resultData = await this.fetch(options)
 
             let result=await this.gunZip(resultData)
-
+            if (!result) {
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: '服务器打盹了,稍后再试试吧'
+                })
+                return
+            }
             result=JSON.parse(result)
             //console.log('gunZip:',result)
             if(this._modalLoadingSpinnerOverLay) {
@@ -450,7 +457,7 @@ const styles = StyleSheet.create({
     button: {
         height: 40,
         backgroundColor: constants.UIActiveColor,
-        borderRadius: 3, borderWidth: StyleSheet.hairlineWidth,
+        borderWidth: StyleSheet.hairlineWidth,
         borderColor: constants.UIActiveColor,
         justifyContent: 'center', borderRadius: 30,
 
@@ -463,8 +470,10 @@ const styles = StyleSheet.create({
     }
 });
 
-const navigationBarRouteMapper = {
+import {navigationBar} from '../components/NavigationBarRouteMapper'
 
+const navigationBarRouteMapper = {
+    ...navigationBar,
     LeftButton: function (route, navigator, index, navState) {
         if (index === 0) {
             return null;
@@ -489,25 +498,53 @@ const navigationBarRouteMapper = {
 
         );
     },
+};
 
-    RightButton: function (route, navigator, index, navState) {
-
-    },
-
-    Title: function (route, navigator, index, navState) {
-        return (
-            Platform.OS == 'ios' ?
-                <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText]}>
-                    {route.title}
-                </Text> : <View style={navigatorStyle.navBarTitleAndroid}>
-                <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText]}>
-                    {route.title}
-                </Text>
-            </View>
-        )
-    },
-
-}
+//const navigationBarRouteMapper = {
+//
+//    LeftButton: function (route, navigator, index, navState) {
+//        if (index === 0) {
+//            return null;
+//        }
+//
+//        var previousRoute = navState.routeStack[ index - 1 ];
+//        return (
+//            <TouchableOpacity
+//                onPress={() => Alert.alert('温馨提醒','确定退出吗?',[
+//             {text:'取消',onPress:()=>{}},
+//             {text:'确定',onPress:()=>this.props.navigator.popToRoute(routes[1])}
+//             ])}
+//                style={navigatorStyle.navBarLeftButton}>
+//                <View style={navigatorStyle.navBarLeftButtonAndroid}>
+//                    <Icon
+//                        style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText,{fontSize: 20,}]}
+//                        name={'ios-arrow-back'}
+//                        size={constants.IconSize}
+//                        color={'white'}/>
+//                </View>
+//            </TouchableOpacity>
+//
+//        );
+//    },
+//
+//    RightButton: function (route, navigator, index, navState) {
+//
+//    },
+//
+//    Title: function (route, navigator, index, navState) {
+//        return (
+//            Platform.OS == 'ios' ?
+//                <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText]}>
+//                    {route.title}
+//                </Text> : <View style={navigatorStyle.navBarTitleAndroid}>
+//                <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText]}>
+//                    {route.title}
+//                </Text>
+//            </View>
+//        )
+//    },
+//
+//}
 
 
 export default AppEventListenerEnhance(XhrEnhance(Register))

@@ -86,7 +86,7 @@ class Version extends Component {
                     <Text
                     style={{color:constants.UIActiveColor,marginTop:10,marginBottom:10,fontSize:16,}}
                     //backgroundColor:'transparent'
-                    >发送委托单成功了</Text>
+                    >新建成功了</Text>
                     <View style={[styles.viewItem,]}>
 
                         <TouchableOpacity
@@ -143,8 +143,10 @@ const styles = StyleSheet.create({
 
 });
 
-const navigationBarRouteMapper = {
+import {navigationBar} from '../components/NavigationBarRouteMapper'
 
+const navigationBarRouteMapper = {
+    ...navigationBar,
     LeftButton: function (route, navigator, index, navState) {
         if (index === 0) {
             return null;
@@ -166,24 +168,49 @@ const navigationBarRouteMapper = {
 
         );
     },
+};
 
-    RightButton: function (route, navigator, index, navState) {
-
-    },
-
-    Title: function (route, navigator, index, navState) {
-        return (
-            Platform.OS == 'ios' ?
-                <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText]}>
-                    {route.title}
-                </Text> : <View style={navigatorStyle.navBarTitleAndroid}>
-                <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText]}>
-                    {route.title}
-                </Text>
-            </View>
-        )
-    },
-
-}
+//const navigationBarRouteMapper = {
+//
+//    LeftButton: function (route, navigator, index, navState) {
+//        if (index === 0) {
+//            return null;
+//        }
+//
+//        var previousRoute = navState.routeStack[ index - 1 ];
+//        return (
+//            <TouchableOpacity
+//                onPress={() => navigator.popToTop()}
+//                style={navigatorStyle.navBarLeftButton}>
+//                <View style={navigatorStyle.navBarLeftButtonAndroid}>
+//                    <Icon
+//                        style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText,{fontSize: 20,}]}
+//                        name={'ios-arrow-back'}
+//                        size={constants.IconSize}
+//                        color={'white'}/>
+//                </View>
+//            </TouchableOpacity>
+//
+//        );
+//    },
+//
+//    RightButton: function (route, navigator, index, navState) {
+//
+//    },
+//
+//    Title: function (route, navigator, index, navState) {
+//        return (
+//            Platform.OS == 'ios' ?
+//                <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText]}>
+//                    {route.title}
+//                </Text> : <View style={navigatorStyle.navBarTitleAndroid}>
+//                <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText]}>
+//                    {route.title}
+//                </Text>
+//            </View>
+//        )
+//    },
+//
+//}
 
 export default AppEventListenerEnhance(Version)

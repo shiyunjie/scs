@@ -50,11 +50,10 @@ import LoadingSpinnerOverlay from 'react-native-smart-loading-spinner-overlay'
 import items from '../constants/serviceItem'
 import pay  from '../constants/pay'
 import typeData from '../constants/mode'
-let typeShow = []
 
 
 import countryData from '../constants/country'
-let countryShow = []
+
 
 let selectedItems = ['信用证',];
 
@@ -121,8 +120,12 @@ class AddOrder extends Component {
 
         this._phoneReg = /^1[34578]\d{9}$/;//手机号码
 
-        this._scrollY=0
-        this._showKeyboard=true;
+        this._scrollY = 0
+        this._showKeyboard = true;
+
+        this.typeShow = []
+        this.countryShow = []
+        this.countryEnd = []
     }
 
     componentWillMount() {
@@ -163,28 +166,26 @@ class AddOrder extends Component {
     onKeyboardWillShow(frames) {
 
         const keyboardSpace = frames.endCoordinates.height//获取键盘高度
-        console.log('Keyboard is shown',keyboardSpace);
-        if(this._showKeyboard) {
+        //console.log('Keyboard is shown', keyboardSpace);
+        if (this._showKeyboard) {
             this.setState({
                 keyboardSpace: keyboardSpace,
             })
             this._scrollView.scrollTo({y: this._scrollY + this.state.keyboardSpace, animated: true})
-            this._showKeyboard=false;
+            this._showKeyboard = false;
         }
     }
 
     onKeyboardWillHide() {
-        console.log('Keyboard is hide');
+        //console.log('Keyboard is hide');
 
-        this._scrollView.scrollTo({ y: this._scrollY, animated: true});
+        this._scrollView.scrollTo({y: this._scrollY, animated: true});
 
         this.setState({
             keyboardSpace: 0,
         })
-        this._showKeyboard=true;
+        this._showKeyboard = true;
     }
-
-
 
 
     async _getPhoneAndName() {
@@ -202,14 +203,19 @@ class AddOrder extends Component {
 
     componentDidMount() {
         //console.log('items:' + this.state.items.length)
-        if (typeShow.length == 0) {
+        if (this.typeShow.length == 0) {
             for (type of typeData) {
-                typeShow.push(type.value)
+                this.typeShow.push(type.value)
             }
         }
-        if (countryShow.length == 0) {
+        if (this.countryShow.length == 0) {
             for (data of countryData) {
-                countryShow.push(data.name)
+                this.countryShow.push(data.name)
+            }
+        }
+        if (this.countryEnd.length == 0) {
+            for (data of countryData) {
+                this.countryEnd.push(data.name)
             }
         }
 
@@ -222,9 +228,9 @@ class AddOrder extends Component {
         }
     }
 
-    _onScroll(e){
+    _onScroll(e) {
         this._scrollY = e.nativeEvent.contentOffset.y
-        console.log(`this._scrollY = ${this._scrollY}`)
+        //console.log(`this._scrollY = ${this._scrollY}`)
     }
 
 
@@ -278,24 +284,38 @@ class AddOrder extends Component {
                         onKeyboardWillShow={this.onKeyboardWillShow.bind(this)}
                         onKeyboardWillHide={this.onKeyboardWillHide.bind(this)}
                         onScroll={this._onScroll.bind(this)}
-                        scrollEventThrottle={100}
-                        >
+                        scrollEventThrottle={100}>
                         <TouchableOpacity
                             style={[{marginTop:10,height:50,}]}
                             onPress={()=>{
+                             //查找下标
+                             console.log(`this.state.type:`,this.state.type);
+                            let index=0;
+
+                             for(let i=0;i<this.typeShow.length;i++){
+                             if(this.typeShow[i]==this.state.type){
+
+                                 index=i;
+                                  console.log(`index:`,index);
+                                 break;
+                                 }
+                             }
+
+
                           Picker.init({
-                          pickerData: typeShow,
+                          pickerData: this.typeShow ,
                           pickerConfirmBtnText:'确定',
                           pickerCancelBtnText:'取消',
                           pickerTitleText:'选择贸易条款',
-                          selectedValue: [0],
+                          selectedValue: [this.typeShow[index]],
                           onPickerConfirm: data => {
+
                               this.setState({type:data+''})
                           },
                           onPickerCancel: data => {
-                              //console.log(data);
                           },
                           onPickerSelect: data => {
+
                               this.setState({type:data+''})
                           }
                             });
@@ -346,13 +366,25 @@ class AddOrder extends Component {
                         </TouchableOpacity>
                         <TouchableOpacity
                             style={[{height:50,}]}
+
                             onPress={()=>{
+                            let index=0;
+
+                             for(let i=0;i<this.countryShow.length;i++){
+                             if(this.countryShow[i]==this.state.start){
+
+                                 index=i;
+                                  console.log(`index:`,index);
+                                 break;
+                                 }
+                             }
+
                              Picker.init({
-                                    pickerData: countryShow,
+                                    pickerData: this.countryShow,
                                     pickerConfirmBtnText:'确定',
                                     pickerCancelBtnText:'取消',
                                     pickerTitleText:'出发国家',
-                                    selectedValue: [0],
+                                    selectedValue: [this.countryShow[index]],
                                     onPickerConfirm: data => {
                                         this.setState({start:data+''})
                                     },
@@ -375,12 +407,22 @@ class AddOrder extends Component {
                         <TouchableOpacity
                             style={{height:50,}}
                             onPress={()=>{
+                            let index=0;
+
+                             for(let i=0;i<this.countryEnd.length;i++){
+                             if(this.countryEnd[i]==this.state.reach){
+
+                                 index=i;
+                                  console.log(`index:`,index);
+                                 break;
+                                 }
+                             }
                                     Picker.init({
-                                    pickerData: countryShow,
+                                    pickerData: this.countryEnd,
                                     pickerConfirmBtnText:'确定',
                                     pickerCancelBtnText:'取消',
                                     pickerTitleText:'目的国家',
-                                    selectedValue: [0],
+                                    selectedValue: [this.countryEnd[index]],
                                     onPickerConfirm: data => {
                                         this.setState({reach:data+''})
                                     },
@@ -424,7 +466,7 @@ class AddOrder extends Component {
                         <TouchableOpacity
                             style={{height:50,}}
                             onPress={()=>{
-                        let select
+                                 let select
                                  if (this.state.logistics==1) {
                                          //取消国际物流
                                         select=0
@@ -565,8 +607,10 @@ class AddOrder extends Component {
                             />
                         </TouchableOpacity>
 
+                        <Text
+                            style={[styles.labelText,{marginLeft:constants.MarginLeftRight,paddingTop:5,paddingBottom:5,}]}>委托内容</Text>
 
-                        <View style={{height:150,marginTop:5,}}>
+                        <View style={{height:150,}}>
                             <TextInput
                                 style={[styles.labelText,{flex:1,
                                     fontSize:14,
@@ -577,7 +621,7 @@ class AddOrder extends Component {
                                     justifyContent:'flex-start',
                                     }]}
                                 clearButtonMode="while-editing"
-                                placeholder='委托内容'
+                                //placeholder='委托内容'
                                 maxLength={300}
                                 underlineColorAndroid='transparent'
                                 multiline={true}//多行输入
@@ -684,10 +728,10 @@ class AddOrder extends Component {
     async _fetchData() {
         //console.log(`_fetchData`)
         try {
-            let departure = countryData[countryShow.indexOf(this.state.start)]
+            let departure = countryData[this.countryShow.indexOf(this.state.start)]
             //console.log(`departure_id_start`, departure)
             let departure_id = departure.id
-            let destination = countryData[countryShow.indexOf(this.state.reach)]
+            let destination = countryData[this.countryEnd.indexOf(this.state.reach)]
             //console.log(`destination_id_reach`, destination)
             let destination_id = destination.id
 
@@ -725,11 +769,18 @@ class AddOrder extends Component {
             let resultData = await this.fetch(options)
 
             let result = await this.gunZip(resultData)
-
+            if (!result) {
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: '服务器打盹了,稍后再试试吧'
+                })
+                return
+            }
             result = JSON.parse(result)
-            //console.log('gunZip:', result)
+            console.log('gunZip:', result)
 
-            if(!result){
+            if (!result) {
                 this._toast.show({
                     position: Toast.constants.gravity.center,
                     duration: 255,
@@ -786,7 +837,7 @@ class AddOrder extends Component {
              loading: false,
              //disabled: false
              })*/
-            if(this._modalLoadingSpinnerOverLay) {
+            if (this._modalLoadingSpinnerOverLay) {
                 this._modalLoadingSpinnerOverLay.hide({duration: 0,})
             }
             //console.log(`SplashScreen.close(SplashScreen.animationType.scale, 850, 500)`)
@@ -797,10 +848,10 @@ class AddOrder extends Component {
     async _fetchData_update() {
         //console.log(`_fetchData_update`)
         try {
-            let departure = countryData[countryShow.indexOf(this.state.start)]
+            let departure = countryData[this.countryShow.indexOf(this.state.start)]
             //console.log(`departure_id_start`, departure)
             let departure_id = departure.id
-            let destination = countryData[countryShow.indexOf(this.state.reach)]
+            let destination = countryData[this.countryEnd.indexOf(this.state.reach)]
             //console.log(`destination_id_reach`, destination)
             let destination_id = destination.id
 
@@ -839,13 +890,20 @@ class AddOrder extends Component {
             let resultData = await this.fetch(options)
 
             let result = await this.gunZip(resultData)
-
+            if (!result) {
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: '服务器打盹了,稍后再试试吧'
+                })
+                return
+            }
             result = JSON.parse(result)
-            if(this._modalLoadingSpinnerOverLay) {
+            if (this._modalLoadingSpinnerOverLay) {
                 this._modalLoadingSpinnerOverLay.hide({duration: 0,})
             }
-            //console.log('gunZip:', result)
-            if(!result){
+            console.log('gunZip:', result)
+            if (!result) {
                 this._toast.show({
                     position: Toast.constants.gravity.center,
                     duration: 255,
@@ -874,7 +932,7 @@ class AddOrder extends Component {
                 //修改订单状态
                 NativeAppEventEmitter.emit('orderDetail_hasUpdate_should_resetState', this.state.id)
 
-                setTimeout(()=>this.props.navigator.popToTop(),1000)
+                setTimeout(()=>this.props.navigator.popToTop(), 1000)
 
 
             } else {
@@ -903,7 +961,7 @@ class AddOrder extends Component {
              loading: false,
              //disabled: false
              })*/
-            if(this._modalLoadingSpinnerOverLay) {
+            if (this._modalLoadingSpinnerOverLay) {
                 this._modalLoadingSpinnerOverLay.hide({duration: 0,})
             }
             //console.log(`SplashScreen.close(SplashScreen.animationType.scale, 850, 500)`)
@@ -981,8 +1039,11 @@ const styles = StyleSheet.create({
 
 export default AppEventListenerEnhance(XhrEnhance(AddOrder))
 
+
+import {navigationBar} from '../components/NavigationBarRouteMapper'
+
 const navigationBarRouteMapper = {
-    LeftButton: function (route, navigator, index, navState) {
+    ...navigationBar, LeftButton: function (route, navigator, index, navState) {
         if (index === 0) {
             return null;
         }
@@ -1003,22 +1064,47 @@ const navigationBarRouteMapper = {
 
         );
     },
-
-    RightButton: function (route, navigator, index, navState) {
-
-    },
-
-    Title: function (route, navigator, index, navState) {
-        return (
-            Platform.OS == 'ios' ?
-                <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText]}>
-                    {route.title}
-                </Text> : <View style={navigatorStyle.navBarTitleAndroid}>
-                <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText]}>
-                    {route.title}
-                </Text>
-            </View>
-        )
-    },
-
 }
+
+/*
+ const navigationBarRouteMapper = {
+ LeftButton: function (route, navigator, index, navState) {
+ if (index === 0) {
+ return null;
+ }
+
+ var previousRoute = navState.routeStack[index - 1];
+ return (
+ <TouchableOpacity
+ onPress={() => navigator.popToTop()}
+ style={navigatorStyle.navBarLeftButton}>
+ <View style={navigatorStyle.navBarLeftButtonAndroid}>
+ <Icon
+ style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText,{fontSize: 20,}]}
+ name={'ios-arrow-back'}
+ size={constants.IconSize}
+ color={'white'}/>
+ </View>
+ </TouchableOpacity>
+
+ );
+ },
+
+ RightButton: function (route, navigator, index, navState) {
+
+ },
+
+ Title: function (route, navigator, index, navState) {
+ return (
+ Platform.OS == 'ios' ?
+ <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText]}>
+ {route.title}
+ </Text> : <View style={navigatorStyle.navBarTitleAndroid}>
+ <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText]}>
+ {route.title}
+ </Text>
+ </View>
+ )
+ },
+
+ }*/

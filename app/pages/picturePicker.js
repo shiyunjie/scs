@@ -198,30 +198,11 @@ const styles = StyleSheet.create({
 
 export default AppEventListenerEnhance(PicturePicker)
 
+
+import {navigationBar} from '../components/NavigationBarRouteMapper'
+
 const navigationBarRouteMapper = {
-
-    LeftButton: function (route, navigator, index, navState) {
-        if (index === 0) {
-            return null;
-        }
-
-        var previousRoute = navState.routeStack[index - 1];
-        return (
-            <TouchableOpacity
-                onPress={() => navigator.pop()}
-                style={navigatorStyle.navBarLeftButton}>
-                <View style={navigatorStyle.navBarLeftButtonAndroid}>
-                    <Icon
-                        style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText,{fontSize: 20,}]}
-                        name={'ios-arrow-back'}
-                        size={constants.IconSize}
-                        color={'white'}/>
-                </View>
-            </TouchableOpacity>
-
-        );
-    },
-
+    ...navigationBar,
     RightButton: function (route, navigator, index, navState) {
         return (
             <TouchableOpacity
@@ -238,18 +219,61 @@ const navigationBarRouteMapper = {
                 </View>
             </TouchableOpacity>)
     },
+};
 
-    Title: function (route, navigator, index, navState) {
-        return (
-            Platform.OS == 'ios' ?
-                <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText]}>
-                    {route.title}
-                </Text> : <View style={navigatorStyle.navBarTitleAndroid}>
-                <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText]}>
-                    {route.title}
-                </Text>
-            </View>
-        )
-    },
 
-}
+//const navigationBarRouteMapper = {
+//
+//    LeftButton: function (route, navigator, index, navState) {
+//        if (index === 0) {
+//            return null;
+//        }
+//
+//        var previousRoute = navState.routeStack[index - 1];
+//        return (
+//            <TouchableOpacity
+//                onPress={() => navigator.pop()}
+//                style={navigatorStyle.navBarLeftButton}>
+//                <View style={navigatorStyle.navBarLeftButtonAndroid}>
+//                    <Icon
+//                        style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText,{fontSize: 20,}]}
+//                        name={'ios-arrow-back'}
+//                        size={constants.IconSize}
+//                        color={'white'}/>
+//                </View>
+//            </TouchableOpacity>
+//
+//        );
+//    },
+//
+//    RightButton: function (route, navigator, index, navState) {
+//        return (
+//            <TouchableOpacity
+//                onPress={() => {
+//                NativeAppEventEmitter.emit('PicturePicker.selected.setState')
+//            }}
+//                style={navigatorStyle.navBarRightButton}>
+//                <View style={navigatorStyle.navBarLeftButtonAndroid}>
+//                    <Text
+//                        style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText,{fontSize:14}]}
+//                        color={'white'}>
+//                        发送
+//                    </Text>
+//                </View>
+//            </TouchableOpacity>)
+//    },
+//
+//    Title: function (route, navigator, index, navState) {
+//        return (
+//            Platform.OS == 'ios' ?
+//                <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText]}>
+//                    {route.title}
+//                </Text> : <View style={navigatorStyle.navBarTitleAndroid}>
+//                <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText]}>
+//                    {route.title}
+//                </Text>
+//            </View>
+//        )
+//    },
+//
+//}
