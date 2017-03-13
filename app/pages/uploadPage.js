@@ -35,7 +35,12 @@ import RNFS from 'react-native-fs'
 
 import {doSign} from '../lib/utils'
 import LoadingSpinnerOverlay from 'react-native-smart-loading-spinner-overlay'
-import ImageZoom from 'react-native-image-pan-zoom';
+import {ImageZoom} from 'react-native-image-pan-zoom';
+
+import doc from '../images/word.png'
+import excel from '../images/excel.png'
+import pdf from '../images/pdf.png'
+import file from '../images/File_Blank.png'
 
 const NativeCompressedModule = NativeModules.NativeCompressedModule;
 
@@ -131,14 +136,7 @@ class UploadPage extends Component {
                 //
             })
         )
-        this.addAppEventListener(
-            NativeAppEventEmitter.addListener('PicturePicker.finish.saveIds', () => {
-                if(this._modalLoadingSpinnerOverLay){
-                    this._modalLoadingSpinnerOverLay.show()
-                }
-                this._fetch_finish()
-            })
-        )
+
         this.addAppEventListener(
             this.props.navigator.navigationContext.addListener('didfocus', (event) => {
                 //console.log(`payPage didfocus...`)
@@ -147,7 +145,44 @@ class UploadPage extends Component {
                     console.log("upload didAppear")
 
                     if (this.firstFetch) {
-                        this._fetchData()
+                        //this._fetchData()
+
+                        let photos = []
+                        for (let data of this.props.showList) {
+                            if(!data.file_url){
+                                continue
+                            }
+                            //console.log('data', data)
+                            let file = {uri: data.file_url, id: data.id}
+                            if (this._ids.indexOf(file) == -1) {
+                                this._ids.push(file)
+                                //console.log(`ids:`, this._ids);
+                            }
+
+                            photos.push(
+                                {
+                                    filename: data.filename,
+                                    height: data.height,
+                                    isStored: true,
+                                    uploaded: true,
+                                    uploading: false,
+                                    uri: data.file_url,
+                                    big_uri: data.big_url,
+                                    width: data.width,
+                                    file_mime:data.file_mime,
+                                    file_name:data.file_name
+
+                                }
+                            )
+                        }
+                        //很明显, 这里UI要更新
+                        let photoList = this.state.photoList
+                        photoList = photoList.concat(photos)
+                        this.setState({
+                            photoList,
+                            dataSource: this._dataSource.cloneWithRows(photoList),
+                        })
+
                         this.firstFetch = false;
                     }
                 }else {
@@ -220,27 +255,51 @@ class UploadPage extends Component {
         return (
             <View style={styles.container}>
                 <Modal
-                    animationType={"slide"}
+                    animationType={"none"}
                     transparent={true}
                     visible={this.state.modalVisible}
                     onRequestClose={() => {this.setState({modalVisible:false})}}>
                     <View style={{flex:1,justifyContent:'center',alignItems:'center',
-                    backgroundColor:'rgba(0, 0, 0, 0.5)'}}>
-                        <TouchableOpacity
-                            style={{position:'absolute',top:10,right:10, backgroundColor: 'transparent',}}
-                            onPress={()=>this.setState({modalVisible:false})}>
-                            <Icon
-                                name='md-close-circle'  // 图标
-                                size={constants.IconSize}
-                                color={constants.UIActiveColor}/>
-                        </TouchableOpacity>
-                        <ImageZoom cropWidth={500}
-                                   cropHeight={500}
-                                   imageWidth={400}
-                                   imageHeight={400}>
+                    backgroundColor:constants.UIInActiveColor}}>
+                        <View
+                            style={{width:deviceWidth,height:Platform.OS == 'ios' ? 64 : 56
+                            ,backgroundColor:'black',flexDirection:'row',position:'absolute',top:0,
+                            justifyContent:'center',alignItems: 'center',paddingTop:10}}>
+                            <TouchableOpacity
+                                style={{flex:1,paddingLeft:20}}
+                                onPress={()=>this.setState({modalVisible:false})}>
+                                <Icon
+                                    name={'ios-arrow-back'}
+                                    size={constants.IconSize}
+                                    color='white'
+                                />
+                            </TouchableOpacity>
+                            <View
+                                style={{flex:4}}
+                            />
+
+                                <TouchableOpacity
+                                    style={{flex:1,alignItems:'flex-end',paddingRight:20,}}
+                                    onPress={()=>{
+                            this._removeFromUploadQuene(this.state.showUrl)
+
+                            }}>
+                                    <Icon
+                                        name="ios-trash"
+                                        size={constants.IconSize}
+                                        color='white'
+                                    />
+                                </TouchableOpacity>
+
+
+                        </View>
+                        <ImageZoom cropWidth={deviceWidth+100}
+                                   cropHeight={deviceWidth+100}
+                                   imageWidth={deviceWidth}
+                                   imageHeight={deviceWidth}>
                             <Image
                                 source={{uri: this.state.showUrl}}
-                                style={{width:400,height:400, position: 'relative',margin: 5, }}/>
+                                style={{width:deviceWidth,height:deviceWidth, position: 'relative',margin: 5, }}/>
                         </ImageZoom>
                     </View>
 
@@ -292,50 +351,157 @@ class UploadPage extends Component {
     }
 
     _renderRow = (rowData, sectionID, rowID) => {
-        let width = height = deviceWidth / 3
-        return (
-            <View
-                key={`key${rowID}img`}
-                style={[styles.itemViewStyle,{width, height,}]}>
-                <TouchableOpacity
-                    onPress={this._showBigUrl.bind(this,rowData.big_uri)}
-                    style={{flex: 1,}}>
-                    <Image
-                        source={{uri: rowData.big_uri}}
-                        style={{flex: 1, position: 'relative',margin: 5, }}>
+        let width = height =deviceWidth / 3
+        if(!rowData.file_mime||rowData.file_mime.indexOf('image/')>-1) {
+            return (
 
-                        {
-                            rowData.uploading ? <View
-                                style={{flex: 1, backgroundColor: 'rgba(160, 160, 160, 0.5)', justifyContent: 'center', alignItems: 'center',}}>
-                                <ActivityIndicator
-                                    animating={true}
-                                    color={'#fff'}
-                                    size={'small'}/>
-                                <Text
-                                    style={{color: '#fff', padding: 5, fontSize: 14,}}>{rowData.uploadProgress ? Math.floor(rowData.uploadProgress * 100) : 0}%</Text>
-                            </View> : null
-                        }
-                        {
-                            rowData.uploadError ? <View
-                                style={{flex: 1, backgroundColor: 'rgba(160, 160, 160, 0.7)', justifyContent: 'center', alignItems: 'center',}}>
+                <View
+                    key={`key${rowID}img`}
+                    style={[styles.itemViewStyle,{width:width, height:height,}]}>
+                    <TouchableOpacity
+                        onPress={this._showBigUrl.bind(this,rowData.big_uri)}
+                        style={{flex: 1,}}>
+                        <Image
+                            source={{uri: rowData.big_uri}}
+                            style={{flex: 1, position: 'relative',margin: 5, }}>
 
-                                <Text
-                                    style={{color: '#fff', padding: 5, fontSize: 14,}}>上传失败</Text>
-                            </View> : null
-                        }
-                        <TouchableOpacity
-                            style={{position:'absolute',top:0,right:0, backgroundColor: 'transparent',}}
-                            onPress={this._removeFromUploadQuene.bind(this, rowData.uri)}>
-                            <Icon
-                                name='md-close-circle'  // 图标
-                                size={constants.IconSize}
-                                color={constants.UIActiveColor}/>
-                        </TouchableOpacity>
-                    </Image>
-                </TouchableOpacity>
+                            {
+                                rowData.uploading ? <View
+                                    style={{flex: 1, backgroundColor: 'rgba(160, 160, 160, 0.5)', justifyContent: 'center', alignItems: 'center',}}>
+                                    <ActivityIndicator
+                                        animating={true}
+                                        color={'#fff'}
+                                        size={'small'}/>
+                                    <Text
+                                        style={{color: '#fff', padding: 5, fontSize: 14,}}>{rowData.uploadProgress ? Math.floor(rowData.uploadProgress * 100) : 0}%</Text>
+                                </View> : null
+                            }
+                            {
+                                rowData.uploadError ? <View
+                                    style={{flex: 1, backgroundColor: 'rgba(160, 160, 160, 0.7)', justifyContent: 'center', alignItems: 'center',}}>
 
-            </View>
-        )
+                                    <Text
+                                        style={{color: '#fff', padding: 5, fontSize: 14,}}>上传失败</Text>
+                                </View> : null
+                            }
+                            <TouchableOpacity
+                                style={{position:'absolute',top:0,right:0, backgroundColor: 'transparent',}}
+                                onPress={this._removeFromUploadQuene.bind(this, rowData.uri)}>
+                                <Icon
+                                    name='ios-remove-circle'  // 图标
+                                    size={constants.IconSize}
+                                    color={constants.UIActiveColor}/>
+                            </TouchableOpacity>
+                        </Image>
+                    </TouchableOpacity>
+
+                </View>
+
+            )
+        }else{
+            if (rowData.file_mime.indexOf('pdf')>-1) {
+                return (
+                    <View
+                        key={`${rowID}`}
+                        style={{width:width,height:height}}>
+                        <Image
+                            key={`${rowID}`}
+                            style={{width:width-25,height:height-25}}
+                            source={pdf}>
+                            <TouchableOpacity
+                                style={{position:'absolute',top:0,right:0, backgroundColor: 'transparent',}}
+                                onPress={this._removeFromUploadQuene.bind(this, rowData.uri)}>
+                                <Icon
+                                    name='md-close-circle'  // 图标
+                                    size={constants.IconSize}
+                                    color={constants.UIActiveColor}/>
+                            </TouchableOpacity>
+                        </Image>
+                        <Text
+                            style={{fontSize:14,color:constants.LabelColor}}
+                            numberOfLines={1}>
+                            {rowData.file_name}
+                        </Text>
+                    </View>
+                )
+            } else if (rowData.file_mime.indexOf('word')>-1) {
+                return (
+                    <View
+                        key={`${rowID}`}
+                        style={{width:width,height:height}}>
+                        <Image
+                            key={`${rowID}`}
+                            style={{width:width-25,height:height-25}}
+                            source={doc}>
+                            <TouchableOpacity
+                                style={{position:'absolute',top:0,right:0, backgroundColor: 'transparent',}}
+                                onPress={this._removeFromUploadQuene.bind(this, rowData.uri)}>
+                                <Icon
+                                    name='md-close-circle'  // 图标
+                                    size={constants.IconSize}
+                                    color={constants.UIActiveColor}/>
+                            </TouchableOpacity>
+                        </Image>
+                        <Text
+                            style={{fontSize:14,color:constants.LabelColor}}
+                            numberOfLines={1}>
+                            {rowData.file_name}
+                        </Text>
+                    </View>
+                )
+            } else if (rowData.file_mime.indexOf('excel')>-1) {
+                return (
+                    <View
+                        key={`${rowID}`}
+                        style={{width:width,height:height}}>
+                        <Image
+                            key={`${rowID}`}
+                            style={{width:width-25,height:height-25}}
+                            source={excel}>
+                            <TouchableOpacity
+                                style={{position:'absolute',top:0,right:0, backgroundColor: 'transparent',}}
+                                onPress={this._removeFromUploadQuene.bind(this, rowData.uri)}>
+                                <Icon
+                                    name='md-close-circle'  // 图标
+                                    size={constants.IconSize}
+                                    color={constants.UIActiveColor}/>
+                            </TouchableOpacity>
+                        </Image>
+                        <Text
+                            style={{fontSize:14,color:constants.LabelColor}}
+                            numberOfLines={1}>
+                            {rowData.file_name}
+                        </Text>
+                    </View>
+                )
+            }else {
+                return (
+                    <View
+                        key={`${rowID}`}
+                        style={{width:width,height:height}}>
+                        <Image
+                            style={{width:width-25,height:height-25,}}
+                            source={file}>
+                            <TouchableOpacity
+                                style={{position:'absolute',top:0,right:0, backgroundColor: 'transparent',}}
+                                onPress={this._removeFromUploadQuene.bind(this, rowData.uri)}>
+                                <Icon
+                                    name='ios-remove-circle'  // 图标
+                                    size={constants.IconSize}
+                                    color={constants.UIActiveColor}/>
+                            </TouchableOpacity>
+                        </Image>
+                        <Text
+                        style={{fontSize:14,color:constants.LabelColor}}
+                        numberOfLines={1}>
+                            {rowData.file_name}
+                        </Text>
+                    </View>
+                )
+
+
+            }
+        }
     }
 
     componentWillUnmount() {
@@ -373,41 +539,60 @@ class UploadPage extends Component {
     }
 
     _removeFromUploadQuene = (uri) => {
-        //先看待waitForUploadQuene上传队列中是否存在, 存在直接移除队列中的这个对象, 阻止后续的上传
-        let uploadTaskIndex = this._waitForUploadQuene.find(uploadTask => {
-            return uri == uploadTask.uri
-        })
-        this._waitForUploadQuene.splice(uploadTaskIndex, 1)
 
-        //再看uploadingXhrCacheList中是否存在(会包含上传失败的xhr), 存在就移除, 这个list的长度会影响当前的上传可用线程数
-        let xhrCache = this._uploadingXhrCacheList.find((xhrCache) => {
-            return uri == xhrCache.uri
-        })
-        let xhr = xhrCache && xhrCache.xhr
-        if (xhr && (xhr.status != 200 || xhr.readyState != 4)) {
-            xhr.abort()
-        }
-        //遍历ids如果包含,删除id
-        for (let data of this._ids) {
+        Alert.alert('温馨提醒','确定删除吗?',[
+            {text:'取消',onPress:()=>{}},
+            {text:'确定',onPress:()=> {
 
-            if (data.uri == uri) {
-                //console.log(`ids_delete${data.uri}:`, data.id)
-                this._ids.splice(this._ids.indexOf(data), 1)
-                break
-            }
-        }
+                //先看待waitForUploadQuene上传队列中是否存在, 存在直接移除队列中的这个对象, 阻止后续的上传
+                let uploadTaskIndex = this._waitForUploadQuene.find(uploadTask => {
+                    return uri == uploadTask.uri
+                })
+                this._waitForUploadQuene.splice(uploadTaskIndex, 1)
+
+                //再看uploadingXhrCacheList中是否存在(会包含上传失败的xhr), 存在就移除, 这个list的长度会影响当前的上传可用线程数
+                let xhrCache = this._uploadingXhrCacheList.find((xhrCache) => {
+                    return uri == xhrCache.uri
+                })
+                let xhr = xhrCache && xhrCache.xhr
+                if (xhr && (xhr.status != 200 || xhr.readyState != 4)) {
+                    xhr.abort()
+                }
+                //遍历ids如果包含,删除id
+                for (let data of this._ids) {
+
+                    if (data.uri == uri) {
+                        //console.log(`ids_delete${data.uri}:`, data.id)
+                        this._ids.splice(this._ids.indexOf(data), 1)
+                        break
+                    }
+                }
 
 
-        //根据photoIndex, 删除photoList, 并更新state
-        let { photoList, } = this.state
-        let photoIndex = photoList.findIndex((photo) => {
-            return photo.uri == uri
-        })
-        photoList.splice(photoIndex, 1)
-        this.setState({
-            photoList,
-            dataSource: this._dataSource.cloneWithRows(photoList),
-        });
+                //根据photoIndex, 删除photoList, 并更新state
+                let { photoList, } = this.state
+                let photoIndex = photoList.findIndex((photo) => {
+                    return photo.uri == uri
+                })
+                photoList.splice(photoIndex, 1)
+                this.setState({
+                    photoList,
+                    dataSource: this._dataSource.cloneWithRows(photoList),
+                    modalVisible:false
+                });
+
+               for(let data of this.props.showList){
+                   if(data.file_url==uri){
+                       this.props.showList.splice(this.props.showList.indexOf(data),1)
+                       break;
+                   }
+               }
+
+            }},
+            ])
+
+
+
     }
 
     _startUploadQuene() {
@@ -518,36 +703,84 @@ class UploadPage extends Component {
             this._startUploadQuene()    //再次启动上传队列(因为this._uploadingXhrCacheList的length有变化了)
         };
 
-        //xhr.open('post', 'http://posttestserver.com/post.php')
-        xhr.open('post', constants.api.service)
+        if(constants.development){
+            //测试模式
+            xhr.open('post', 'http://posttestserver.com/post.php')
+        }else {
+            xhr.open('post', constants.api.service)
+        }
         xhr.setRequestHeader('Content-Type', 'multipart/form-data')
         xhr.onload = () => {
             if (xhr.status == 200 && xhr.readyState == 4) {
                 //console.log(`xhr.responseText = ${xhr.responseText}`)
                 //处理获取的id
                 let eventName = 'onload'
-                this.gunZip(xhr.responseText).then((response)=> {
 
-                    let result = JSON.parse(response)
-                    if(!result){
+                if(constants.development){
+                    //开发模式
+                    let myDate = new Date();
 
-                        return
+                    let id=myDate.getMilliseconds()+''
+
+                    //id加入集合
+                    let file = {uri: uploadPhoto.big_uri, id: id}
+                    if (this._ids.indexOf(file) == -1) {
+                        this._ids.push(file)
+                        //console.log(`ids:`, this._ids);
                     }
-                    if (result.code == '10' && result.result) {
-                        //console.log(`response.result:`, result.result)
-                        //id加入集合
-                        let file = {uri: uploadPhoto.big_uri, id: result.result.id}
-                        if (this._ids.indexOf(file) == -1) {
-                            this._ids.push(file)
-                            //console.log(`ids:`, this._ids);
+
+                    //url 加入到上一个页面显示照片列表,
+                   /* this.props.showList.unshift({
+                        id:id,
+                        file_url:uploadPhoto.big_uri,
+                        big_url:uploadPhoto.big_uri,
+                    })*/
+                    //this.props.showList.splice(this.props.showList.length-1,0,{
+                    //    id:id,
+                    //    file_url:uploadPhoto.big_uri,
+                    //    big_url:uploadPhoto.big_uri,
+                    //})
+                     this.props.showList.push({
+                        id:id,
+                        file_url:uploadPhoto.big_uri,
+                        big_url:uploadPhoto.big_uri,
+                    })
+
+
+
+                }else {
+
+
+                    this.gunZip(xhr.responseText).then((response)=> {
+
+                        let result = JSON.parse(response)
+                        if (!result) {
+
+                            return
                         }
-                    } else {
-                        //id出错
-                        //console.log(`error`, result)
-                        eventName = 'onerror'
-                    }
-                }, (error)=>console.log(`responseText:`, error))
+                        if (result.code == '10' && result.result) {
+                            //console.log(`response.result:`, result.result)
+                            //id加入集合
+                            let file = {uri: uploadPhoto.big_uri, id: result.result.id}
+                            if (this._ids.indexOf(file) == -1) {
+                                this._ids.push(file)
+                                //console.log(`ids:`, this._ids);
+                            }
 
+                            //url 加入到上一个页面显示照片列表,
+                            this.props.showList.unshift({
+                                id: result.result.id,
+                                file_url: uploadPhoto.big_uri,
+                                big_url: uploadPhoto.big_uri,
+                            })
+
+                        } else {
+                            //id出错
+                            //console.log(`error`, result)
+                            eventName = 'onerror'
+                        }
+                    }, (error)=>console.log(`responseText:`, error))
+                }
 
                 let photoList = this._handlePhotoList({uploadPhoto, eventName: eventName})
                 this.setState({
@@ -630,7 +863,7 @@ class UploadPage extends Component {
             }
         }
 
-        xhr.timeout = 600000 //超时60秒
+        xhr.timeout = 60000 //超时60秒
 
         //console.log(`formdata:`, formdata)
         xhr.send(formdata);
@@ -697,97 +930,7 @@ class UploadPage extends Component {
     }
 
 
-    async _fetch_finish() {
 
-        try {
-            let token = await getToken()
-            let deviceID = await getDeviceID()
-            let fileIds = '';
-            for (let data of this._ids) {
-                fileIds += data.id + ','
-            }
-            let options = {
-                method: 'post',
-                url: constants.api.service,
-                data: {
-                    iType: constants.iType.uploadFinish,
-                    id: this.state.service_id,
-                    file_ids: fileIds,
-                    deviceId: deviceID,
-                    token: token,
-                }
-            }
-
-            options.data = await this.gZip(options)
-
-            //console.log(`_fetch_finish options:`, options)
-
-            let resultData = await this.fetch(options)
-
-            let result = await this.gunZip(resultData)
-            if (!result) {
-                this._toast.show({
-                    position: Toast.constants.gravity.center,
-                    duration: 255,
-                    children: '服务器打盹了,稍后再试试吧'
-                })
-                return
-            }
-            result = JSON.parse(result)
-            //console.log('gunZip:', result)
-            if(this._modalLoadingSpinnerOverLay) {
-                this._modalLoadingSpinnerOverLay.hide({duration: 0,})
-            }
-            if(!result){
-                this._toast.show({
-                    position: Toast.constants.gravity.center,
-                    duration: 255,
-                    children: '服务器打盹了,稍后再试试吧'
-                })
-                return
-            }
-            if (result.code && result.code == 10) {
-
-                //console.log('token', result.result)
-
-                this._toast.show({
-                    position: Toast.constants.gravity.center,
-                    duration: 255,
-                    children: '上传成功'
-                })
-                setTimeout(()=>this.props.navigator.pop(),1000)
-
-
-            } else {
-                this._toast.show({
-                    position: Toast.constants.gravity.center,
-                    duration: 255,
-                    children: result.msg
-                })
-            }
-
-
-        }
-        catch (error) {
-            //console.log(error)
-            if(this._toast) {
-                this._toast.show({
-                    position: Toast.constants.gravity.center,
-                    duration: 255,
-                    children: error
-                })
-            }
-
-
-        }
-        finally {
-            if(this._modalLoadingSpinnerOverLay) {
-                this._modalLoadingSpinnerOverLay.hide({duration: 0,})
-            }
-            //console.log(`SplashScreen.close(SplashScreen.animationType.scale, 850, 500)`)
-            //SplashScreen.close(SplashScreen.animationType.scale, 850, 500)
-        }
-    }
 
     async _fetchData() {
         console.log(`upload_fetchData`)
@@ -900,22 +1043,20 @@ const styles = StyleSheet.create({
         flex: 1,
         paddingTop: Platform.OS == 'ios' ? 64 : 56,
         backgroundColor: constants.UIBackgroundColor,
-        flexDirection: 'column',
+        flexDirection: 'column'
     },
     listStyle: {
         flexDirection: 'row', //改变ListView的主轴方向
-        flexWrap: 'wrap', //换行
+        flexWrap: 'wrap' //换行
     },
     itemViewStyle: {
         //justifyContent: 'center',
         //alignItems:'center', //这里要注意，如果每个Item都在外层套了一个 Touchable的时候，一定要设置Touchable的宽高
-
         //height:150,
         overflow: 'hidden',
         //borderBottomWidth: StyleSheet.hairlineWidth,
         //borderLeftWidth: StyleSheet.hairlineWidth,
-        borderColor: constants.UIInActiveColor,
-
+        borderColor: constants.UIInActiveColor
     },
     buttonStyle: {
         position: 'absolute',
@@ -929,7 +1070,7 @@ const styles = StyleSheet.create({
         height: 40,
         borderColor: constants.UIActiveColor,
         justifyContent: 'center',
-        borderRadius: 30,
+        borderRadius: 30
 
     },
     viewItem: {
@@ -937,13 +1078,13 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'flex-start',
         alignItems: 'center',
-        paddingLeft: constants.MarginLeftRight,
+        paddingLeft: constants.MarginLeftRight
     },
     line: {
         marginLeft: constants.MarginLeftRight,
         marginRight: constants.MarginLeftRight,
         borderBottomWidth: StyleSheet.hairlineWidth,
-        borderColor: constants.UIInActiveColor,
+        borderColor: constants.UIInActiveColor
     },
 
 });
@@ -952,19 +1093,6 @@ import {navigationBar} from '../components/NavigationBarRouteMapper'
 
 const navigationBarRouteMapper = {
     ...navigationBar,
-    RightButton: function (route, navigator, index, navState) {
-        return (
-            <TouchableOpacity
-                onPress={() => {
-                NativeAppEventEmitter.emit('PicturePicker.finish.saveIds')
-                }}
-                style={navigatorStyle.navBarRightButton}>
-                <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText]}>
-                    完成
-                </Text>
-            </TouchableOpacity>
-        )
-    },
 };
 
 //const navigationBarRouteMapper = {

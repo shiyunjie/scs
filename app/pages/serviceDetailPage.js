@@ -19,7 +19,6 @@ import UploadPage from './uploadPage'
 import LogisticsPage from './logisticsPage'
 import LoginPage from './loginPage'
 import PayPage from './payPage'
-import AddOrderPage from './addOrderPage'
 import constants from  '../constants/constant'
 import navigatorStyle from '../styles/navigatorStyle'       //navigationBar样式
 import Icon from 'react-native-vector-icons/Ionicons'
@@ -30,8 +29,12 @@ import {getDeviceID,getToken} from '../lib/User'
 import XhrEnhance from '../lib/XhrEnhance' //http
 import Toast from 'react-native-smart-toast'
 import ProgressView from '../components/modalProgress'
-//import ModalDialog from '../components/modalDialog'
 
+
+import ImageZoomModal from '../components/ImageZoomModal'
+import ShowPhotoView from '../components/showPhotoView'
+import ServicePhotoPage from './servicePhotoPage'
+let disable=false
 let service_id
 class ServiceDetail extends Component {
     // 构造
@@ -115,13 +118,17 @@ class ServiceDetail extends Component {
             consignee_name: '',// 收货人
 
             consignor_name: '',// 发货人
-            logistics_status_name: '',//物流状态
+
+            photoList:[]
         }
         service_id = this.props.id
         this.firstFetch = true;
 
     }
 
+    componentDidMount() {
+        setTimeout(()=>disable=true,1000)
+    }
     componentWillMount() {
         NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
         let currentRoute = this.props.navigator.navigationContext.currentRoute
@@ -133,6 +140,7 @@ class ServiceDetail extends Component {
                 if (currentRoute === event.data.route) {
                     console.log("OrderDetail willAppear")
                     NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
+                    setTimeout(()=>disable=true,1000)
                 } else {
                     console.log("OrderDetail willDisappear, other willAppear")
                 }
@@ -153,9 +161,9 @@ class ServiceDetail extends Component {
                 //console.log(`payPage didfocus...`)
                 if (event && currentRoute === event.data.route) {
                     console.log("upload didAppear")
-
+                    this._fetchData()
                     if (this.firstFetch) {
-                        this._fetchData()
+
                         this.firstFetch = false;
                     }
                 }else {
@@ -169,6 +177,9 @@ class ServiceDetail extends Component {
 
 
     async _fetchData() {
+        if(!this.firstFetch){
+            this._modalLoadingSpinnerOverLay.show()
+        }
         try {
 
             let token = await getToken()
@@ -219,35 +230,23 @@ class ServiceDetail extends Component {
                     title: '用户登录',
                     component: LoginPage,
                 })
+                disable=false
             }
             if (result.code && result.code == 10) {
 
-                this.setState(
-                    {
+                this.setState({
                         showProgress: false,//显示加载
                         showReload: false,//显示加载更多
-
                         service_no: result.result.service_no,// 服务单号
-
                         order_status_name: result.result.order_status_name,// 服务单状态名称
-
                         order_status: result.result.order_status,// 服务单状态
-
                         remark: result.result.remark,// 备注
-
                         trade_terms: result.result.trade_terms,// 贸易条款
-
                         country_name: result.result.country_name,// 起运国
-
                         destination_name: result.result.destination_name,// 目的国
-
                         logistics_status_name: result.result.logistics_status_name,// 物流状态名称
-
                         time_name: result.result.time_name,// 接单时间
-
-
                         import_clearance: result.result.import_clearance,// 进口清关,0否，1是
-
                         international_logistics: result.result.international_logistics,// 国际物流,0否，1是
 
                         export_country_land: result.result.export_country_land,// 出口国陆运,0否，1是
@@ -297,9 +296,9 @@ class ServiceDetail extends Component {
 
                         consignor_name: result.result.consignor_name,// 发货人
 
-                        logistics_status_name: result.result.logistics_status_name,// 物流状态
-                    }
-                )
+
+                    })
+                this._fetchPhotoList()
 
             } else {
                 this._toast.show({
@@ -326,7 +325,9 @@ class ServiceDetail extends Component {
             })
         }
         finally {
-
+            if(!this.firstFetch&&this._modalLoadingSpinnerOverLay){
+               this._modalLoadingSpinnerOverLay.hide()
+            }
             //console.log(`SplashScreen.close(SplashScreen.animationType.scale, 850, 500)`)
             //SplashScreen.close(SplashScreen.animationType.scale, 850, 500)
         }
@@ -358,14 +359,7 @@ class ServiceDetail extends Component {
             let resultData = await this.fetch(options)
 
             let result = await this.gunZip(resultData)
-            if (!result) {
-                this._toast.show({
-                    position: Toast.constants.gravity.center,
-                    duration: 255,
-                    children: '服务器打盹了,稍后再试试吧'
-                })
-                return
-            }
+
             result = JSON.parse(result)
             //console.log('gunZip:', result)
             if(this._modalLoadingSpinnerOverLay) {
@@ -389,6 +383,7 @@ class ServiceDetail extends Component {
                     title: '用户登录',
                     component: LoginPage,
                 })
+                disable=false
             }
             if (result.code && result.code == 10) {
                 this._toast.show({
@@ -436,6 +431,84 @@ class ServiceDetail extends Component {
         }
     }
 
+    async _fetchPhotoList() {
+        console.log(`fetchData_photoList`)
+        try {
+            let token = await getToken()
+            let deviceID = await getDeviceID()
+
+            let options = {
+                method: 'post',
+                url: constants.api.service,
+                data: {
+                    iType: constants.iType.uploadImageList,
+                    id: service_id,
+                    deviceId: deviceID,
+                    token: token,
+                }
+            }
+
+            options.data = await this.gZip(options)
+
+            //console.log(`_fetchData options:`, options)
+
+            let resultData = await this.fetch(options)
+
+            let result = await this.gunZip(resultData)
+            if (!result) {
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: '服务器打盹了,稍后再试试吧'
+                })
+                return
+            }
+            result = JSON.parse(result)
+            //console.log('gunZip:', result)
+            if (!result) {
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: '服务器打盹了,稍后再试试吧'
+                })
+                return
+            }
+            if (result.code && result.code == 10) {
+
+                //console.log('token', result.result)
+
+                //let photoList = this.state.photoList
+                //photoList = photoList.concat(result.result)
+                this.setState({
+                    photoList:result.result
+
+                })
+
+            } else {
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: result.msg
+                })
+            }
+
+
+        }
+        catch (error) {
+            //console.log(error)
+            if (this._toast) {
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: error
+                })
+            }
+
+
+        }
+
+    }
+
 
     /**
      *                       <View
@@ -453,19 +526,17 @@ class ServiceDetail extends Component {
                         showProgress={this.state.showProgress}
                         showReload={this.state.showReload}
                         fetchData={()=>{
-                    this.setState({
-                    showProgress:true,//显示加载
-                    showReload:false,//显示加载更多
-                     })
-                    this._fetchData()
-                    }}
+                        this.setState({
+                        showProgress:true,//显示加载
+                        showReload:false,//显示加载更多
+                         })
+                        this._fetchData()
+                        }}
                      /> :
-
-
                     <ScrollView style={styles.container}
                                 showsVerticalScrollIndicator={false}>
                         <View style={[{marginTop:10,flexDirection:'row',alignItems:'center',
-                        paddingLeft:constants.MarginLeftRight,backgroundColor:'white'}]}>
+                              paddingLeft:constants.MarginLeftRight,backgroundColor:'white'}]}>
                             <Icon
                                 name={'logo-python'}
                                 size={constants.IconSize}
@@ -509,6 +580,7 @@ class ServiceDetail extends Component {
                                              order_status: this.state.order_status,
                                             }
                                         });
+                                        disable=false
                                         }
 
                                         }}>
@@ -517,22 +589,32 @@ class ServiceDetail extends Component {
                                 </TouchableOpacity>
                             }
                             { this.state.order_status == 30 || this.state.order_status == 80 || this.state.order_status == 90 ||
-                            this.state.order_status == 100 ? null :
-                                <TouchableOpacity
-                                    style={[styles.line,{justifyContent:'center',alignItems:'center',
+                            this.state.order_status == 100 ? null :<TouchableOpacity
+                                style={[styles.line,{justifyContent:'center',alignItems:'center',
                                     paddingTop:10,paddingBottom:10,},{flex:1}]}
-                                    onPress={()=>{
-                                    this.props.navigator.push({
-                                                title: '上传资料',
-                                                component: UploadPage,
+                                onPress={()=>{
+                                    //this.props.navigator.push({
+                                    //            title: '上传资料',
+                                    //            component: UploadPage,
+                                    //            passProps: {
+                                    //                id:service_id,
+                                    //            }
+                                    //        });
+
+                                     this.props.navigator.push({
+                                                title: '服务单资料',
+                                                component: ServicePhotoPage,
                                                 passProps: {
                                                     id:service_id,
                                                 }
                                             });
-                                    }}>
-                                    <Text style={{color:constants.UIActiveColor,fontSize:12,}}>上传</Text>
+                                            disable=false
+                                    } }
+                            >
+                                <Text style={{color:constants.UIActiveColor,fontSize:12,}}>上传</Text>
 
-                                </TouchableOpacity>
+                            </TouchableOpacity>
+                               //上传
                             }
                             {this.state.order_status == 10 || this.state.order_status == 20 || this.state.order_status == 40 ||
                             this.state.order_status == 70 ?
@@ -577,7 +659,9 @@ class ServiceDetail extends Component {
                                             passProps: {
                                                 service_id:service_id,
                                             }
+
                                         });
+                                        disable=false
                                             }}>{this.state.logistics_status_name!=null&&this.state.logistics_status_name!=''?
                             this.state.logistics_status_name+'>':''}</Text>
                         </View>
@@ -605,7 +689,24 @@ class ServiceDetail extends Component {
                             <Text style={[{flex:1},styles.labelText]}>目的国家</Text>
                             <Text style={[{flex:3},styles.contentText]}>{this.state.destination_name}</Text>
                         </View>
-
+                        {this.state.order_status == 30 || this.state.order_status == 80 || this.state.order_status == 90 ||
+                        this.state.order_status == 100 ||!(this.state.photoList&&this.state.photoList.length)? null :
+                            <Text
+                                style={[styles.contentText,{paddingTop:5,paddingBottom:5,fontSize:12},
+                               ]}>上传资料</Text>
+                        }
+                        {this.state.order_status == 30 || this.state.order_status == 80 || this.state.order_status == 90 ||
+                        this.state.order_status == 100 ||!(this.state.photoList&&this.state.photoList.length) ? null :
+                            <ShowPhotoView
+                                style={{flex:1,backgroundColor:'white',
+                            paddingLeft:constants.MarginLeftRight,paddingRight:constants.MarginLeftRight,}}
+                                navigator={this.props.navigator}
+                                photoList={this.state.photoList}
+                                showPhoto={this._ImageZoomModal.ShowPhoto}
+                                showUpload={false}
+                                UploadPage={UploadPage}
+                            />
+                        }
                         <Text
                             style={[styles.contentText,{paddingTop:5,paddingBottom:5,fontSize:12}]}>贸易支付</Text>
 
@@ -640,7 +741,7 @@ class ServiceDetail extends Component {
                             style={[styles.contentText,{paddingTop:5,paddingBottom:5,fontSize:12}]}>委托内容</Text>
 
                         <View style={[styles.viewItem,{flex:1,}]}>
-                            <Text style={[{height:100},styles.contentText]}
+                            <Text style={[{height:100},styles.contentText,{paddingLeft:0}]}
                                   multiline={true}//多行输入
                                   numberOfLines={8}>
                                 {this.state.commission_content}
@@ -788,6 +889,9 @@ class ServiceDetail extends Component {
                         </View>:null
                         }
                     </ScrollView>}
+                <ImageZoomModal
+                    ref={ component => this._ImageZoomModal = component }
+                />
                 <Toast
                     ref={ component => this._toast = component }
                     marginTop={64}>
@@ -846,14 +950,17 @@ const navigationBarRouteMapper = {
         return (
             <TouchableOpacity
                 onPress={() => {
-            //查看物流
-               navigator.push({
-            title: '查看物流',
-            component: LogisticsPage,
-            passProps: {
-                service_id:service_id,
-            }
-        });
+                if(disable){
+                //查看物流
+                   navigator.push({
+                        title: '查看物流',
+                        component: LogisticsPage,
+                        passProps: {
+                            service_id:service_id,
+                        }
+                    });
+                    disable=false
+                }
             }}
                 style={navigatorStyle.navBarRightButton}>
                 <View style={navigatorStyle.navBarLeftButtonAndroid}>

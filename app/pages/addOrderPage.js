@@ -17,9 +17,11 @@ import {
     ProgressBarAndroid,
     Platform,
     BackAndroid,
+    Dimensions,
     NativeAppEventEmitter,
     DeviceEventEmitter,
     KeyboardAvoidingView,
+    Image,
 } from 'react-native';
 /**
  * md-checkmark-circle
@@ -54,7 +56,11 @@ import typeData from '../constants/mode'
 
 import countryData from '../constants/country'
 
+import UploadPage from '../pages/uploadPage'
+import ImageZoomModal from '../components/ImageZoomModal'
+import ShowPhotoView from '../components/showPhotoView'
 
+const { width: deviceWidth } = Dimensions.get('window');
 let selectedItems = ['信用证',];
 
 /*
@@ -105,7 +111,12 @@ class AddOrder extends Component {
             commission_content: this.props.commission_content ? this.props.commission_content : '',
             id: this.props.id ? this.props.id : '',
             items: items,
-            pay: this.props.credit_letter ? this.props.credit_letter : 1,
+            pay: this.props.credit_letter ? this.props.credit_letter : 0,
+            cash:this.props.cash?this.props.cash:0,// 现金 ,0否，1是
+
+            trans:this.props.trans?this.props.trans:0,// 转账 ,0否，1是
+
+            aliPay:this.props.aliPay?this.props.aliPay:1,//支付宝 ,0否，1是
             selectedItems: selectedItems,
             type: this.props.trade_terms ? this.props.trade_terms : typeData[0].value,
             start: this.props.departure_name ? this.props.departure_name : countryData[0].name,
@@ -114,11 +125,16 @@ class AddOrder extends Component {
             logistics: this.props.international_logistics ? this.props.international_logistics : 1,//需求国际物流
             land: this.props.export_country_land ? this.props.export_country_land : 1,//出口国陆运
             sea_air: this.props.booking_service_name ? this.props.booking_service_name : 0,//海运
-            internal: this.props.domestic_logistics ? this.props.domestic_logistics : 1//国内物流
+            internal: this.props.domestic_logistics ? this.props.domestic_logistics : 1,//国内物流
+            receiving_address:this.props.receiving_address?this.props.receiving_address:'',//收获地址
+            photoList: this.props.photoList?this.props.photoList:[],
+
         }
-        this._realName = /^[A-Za-z]{2,20}$|^[\u4E00-\u9FA5]{2,8}$/
+        //this._realName = /^[A-Za-z]{2,20}$|^[\u4E00-\u9FA5]{2,8}$/
+        this._realName = /^.{1,50}$/;
 
         this._phoneReg = /^1[34578]\d{9}$/;//手机号码
+        this._receivingReg = /^.{1,50}$/;  //收获地址
 
         this._scrollY = 0
         this._showKeyboard = true;
@@ -126,6 +142,7 @@ class AddOrder extends Component {
         this.typeShow = []
         this.countryShow = []
         this.countryEnd = []
+
     }
 
     componentWillMount() {
@@ -139,6 +156,7 @@ class AddOrder extends Component {
                 if (event && currentRoute === event.data.route) {
                     //console.log("orderPage willAppear")
                     NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
+                    //console.log('this.showList:', this.state.photoList)
                 } else {
                     //console.log("orderPage willDisappear, other willAppear")
                 }
@@ -152,14 +170,14 @@ class AddOrder extends Component {
                 } else if (label == '联系电话') {
 
                     this.setState({phone: context})
+                }else if(label == '收货地址'){
+                    this.setState({receiving_address: context})
                 }
             })
         )
         this.addAppEventListener(
             BackAndroid.addEventListener('hardwareBackPress', this.onBackAndroid)
         )
-
-
     }
 
 
@@ -203,6 +221,7 @@ class AddOrder extends Component {
 
     componentDidMount() {
         //console.log('items:' + this.state.items.length)
+
         if (this.typeShow.length == 0) {
             for (type of typeData) {
                 this.typeShow.push(type.value)
@@ -266,16 +285,21 @@ class AddOrder extends Component {
      </TouchableOpacity>
      )
      })}*/
+    //_showBigUrl(url) {
+    //    this.setState({showUrl: url, modalVisible: true})
+    //
+    //}
 
 
     render() {
+        //let width = (deviceWidth - constants.MarginLeftRight * 2 - 20) / 4
         return (
             <View style={{flex:1}}>
                 {this.state.showProgress || this.state.showReload ?
                     <ProgressView
                         showProgress={this.state.showProgress}
                         showReload={this.state.showReload}
-                        fetchData={()=>{}}/> :
+                        fetchData={()=>{}}/>:
 
                     <ScrollView
                         ref={ (component) => this._scrollView = component}
@@ -366,6 +390,25 @@ class AddOrder extends Component {
                         </TouchableOpacity>
                         <TouchableOpacity
                             style={[{height:50,}]}
+                            onPress={ ()=>{
+                            this.props.navigator.push({
+                            title: '收货地址',
+                            component: ValidatePage,
+                            passProps:{
+                            context:this.state.receiving_address,
+                            label:'收货地址',
+                            reg:this._receivingReg
+                                }
+                            });
+                            } }>
+                            <ItemView
+                                ref={ component => this._input_receiving_address = component }
+                                name='ios-arrow-forward'
+                                title='收货地址'
+                                rightText={this.state.receiving_address}/>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={[{height:50,}]}
 
                             onPress={()=>{
                             let index=0;
@@ -441,6 +484,19 @@ class AddOrder extends Component {
                                 rightText={this.state.reach}
                                 hasLine={false}/>
                         </TouchableOpacity>
+
+                        <Text
+                            style={[styles.labelText,{marginLeft:constants.MarginLeftRight,paddingTop:5,paddingBottom:5,}]}>上传资料</Text>
+
+                        <ShowPhotoView
+                            style={{flex:1,backgroundColor:'white',
+                            paddingLeft:constants.MarginLeftRight,paddingRight:constants.MarginLeftRight,}}
+                            navigator={this.props.navigator}
+                            photoList={this.state.photoList}
+                            showPhoto={this._ImageZoomModal.ShowPhoto}
+                            UploadPage={UploadPage}
+                        />
+
                         <Text
                             style={[styles.labelText,{marginLeft:constants.MarginLeftRight,paddingTop:5,paddingBottom:5,}]}>货代服务</Text>
                         <TouchableOpacity
@@ -509,7 +565,7 @@ class AddOrder extends Component {
                         <View style={[this.state.logistics==1?{height:50,}:{height:0,},{flexDirection:'row',alignItems:'stretch',
                             paddingLeft:constants.MarginLeftRight,backgroundColor:'white',}]}>
                             <View style={{flexDirection:'row',backgroundColor:'white',alignItems:'center',
-                        borderColor: constants.UIInActiveColor,borderBottomWidth:StyleSheet.hairlineWidth,}}>
+                            borderColor: constants.UIInActiveColor,borderBottomWidth:StyleSheet.hairlineWidth,}}>
                                 <Text
                                     style={[styles.labelText,{textAlignVertical:'center',color:constants.PointColor}]}>订舱服务</Text>
                             </View>
@@ -567,11 +623,8 @@ class AddOrder extends Component {
                             onPress={()=>{
                                 let select
                                  if (this.state.internal==1) {
-
-
                                         select=0
                                  }else{
-
                                         select=1
                                  }
                                  this.setState({internal:select});
@@ -580,7 +633,6 @@ class AddOrder extends Component {
                                 color={this.state.internal==1?constants.UIActiveColor:constants.UIInActiveColor}
                                 name={this.state.internal==1?'md-checkmark-circle':'ios-radio-button-off-outline'}
                                 title='国内物流'
-
                                 rightText=''
                                 hasLine={false}
                             />
@@ -591,17 +643,73 @@ class AddOrder extends Component {
                             style={{height:50,}}
                             onPress={()=>{
                                  let select
-                                 if (this.state.pay==1) {
-                                        select=0
+                                 if (this.state.cash==1) {
+                                        //select=0
                                  }else{
                                         select=1
                                  }
-                                 this.setState({pay:select});
+                                 if(select){
+                                     this.setState({
+                                     cash:select,
+                                     trans:0,
+                                     aliPay:0
+                                     });
+                                 }
                                   }}>
                             <ItemView
-                                color={this.state.pay==1?constants.UIActiveColor:constants.UIInActiveColor}
-                                name={this.state.pay==1?'md-checkmark-circle':'ios-radio-button-off-outline'}
-                                title='信用证'
+                                color={this.state.cash==1?constants.UIActiveColor:constants.UIInActiveColor}
+                                name={this.state.cash==1?'md-checkmark-circle':'ios-radio-button-off-outline'}
+                                title='现金'
+                                rightText=''
+                                hasLine={true}
+                            />
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={{height:50,}}
+                            onPress={()=>{
+                                 let select
+                                 if (this.state.trans==1) {
+                                        //select=0
+                                 }else{
+                                        select=1
+                                 }
+                                 if(select){
+                                     this.setState({
+                                     cash:0,
+                                     trans:select,
+                                     aliPay:0
+                                     });
+                                 }
+                                  }}>
+                            <ItemView
+                                color={this.state.trans==1?constants.UIActiveColor:constants.UIInActiveColor}
+                                name={this.state.trans==1?'md-checkmark-circle':'ios-radio-button-off-outline'}
+                                title='转账'
+                                rightText=''
+                                hasLine={true}
+                            />
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={{height:50,}}
+                            onPress={()=>{
+                                 let select
+                                 if (this.state.aliPay==1) {
+                                        //select=0
+                                 }else{
+                                        select=1
+                                 }
+                                 if(select){
+                                     this.setState({
+                                     cash:0,
+                                     trans:0,
+                                     aliPay:select
+                                     });
+                                 }
+                                  }}>
+                            <ItemView
+                                color={this.state.aliPay==1?constants.UIActiveColor:constants.UIInActiveColor}
+                                name={this.state.aliPay==1?'md-checkmark-circle':'ios-radio-button-off-outline'}
+                                title='支付宝'
                                 rightText=''
                                 hasLine={false}
                             />
@@ -668,6 +776,26 @@ class AddOrder extends Component {
                                         return
                                         }
 
+                                        if(!this._receivingReg.test(this.state.receiving_address)){
+                                            this._toast.show({
+                                            position: Toast.constants.gravity.center,
+                                            duration: 255,
+                                            children: '收货地址不能为空'
+                                        })
+                                        return
+                                        }
+
+                                        if(this.state.photoList&&this.state.photoList.length>0){
+
+                                        }else{
+                                        this._toast.show({
+                                            position: Toast.constants.gravity.center,
+                                            duration: 255,
+                                            children: '请上传相关照片'
+                                        })
+                                        return
+                                        }
+
 
                                           /*  this.button2.setState({
 
@@ -701,7 +829,9 @@ class AddOrder extends Component {
 
                     </ScrollView>
                 }
-
+                <ImageZoomModal
+                    ref={ component => this._ImageZoomModal = component }
+                />
                 <Toast
                     ref={ component => this._toast = component }
                     marginTop={64}>
@@ -719,7 +849,7 @@ class AddOrder extends Component {
              {text:'取消',onPress:()=>{}},
              {text:'确定',onPress:()=>this.props.navigator.popToTop()}
              ])*/
-            this.props.navigator.popToTop()
+            this.props.navigator.pop()
             return true;
         }
 
@@ -734,7 +864,10 @@ class AddOrder extends Component {
             let destination = countryData[this.countryEnd.indexOf(this.state.reach)]
             //console.log(`destination_id_reach`, destination)
             let destination_id = destination.id
-
+            let file_ids=''
+            for(let data of this.state.photoList){
+                file_ids+=data.id+','
+            }
 
             let token = await getToken()
             let deviceID = await getDeviceID()
@@ -743,20 +876,27 @@ class AddOrder extends Component {
                 url: constants.api.service,
                 data: {
                     iType: constants.iType.commissionOrderStart,
-                    import_clearance: this.state.clearance,
-                    international_logistics: this.state.logistics,
-                    export_country_land: this.state.land,
-                    booking_service: this.state.sea_air,
-                    domestic_logistics: this.state.internal,
-                    credit_letter: this.state.pay,
-                    trade_terms: this.state.type,
-                    departure_id: departure_id,
-                    departure_name: this.state.start,
-                    destination_id: destination_id,
-                    destination_name: this.state.reach,
-                    client_name: this.state.realName,
-                    client_phone: this.state.phone,
-                    commission_content: this.state.commission_content,
+                    commissionOrder: {
+                        import_clearance: this.state.clearance,
+                        international_logistics: this.state.logistics,
+                        export_country_land: this.state.land,
+                        booking_service: this.state.sea_air,
+                        domestic_logistics: this.state.internal,
+                        credit_letter: this.state.pay,
+                        trade_terms: this.state.type,
+                        departure_id: departure_id,
+                        departure_name: this.state.start,
+                        destination_id: destination_id,
+                        destination_name: this.state.reach,
+                        client_name: this.state.realName,
+                        client_phone: this.state.phone,
+                        commission_content: this.state.commission_content,
+                        receiving_address:this.state.receiving_address,
+                        cash:this.state.cash,
+                        trans:this.state.trans,
+                        aliPay:this.state.aliPay,
+                    },
+                    file_ids:file_ids,
                     deviceId: deviceID,
                     token: token,
                 }
@@ -854,7 +994,10 @@ class AddOrder extends Component {
             let destination = countryData[this.countryEnd.indexOf(this.state.reach)]
             //console.log(`destination_id_reach`, destination)
             let destination_id = destination.id
-
+            let file_ids=''
+            for(let data of this.state.photoList){
+                file_ids+=data.id+','
+            }
 
             let token = await getToken()
             let deviceID = await getDeviceID()
@@ -863,21 +1006,28 @@ class AddOrder extends Component {
                 url: constants.api.service,
                 data: {
                     iType: constants.iType.commissionOrder_commissionOrderEditSave,
-                    id: this.state.id,
-                    import_clearance: this.state.clearance,
-                    international_logistics: this.state.logistics,
-                    export_country_land: this.state.land,
-                    booking_service: this.state.sea_air,
-                    domestic_logistics: this.state.internal,
-                    credit_letter: this.state.pay,
-                    trade_terms: this.state.type,
-                    departure_id: departure_id,
-                    departure_name: this.state.start,
-                    destination_id: destination_id,
-                    destination_name: this.state.reach,
-                    client_name: this.state.realName,
-                    client_phone: this.state.phone,
-                    commission_content: this.state.commission_content,
+                    commissionOrder: {
+                        id: this.state.id,
+                        import_clearance: this.state.clearance,
+                        international_logistics: this.state.logistics,
+                        export_country_land: this.state.land,
+                        booking_service: this.state.sea_air,
+                        domestic_logistics: this.state.internal,
+                        credit_letter: this.state.pay,
+                        trade_terms: this.state.type,
+                        departure_id: departure_id,
+                        departure_name: this.state.start,
+                        destination_id: destination_id,
+                        destination_name: this.state.reach,
+                        client_name: this.state.realName,
+                        client_phone: this.state.phone,
+                        commission_content: this.state.commission_content,
+                        receiving_address:this.state.receiving_address,
+                        cash:this.state.cash,
+                        trans:this.state.trans,
+                        aliPay:this.state.aliPay,
+                    },
+                    file_ids:file_ids,
                     deviceId: deviceID,
                     token: token,
                 }
@@ -924,15 +1074,15 @@ class AddOrder extends Component {
             }
             if (result.code && result.code == 10) {
 
-                this._toast.show({
-                    position: Toast.constants.gravity.center,
-                    duration: 255,
-                    children: '发送成功'
-                })
+
                 //修改订单状态
                 NativeAppEventEmitter.emit('orderDetail_hasUpdate_should_resetState', this.state.id)
 
-                setTimeout(()=>this.props.navigator.popToTop(), 1000)
+
+                this.props.navigator.push({
+                    title: '修改委托',
+                    component: AddOrderfinishPage,
+                })
 
 
             } else {
@@ -1051,7 +1201,7 @@ const navigationBarRouteMapper = {
         var previousRoute = navState.routeStack[index - 1];
         return (
             <TouchableOpacity
-                onPress={() => navigator.popToTop()}
+                onPress={() => navigator.pop()}
                 style={navigatorStyle.navBarLeftButton}>
                 <View style={navigatorStyle.navBarLeftButtonAndroid}>
                     <Icon

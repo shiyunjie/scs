@@ -150,7 +150,7 @@ class PicturePicker extends Component {
                     pageSize={30}
                     fetchSize={90}
                     onSelect={this._getSelectedImages}
-                    onEndReachedThreshold={100}/>
+                    onEndReachedThreshold={200}/>
             </View>)
 
     }

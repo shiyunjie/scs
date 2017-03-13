@@ -16,7 +16,7 @@ import {
 import image_logo from '../images/icon.png'
 
 import constants from  '../constants/constant'
-
+import Button from 'react-native-smart-button';
 import AppEventListenerEnhance from 'react-native-smart-app-event-listener-enhance'
 import navigatorStyle from '../styles/navigatorStyle'       //navigationBar样式
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -76,46 +76,55 @@ class Version extends Component {
                 <View
                     style={{
                     flexDirection: 'column',
-                    flex: 2,
+                    height:150,
                     justifyContent: 'center',
                     alignItems: 'center',}}>
                     <Image
-                    style={{width:100,height:100}}
+                    style={{width:100,marginTop:20,height:100}}
                     source={image_logo}
                     />
                     <Text
-                    style={{color:constants.UIActiveColor,marginTop:10,marginBottom:10,fontSize:16,}}
+                    style={{color:constants.UIActiveColor,marginTop:20,marginBottom:10,fontSize:16,}}
                     //backgroundColor:'transparent'
-                    >新建成功了</Text>
-                    <View style={[styles.viewItem,]}>
+                    >发起成功了</Text>
 
-                        <TouchableOpacity
-                            style={[{justifyContent:'center',alignItems:'center',},
-                            {flex:1}]}
-                            onPress={ ()=> this.props.navigator.pop() }>
-                            <Text style={{color:'white',
-                                      fontSize:17,textAlignVertical:'center',textAlign:'center',}}>再来一单</Text>
-
-                        </TouchableOpacity>
-                        <View
-                            style={[{height:30,backgroundColor:'white'},
-                                {width:StyleSheet.hairlineWidth,}]}/>
-                        <TouchableOpacity
-                            style={[{justifyContent:'center',alignItems:'center',},
-                                        {flex:1,}]}
-                            onPress={ ()=>this.props.navigator.popToTop()} >
-                            <Text
-                                style={{color:'white',
-                                    fontSize:17,
-                                    textAlignVertical:'center',
-                                    textAlign:'center',
-                                    color:'white'}}>完成</Text>
-                        </TouchableOpacity>
-
-                    </View>
 
                 </View>
-                <View style={{flex:1}}/>
+
+                <Button
+                    ref={ component => this.button2 = component }
+                    touchableType={Button.constants.touchableTypes.fadeContent}
+                    style={styles.button}
+                    textStyle={{fontSize: 17, color: 'white'}}
+                    loadingComponent={
+                                        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                                        {
+                                //this._renderActivityIndicator()
+                                }
+                                        <Text style={{fontSize: 17, color: 'white', fontWeight: 'bold', fontFamily: '.HelveticaNeueInterface-MediumP4',}}>委托中...</Text>
+                                        </View>
+                                        }
+                    onPress={ ()=> this.props.navigator.pop() }>
+                    再来一单
+                </Button>
+
+                <Button
+                    ref={ component => this.button2 = component }
+                    touchableType={Button.constants.touchableTypes.fadeContent}
+                    style={[styles.button,{backgroundColor: 'white'}]}
+                    textStyle={{fontSize: 17, color: constants.UIActiveColor}}
+                    loadingComponent={
+                                        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                                        {
+                                //this._renderActivityIndicator()
+                                }
+                                        <Text style={{fontSize: 17, color: constants.UIActiveColor, fontWeight: 'bold', fontFamily: '.HelveticaNeueInterface-MediumP4',}}>委托中...</Text>
+                                        </View>
+                                        }
+                    onPress={ ()=>this.props.navigator.popToTop() }>
+                    完成
+                </Button>
+
 
             </View>
         );
@@ -139,6 +148,16 @@ const styles = StyleSheet.create({
         //backgroundColor: 'transparent',
         backgroundColor:constants.UIActiveColor,
         borderRadius:3,
+    },
+    button: {
+        height: 40,
+        backgroundColor: constants.UIActiveColor,
+        borderWidth: StyleSheet.hairlineWidth,
+        borderColor: constants.UIActiveColor,
+        justifyContent: 'center',
+        borderRadius: 30,
+        margin:constants.MarginLeftRight,
+        alignSelf:'stretch'
     },
 
 });

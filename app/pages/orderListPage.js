@@ -103,6 +103,22 @@ class OrderList extends Component {
                 })
             })
         )
+        this.addAppEventListener(
+            NativeAppEventEmitter.addListener('orderDetail_hasReCommision_should_resetState', (event) => {
+                let DataList=this.state.dataList
+                for(let data of DataList){
+                    if(data.id==event){
+                        data.order_status=0
+                        data.order_status_name='待接单'
+                        break
+                    }
+                }
+                this.setState({
+                    dataList: DataList,
+                    dataSource: this._dataSource.cloneWithRows(DataList),
+                })
+            })
+        )
     }
 
 

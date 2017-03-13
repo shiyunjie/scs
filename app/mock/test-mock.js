@@ -37,7 +37,7 @@ export const testMock = fetchMock.mock(/\/app\/gateway/, (url, opts) => {
                 //console.log(`parameter:`, parameter)
                 let requestData = JSON.parse(parameter)
                 //console.log(`parameter_itype:`, requestData.itype)
-                console.log(`fetchMock parameter:`, requestData)
+                //console.log(`fetchMock parameter:`, requestData)
                 switch (requestData.itype) {
                     //首页轮播
                     case 111:
@@ -495,7 +495,7 @@ export const testMock = fetchMock.mock(/\/app\/gateway/, (url, opts) => {
                             }
                         }
                         break;
-                    //询价单详情
+                    //委托单详情
                     case 234:
                         if (requestData.data.id) {
 
@@ -503,38 +503,53 @@ export const testMock = fetchMock.mock(/\/app\/gateway/, (url, opts) => {
                                 code: 10,
                                 msg: '查询成功',
                                 result: {
-                                    service_no: 'no778299381',// 委托单号
+                                    commissionOrder: {
+                                        service_no: 'no778299381',// 委托单号
 
-                                    order_status_name: '已下单',// 订单状态
+                                        order_status_name: '待接单',// 订单状态
 
-                                    create_time_str: '2017-01-31 19:00',// 发布时间
+                                        create_time_str: '2017-01-31 19:00',// 发布时间
 
-                                    remark: '你的出价实在太低了',// 备注
+                                        remark: '你的出价实在太低了',// 备注
 
-                                    trade_terms: 'FOB',// 贸易条款
+                                        trade_terms: 'FOB',// 贸易条款
 
-                                    departure_name: '中国',// 起运国
+                                        departure_name: '中国',// 起运国
 
-                                    destination_name: '澳大利亚',// 目的国
+                                        destination_name: '澳大利亚',// 目的国
 
-                                    import_clearance: 0,// 进口清关,0否，1是
+                                        import_clearance: 0,// 进口清关,0否，1是
 
-                                    international_logistics: 1,// 国际物流,0否，1是
+                                        international_logistics: 1,// 国际物流,0否，1是
 
-                                    export_country_land: 1,// 出口国陆运,0否，1是
+                                        export_country_land: 1,// 出口国陆运,0否，1是
 
-                                    booking_service_name: 0,// 订舱服务,0海运，1空运
+                                        booking_service_name: 0,// 订舱服务,0海运，1空运
 
-                                    domestic_logistics: 1,// 国内物流,0否，1是
+                                        domestic_logistics: 1,// 国内物流,0否，1是
 
-                                    credit_letter: 1,// 信用证,0否，1是
+                                        credit_letter: 1,// 信用证,0否，1是
 
-                                    client_name: '张先生',// 委托人名称
+                                        client_name: '张先生',// 委托人名称
 
-                                    client_phone: '13988255783',// 委托人电话
+                                        client_phone: '13988255783',// 委托人电话
 
-                                    order_status: 30,// 订单状态 值
-                                    commission_content: '小心轻放,易碎物品',//委托内容
+                                        order_status: 40,// 订单状态 值
+
+                                        commission_content: '小心轻放,易碎物品',//委托内容
+                                        cash: 0,// 现金 ,0否，1是
+                                        trans: 0,// 转账 ,0否，1是
+                                        aliPay: 1,// 支付宝 ,0否，1是
+                                        receiving_address: '百度商业大厦',// 收货地址
+                                    },
+                                    list:[{
+                                        file_url:'http://o2o.doorto.cn/upload/yun-o2o/ff8080814f2ab654014f2b9ad24b063a.jpg',
+                                        id: '1998276354428',
+                                        filename:'Imagedemo',
+                                        file_mine:'image/jpg',
+                                        big_url: 'http://o2o.doorto.cn/upload/yun-o2o/ff8080814f2ab654014f2b9ad24b063a.jpg',
+                                        }]
+
                                 },
                             }
 
@@ -622,6 +637,7 @@ export const testMock = fetchMock.mock(/\/app\/gateway/, (url, opts) => {
                                     consignee_name: 'YGS',// 收货人
 
                                     consignor_name: 'FSQ',// 发货人
+
 
                                 },
                             }
@@ -1185,14 +1201,15 @@ export const testMock = fetchMock.mock(/\/app\/gateway/, (url, opts) => {
                     //发起委托
                     case 231:
                         //console.log(`requestData.data:`,requestData.data)
-                        if(requestData.data.import_clearance
-                            &&requestData.data.trade_terms
-                            &&requestData.data.departure_id
-                            &&requestData.data.departure_name
-                            &&requestData.data.destination_id
-                            &&requestData.data.destination_name
-                            &&requestData.data.client_name
-                            &&requestData.data.client_phone) {
+                        if(requestData.data.commissionOrder.import_clearance
+                            &&requestData.data.commissionOrder.trade_terms
+                            &&requestData.data.commissionOrder.departure_id
+                            &&requestData.data.commissionOrder.departure_name
+                            &&requestData.data.commissionOrder.destination_id
+                            &&requestData.data.commissionOrder.destination_name
+                            &&requestData.data.commissionOrder.client_name
+                            &&requestData.data.commissionOrder.client_phone
+                            &&requestData.data.file_ids) {
                             result = {
                                 code: 10,
                                 msg: '提交成功',
@@ -1206,17 +1223,18 @@ export const testMock = fetchMock.mock(/\/app\/gateway/, (url, opts) => {
                             }
                         }
                     break;
-                    //修改委托
+                    //修改委托单
                     case 237:
                         //console.log(`requestData.data:`,requestData.data)
-                        if(requestData.data.import_clearance
-                            &&requestData.data.trade_terms
-                            &&requestData.data.departure_id
-                            &&requestData.data.departure_name
-                            &&requestData.data.destination_id
-                            &&requestData.data.destination_name
-                            &&requestData.data.client_name
-                            &&requestData.data.client_phone) {
+                        if(requestData.data.commissionOrder.import_clearance
+                            &&requestData.data.commissionOrder.trade_terms
+                            &&requestData.data.commissionOrder.departure_id
+                            &&requestData.data.commissionOrder.departure_name
+                            &&requestData.data.commissionOrder.destination_id
+                            &&requestData.data.commissionOrder.destination_name
+                            &&requestData.data.commissionOrder.client_name
+                            &&requestData.data.commissionOrder.client_phone
+                            &&requestData.data.file_ids){
                             result = {
                                 code: 10,
                                 msg: '修改成功',
@@ -1230,7 +1248,7 @@ export const testMock = fetchMock.mock(/\/app\/gateway/, (url, opts) => {
                             }
                         }
                         break;
-                    //查询上传图片
+                    //服务单查询已上传图片
                     case 632:
                         //console.log(`requestData.data:`,requestData.data)
                         if(requestData.data.id) {
@@ -1244,6 +1262,232 @@ export const testMock = fetchMock.mock(/\/app\/gateway/, (url, opts) => {
                                     height: 400,
                                     big_url: 'http://o2o.doorto.cn/upload/yun-o2o/ff8080814f2ab654014f2b9ad24b063a.jpg',
                                     width: 400,}]
+                            }
+                        }else{
+                            result = {
+                                code: -10,
+                                msg: '系统错误',
+                                result: {},
+                            }
+                        }
+                        break;
+                    //服务单保存上传图片
+                    case 338:
+                        //console.log(`requestData.data:`,requestData.data)
+                        if(requestData.data.id&&requestData.data.file_ids){
+                            result = {
+                                code: 10,
+                                msg: '保存成功',
+                                result:{}
+                            }
+                        }else{
+                            result = {
+                                code: -10,
+                                msg: '系统错误',
+                                result: {},
+                            }
+                        }
+                        break;
+                    //委托单保存上传图片
+                    case 239:
+                        //console.log(`requestData.data:`,requestData.data)
+                        if(requestData.data.list){
+                            result = {
+                                code: 10,
+                                msg: '保存成功',
+                                result:{}
+                            }
+                        }else{
+                            result = {
+                                code: -10,
+                                msg: '系统错误',
+                                result: {},
+                            }
+                        }
+                        break;
+                    //委托单重新委托
+                    case 240:
+                        //console.log(`requestData.data:`,requestData.data)
+                        if(requestData.data.commission_id){
+                            result = {
+                                code: 10,
+                                msg: '保存成功',
+                                result:{}
+                            }
+                        }else{
+                            result = {
+                                code: -10,
+                                msg: '系统错误',
+                                result: {},
+                            }
+                        }
+                        break;
+                    //委托单查询上传图片
+                    case 238:
+                        //console.log(`requestData.data:`,requestData.data)
+                        if(requestData.data.id){
+                            result = {
+                                code: 10,
+                                msg: '保存成功',
+                                result:[
+                                    {
+                                    file_url:'http://o2o.doorto.cn/upload/yun-o2o/ff8080814f2ab654014f2b9ad24b063a.jpg' ,//附件路径
+
+                                    big_url:'http://o2o.doorto.cn/upload/yun-o2o/ff8080814f2ab654014f2b9ad24b063a.jpg' ,//大图路径 类型为jpg的数据该字段有值
+
+                                    id:'88732666255211' ,//文件id
+
+                                    file_mime:'image/jpg' ,//文件类型
+
+                                    file_name:'88732666255211.jpg' ,//文件名称
+
+                                    file_type_name:'补充资料货物' ,//文件类型名称
+
+                                    file_type_id:'1001' ,//文件类型ID
+                                    }, {
+                                    file_url:'http://o2o.doorto.cn/upload/yun-o2o/ff8080814f2ab654014f2b992cd70626.jpg' ,//附件路径
+
+                                    big_url:'http://o2o.doorto.cn/upload/yun-o2o/ff8080814f2ab654014f2b992cd70626.jpg' ,//大图路径 类型为jpg的数据该字段有值
+
+                                    id:'88732666255212' ,//文件id
+
+                                    file_mime:'image/jpg' ,//文件类型
+
+                                    file_name:'88732666255212.jpg' ,//文件名称
+
+                                    file_type_name:'资格证明' ,//文件类型名称
+
+                                    file_type_id:'1002' ,//文件类型ID
+                                    }, {
+                                    file_url:'http://o2o.doorto.cn/upload/yun-o2o/ff8080814f2ab654014f2b989d520622.jpg' ,//附件路径
+
+                                    big_url:'http://o2o.doorto.cn/upload/yun-o2o/ff8080814f2ab654014f2b989d520622.jpg' ,//大图路径 类型为jpg的数据该字段有值
+
+                                    id:'88732666255213' ,//文件id
+
+                                    file_mime:'image/jpg' ,//文件类型
+
+                                    file_name:'88732666255213.jpg' ,//文件名称
+
+                                    file_type_name:'资格证明' ,//文件类型名称
+
+                                    file_type_id:'1002' ,//文件类型ID
+                                    }, {
+                                    file_url:'http://o2o.doorto.cn/upload/yun-o2o/ff8080814f2ab654014f2b976df5061a.jpg' ,//附件路径
+
+                                    big_url:'http://o2o.doorto.cn/upload/yun-o2o/ff8080814f2ab654014f2b976df5061a.jpg' ,//大图路径 类型为jpg的数据该字段有值
+
+                                    id:'88732666255214' ,//文件id
+
+                                    file_mime:'image/jpg' ,//文件类型
+
+                                    file_name:'88732666255214.jpg' ,//文件名称
+
+                                    file_type_name:'资格证明' ,//文件类型名称
+
+                                    file_type_id:'1002' ,//文件类型ID
+                                    }, {
+                                    file_url:'http://o2o.doorto.cn/upload/yun-o2o/ff8080814f2ab654014f2b9576600612.jpg' ,//附件路径
+
+                                    big_url:'http://o2o.doorto.cn/upload/yun-o2o/ff8080814f2ab654014f2b9576600612.jpg' ,//大图路径 类型为jpg的数据该字段有值
+
+                                    id:'88732666255215' ,//文件id
+
+                                    file_mime:'image/jpg' ,//文件类型
+
+                                    file_name:'88732666255215.jpg' ,//文件名称
+
+                                    file_type_name:'补充资料货物' ,//文件类型名称
+
+                                    file_type_id:'1002' ,//文件类型ID
+                                    }, {
+                                    file_url:'http://o2o.doorto.cn/upload/yun-o2o/ff8080814f2ab654014f2b952dbd060a.jpg' ,//附件路径
+
+                                    big_url:'http://o2o.doorto.cn/upload/yun-o2o/ff8080814f2ab654014f2b952dbd060a.jpg' ,//大图路径 类型为jpg的数据该字段有值
+
+                                    id:'88732666255216' ,//文件id
+
+                                    file_mime:'image/jpg' ,//文件类型
+
+                                    file_name:'88732666255216.jpg' ,//文件名称
+
+                                    file_type_name:'报关单证' ,//文件类型名称
+
+                                    file_type_id:'1003' ,//文件类型ID
+                                    }, {
+                                    file_url:'http://o2o.doorto.cn/upload/yun-o2o/ff8080814f2ab654014f2b94059005e8.jpg' ,//附件路径
+
+                                    big_url:'http://o2o.doorto.cn/upload/yun-o2o/ff8080814f2ab654014f2b94059005e8.jpg' ,//大图路径 类型为jpg的数据该字段有值
+
+                                    id:'88732666255217' ,//文件id
+
+                                    file_mime:'image/jpg' ,//文件类型
+
+                                    file_name:'88732666255217.jpg' ,//文件名称
+
+                                    file_type_name:'报关单证' ,//文件类型名称
+
+                                    file_type_id:'1003' ,//文件类型ID
+                                    },
+                                    {
+                                        file_url:'http://o2o.doorto.cn/upload/yun-o2o/doc' ,//附件路径
+
+                                        big_url:'' ,//大图路径 类型为jpg的数据该字段有值
+
+                                        id:'88732666255221' ,//文件id
+
+                                        file_mime:'doc' ,//文件类型
+
+                                        file_name:'88732666255217.doc' ,//文件名称
+
+                                        file_type_name:'文本资料' ,//文件类型名称
+
+                                        file_type_id:'1004' ,//文件类型ID
+                                    },{
+                                        file_url:'http://o2o.doorto.cn/upload/yun-o2o/pdf' ,//附件路径
+
+                                        big_url:'' ,//大图路径 类型为jpg的数据该字段有值
+
+                                        id:'88732666255222' ,//文件id
+
+                                        file_mime:'pdf' ,//文件类型
+
+                                        file_name:'88732666255217.pdf' ,//文件名称
+
+                                        file_type_name:'文本资料' ,//文件类型名称
+
+                                        file_type_id:'1004' ,//文件类型ID
+                                    },{
+                                        file_url:'http://o2o.doorto.cn/upload/yun-o2o/excel' ,//附件路径
+
+                                        big_url:'' ,//大图路径 类型为jpg的数据该字段有值
+
+                                        id:'88732666255223' ,//文件id
+
+                                        file_mime:'excel' ,//文件类型
+
+                                        file_name:'88732666255217.excel' ,//文件名称
+
+                                        file_type_name:'文本资料' ,//文件类型名称
+
+                                        file_type_id:'1004' ,//文件类型ID
+                                    },
+                                    {
+                                        file_url:'http://o2o.doorto.cn/upload/yun-o2o/zip' ,//附件路径
+
+                                        big_url:'' ,//大图路径 类型为jpg的数据该字段有值
+
+                                        id:'88732666255228' ,//文件id
+
+                                        file_mime:'zip' ,//文件类型
+
+                                        file_name:'88732666255218.zip' ,//文件名称
+
+                                        file_type_name:'文本资料' ,//文件类型名称
+
+                                        file_type_id:'1004' ,//文件类型ID
+                                    },
+                                ]
                             }
                         }else{
                             result = {

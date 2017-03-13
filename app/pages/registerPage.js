@@ -484,7 +484,7 @@ const navigationBarRouteMapper = {
             <TouchableOpacity
                 onPress={() => Alert.alert('温馨提醒','确定退出吗?',[
              {text:'取消',onPress:()=>{}},
-             {text:'确定',onPress:()=>this.props.navigator.popToRoute(routes[1])}
+             {text:'确定',onPress:()=>navigator.popToRoute(routes[1])}
              ])}
                 style={navigatorStyle.navBarLeftButton}>
                 <View style={navigatorStyle.navBarLeftButtonAndroid}>
