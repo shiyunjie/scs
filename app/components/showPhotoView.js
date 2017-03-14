@@ -325,17 +325,17 @@ const maxiumXhrNums = 5 //最多同时上传数量
                                     justifyContent:'flex-start',alignItems:'center',padding:0}}
                         onPress={()=>{
 
-                        this.props.navigator.push({
-                                title: '相机胶卷',
-                                component: PicturePicker,
-                                passProps: {
-                                    maxiumUploadImagesCount,
-                                    currentUploadImagesCount: this.state.photoList.length,
-                                    waitForAddToUploadQuene: this._waitForAddToUploadQuene,
-                                    ids:this._ids,
-                                    //addToUploadQuene: this._addToUploadQuene
-                                    }
-                                })
+                                       /* this.props.navigator.push({
+                                                title: '相机胶卷',
+                                                component: PicturePicker,
+                                                passProps: {
+                                                    maxiumUploadImagesCount,
+                                                    currentUploadImagesCount: this.state.photoList.length,
+                                                    waitForAddToUploadQuene: this._waitForAddToUploadQuene,
+                                                    ids:this._ids,
+                                                    //addToUploadQuene: this._addToUploadQuene
+                                                    }
+                                                })*/
                                        //this.props.navigator.push({
                                        //     title: '上传资料',
                                        //     component: UploadPage,
@@ -345,7 +345,7 @@ const maxiumXhrNums = 5 //最多同时上传数量
                                        //        }
                                        //     });
 
-                                /*ImagePicker.openPicker({
+                                ImagePicker.openPicker({
                                   multiple: true,
                                 }).then(images => {
                                   //console.log(images);
@@ -376,11 +376,11 @@ const maxiumXhrNums = 5 //最多同时上传数量
                                     this._waitForAddToUploadQuene(selected)
                                     if (this._waitForAddPhotos && this._waitForAddPhotos.length > 0) {
                                     setTimeout(() => {
-                                    /!*
+
                                      //@todo async this._getCompressedPhotos 返回photos数组, 遍历this._waitForAddPhotos {let compressedUri = await NativeCompressedModule.compress(...); 遍历的photo对象uri赋值compressedUri }
-                                     this._getCompressedPhotos().then((photos)=>{
-                                     this._addToUploadQuene(photos)
-                                     })*!/
+                                     //this._getCompressedPhotos().then((photos)=>{
+                                     //this._addToUploadQuene(photos)
+                                     //})
                                     this._addToUploadQuene(this._waitForAddPhotos)
                                     this._waitForAddPhotos = null
 
@@ -388,7 +388,7 @@ const maxiumXhrNums = 5 //最多同时上传数量
 
                                     }
 
-                                });*/
+                                });
 
                        }}>
                         <Icon
@@ -408,19 +408,19 @@ const maxiumXhrNums = 5 //最多同时上传数量
      _waitForAddToUploadQuene = (photos) => {
          this._waitForAddPhotos = photos;
 
-         if (this._waitForAddPhotos && this._waitForAddPhotos.length > 0) {
+        /* if (this._waitForAddPhotos && this._waitForAddPhotos.length > 0) {
              setTimeout(() => {
-                 /*
+                 /!*
                   //@todo async this._getCompressedPhotos 返回photos数组, 遍历this._waitForAddPhotos {let compressedUri = await NativeCompressedModule.compress(...); 遍历的photo对象uri赋值compressedUri }
                   this._getCompressedPhotos().then((photos)=>{
                   this._addToUploadQuene(photos)
-                  })*/
+                  })*!/
                  this._addToUploadQuene(this._waitForAddPhotos)
                  this._waitForAddPhotos = null
 
              }, 300)
 
-         }
+         }*/
      }
 
      _addToUploadQuene = (photos) => {
