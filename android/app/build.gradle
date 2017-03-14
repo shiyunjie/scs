@@ -104,6 +104,8 @@ android {
                 JPUSH_APPKEY: "5db939458fd58e3f17a03299", //在此替换你的APPKey
                 APP_CHANNEL: "developer-default"    //应用渠道号
         ]
+
+        vectorDrawables.useSupportLibrary = true
     }
 
     signingConfigs {
@@ -147,6 +149,7 @@ android {
 }
 
 dependencies {
+    compile project(':react-native-image-crop-picker')
     compile project(':react-native-picker')
     compile project(':react-native-spinkit')
     compile project(':react-native-vector-icons')

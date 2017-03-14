@@ -179,7 +179,7 @@ class OrderDetail extends Component {
                                 {this.state.order_status == 40 ?
                                     <View style={{flexDirection:'row',marginTop:5,}}>
                                         <Text
-                                            style={[{flex:1,paddingLeft:0,fontSize:12,color:constants.UIActiveColor},]}>您的委托材料不足,请点击下方上传按钮补充</Text>
+                                            style={[{flex:1,paddingLeft:0,fontSize:12,color:constants.UIActiveColor},]}>请点击上传按钮,按分类补充材料</Text>
                                     </View> : null
                                 }
                             </View>
@@ -221,6 +221,7 @@ class OrderDetail extends Component {
                                                 component: OrderPhotoPage,
                                                 passProps: {
                                                     id:this.state.id,
+                                                    type:'order'
                                                 }
                                             });
                                     } }

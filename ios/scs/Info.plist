@@ -57,7 +57,9 @@
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string></string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string></string>
+	<string>亲，打开相册可以吗？</string>
+	<key>NSCameraUsageDescription</key>
+	<string>亲，打开相机可以吗？</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Entypo.ttf</string>

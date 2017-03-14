@@ -39,7 +39,8 @@ import UploadPage from '../pages/uploadPage'
 //import ImageZoomModal from '../components/ImageZoomModal'
 import ShowPhotoView from '../components/showPhotoView'
 
-
+const maxiumUploadImagesCount = 30 //最多上传图片总数
+const maxiumXhrNums = 5 //最多同时上传数量
 
 class ServicePhoto extends Component {
     // 构造
@@ -56,13 +57,16 @@ class ServicePhoto extends Component {
             showReload: false,//显示加载更多
             showDialog: false,//显示确认框
             order_id: this.props.id,//服务单id
+            service_id: this.props.id,//服务单id
             photoList:[],
             dataSource: this._dataSource.cloneWithRows([]),
-            showUrl: '',
-            modalVisible: false,
+
         }
+
+
         this.firstFetch = true;
     }
+
 
 
     componentWillMount() {
@@ -77,11 +81,16 @@ class ServicePhoto extends Component {
                     //console.log("OrderDetail willAppear")
                     NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
 
-                    let photoList = this.state.photoList
-                    this.setState({
-                        photoList: photoList,
-                        dataSource: this._dataSource.cloneWithRows(photoList),
-                    })
+
+                    if(this.props.type=='order') {
+                        //判断委托单
+                        console.log(`OrderphotoPage setState...`)
+                        /*let photoList = this.state.photoList
+                        this.setState({
+                            photoList: photoList,
+                            dataSource: this._dataSource.cloneWithRows(photoList),
+                        })*/
+                    }
                 } else {
                     //console.log("OrderDetail willDisappear, other willAppear")
                 }
@@ -118,14 +127,16 @@ class ServicePhoto extends Component {
         )
     }
 
+
+
+
+
     onBackAndroid = () => {
         const routers = this.props.navigator.getCurrentRoutes();
         if (routers.length > 1) {
             Alert.alert('温馨提醒', '确定不保存就退出吗?', [
                 {text: '确定', onPress: ()=>this.props.navigator.pop()},
-                {
-                    text: '取消', onPress: ()=> {
-                }
+                {text: '取消', onPress: ()=> {}
                 },
 
             ])
@@ -136,6 +147,7 @@ class ServicePhoto extends Component {
     }
 
     render() {
+
         return (
             <View style={{flex:1}}>
 
@@ -145,15 +157,30 @@ class ServicePhoto extends Component {
                         showReload={this.state.showReload}
                     /> :
                     <View style={{flex:1,backgroundColor:'white'}}>
-                        <ListView
+                        {this.props.type=='order'?
+                            <ListView
+                                style={styles.container}
+                                contentContainerStyle={{ overflow: 'hidden',}}
+                                initialListSize={10}
+                                dataSource={this.state.dataSource}
+                                renderRow={this._renderRow}
+                                enableEmptySections={true}
+                                showsVerticalScrollIndicator={false}
+                                showsHorizontalScrollIndicator={false}/>:
+                            <ScrollView
                             style={styles.container}
-                            contentContainerStyle={{ overflow: 'hidden',}}
-                            initialListSize={10}
-                            dataSource={this.state.dataSource}
-                            renderRow={this._renderRow}
-                            enableEmptySections={true}
-                            showsVerticalScrollIndicator={false}
-                            showsHorizontalScrollIndicator={false}/>
+                            showsVerticalScrollIndicator={false}>
+                                <Text
+                                    style={[styles.contentText,{paddingTop:5,paddingBottom:5,fontSize:12}]}>上传资料</Text>
+                                <ShowPhotoView
+                                    style={{flex:1,backgroundColor:'white',
+                                paddingLeft:constants.MarginLeftRight,paddingRight:constants.MarginLeftRight,}}
+                                    navigator={this.props.navigator}
+                                    photoList={this.state.photoList}
+                                    UploadPage={UploadPage}
+                                />
+                            </ScrollView>
+                        }
                         <Button
                             ref={ component => this.button2 = component }
                             touchableType={Button.constants.touchableTypes.fadeContent}
@@ -209,6 +236,7 @@ class ServicePhoto extends Component {
     }
 
 
+
     async _fetchData() {
         console.log(`fetchData_photoList`)
         try {
@@ -219,8 +247,8 @@ class ServicePhoto extends Component {
                 method: 'post',
                 url: constants.api.service,
                 data: {
-                    iType: constants.iType.commissionOrder_missFileShow,
-                    id: this.state.order_id,
+                    iType:this.props.type=='order'? constants.iType.commissionOrder_missFileShow:constants.iType.uploadImageList,
+                    id: this.props.type=='order'?this.state.order_id:this.state.service_id,
                     deviceId: deviceID,
                     token: token,
                 }
@@ -255,48 +283,75 @@ class ServicePhoto extends Component {
 
                 //console.log('result_result:', result.result)
 
-                let photoList = this.state.photoList
+                if(this.props.type=='order'){
+                    //委托单
+                    let photoList = this.state.photoList
 
-                for(let data of result.result){
-                    console.log('data:', data)
-                    let flag=true;
-                    for(let item of photoList){
-                        console.log('item:', item)
+                    for(let data of result.result){
+                        console.log('data:', data)
+                        let flag=true;
+                        for(let item of photoList){
+                            console.log('item:', item)
 
-                        if(item.file_type_id==data.file_type_id){
-                            console.log('break:', photoList)
-                            item.list.push(data)
-                            flag=false;
-                            break;
-                        }
-                        flag=true;
-                    }
+                            if(item.file_type_id==data.file_type_id){
+                                console.log('break:', photoList)
+                                item.list.push({...data,
+                                    isStored: true,
+                                    uploaded: true,
+                                    uploading: false,})
+                                flag=false;
+                                break;
+                            }
 
-                    if(flag){
-
-                        if(data.id){
-                            photoList.push({
-                                file_type_id:data.file_type_id,
-                                title:data.file_type_name,
-                                list:[data]
-                            })
-                        }else{
-                            photoList.push({
-                                file_type_id:data.file_type_id,
-                                title:data.file_type_name,
-                                list:[]
-                            })
+                            flag=true;
                         }
 
-                    }
+                        if(flag){
 
+                            if(data.id){
+                                photoList.push({
+                                    file_type_id:data.file_type_id,
+                                    title:data.file_type_name,
+                                    list:[{...data,
+                                        isStored: true,
+                                        uploaded: true,
+                                        uploading: false,}]
+                                })
+                            }else{
+                                photoList.push({
+                                    file_type_id:data.file_type_id,
+                                    title:data.file_type_name,
+                                    list:[]
+                                })
+                            }
+
+                        }
+
+                    }
+                    console.log(`photoList:`,photoList)
+
+                    this.setState({
+                        photoList:photoList,
+                        dataSource: this._dataSource.cloneWithRows(photoList),
+                    })
+                }else{
+                    //服务单
+                    let photoList =this.state.photoList
+                    for(let data of result.result){
+                        photoList.push(
+                            {...data,
+                            isStored: true,
+                            uploaded: true,
+                            uploading: false,})
+                    }
+                    //photoList = photoList.concat(result.result)
+                    this.setState({
+                        photoList:photoList
+
+                    })
                 }
-                console.log(`photoList:`,photoList)
 
-                this.setState({
-                    photoList:photoList,
-                    dataSource: this._dataSource.cloneWithRows(photoList),
-                })
+
 
             } else {
                 this._toast.show({
@@ -333,28 +388,49 @@ class ServicePhoto extends Component {
         try {
             let token = await getToken()
             let deviceID = await getDeviceID()
-            let ids=[]
+            let ids=[];
+            let fileIds = '';
 
-            for (let data of this.state.photoList) {
-                console.log('data:', data)
-                let fileIds = '';
-                for(let item of data.list){
-                    fileIds += item.id + ','
+
+            if(this.props.type=='order') {
+                //委托单
+                for (let data of this.state.photoList) {
+                    console.log('data:', data)
+                    let fileIds = '';
+                    for (let item of data.list) {
+                        fileIds += item.id + ','
+                    }
+                    ids.push({
+                        file_type_id: data.file_type_id,
+                        file_ids: fileIds
+                    })
+
                 }
-                ids.push({
-                    file_type_id:data.file_type_id,
-                    file_ids:fileIds
-                })
 
+            }else {
+                //服务单
+                for (let data of this.state.photoList) {
+                    fileIds += data.id + ','
+                }
             }
 
 
-            let options = {
+            let options = this.props.type=='order'?{
                 method: 'post',
                 url: constants.api.service,
                 data: {
                     iType: constants.iType.commissionOrder_missFileSave,
                     list:ids,
+                    deviceId: deviceID,
+                    token: token,
+                }
+            }:{
+                method: 'post',
+                url: constants.api.service,
+                data: {
+                    iType: constants.iType.uploadFinish,
+                    id: this.state.service_id,
+                    file_ids: fileIds,
                     deviceId: deviceID,
                     token: token,
                 }

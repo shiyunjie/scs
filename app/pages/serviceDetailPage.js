@@ -33,7 +33,8 @@ import ProgressView from '../components/modalProgress'
 
 import ImageZoomModal from '../components/ImageZoomModal'
 import ShowPhotoView from '../components/showPhotoView'
-import ServicePhotoPage from './servicePhotoPage'
+//import ServicePhotoPage from './servicePhotoPage'
+import OrderPhotoPage from './orderPhotoPage'
 let disable=false
 let service_id
 class ServiceDetail extends Component {
@@ -603,9 +604,10 @@ class ServiceDetail extends Component {
 
                                      this.props.navigator.push({
                                                 title: '服务单资料',
-                                                component: ServicePhotoPage,
+                                                component: OrderPhotoPage,
                                                 passProps: {
                                                     id:service_id,
+                                                    type:'service'
                                                 }
                                             });
                                             disable=false

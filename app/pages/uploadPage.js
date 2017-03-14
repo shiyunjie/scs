@@ -42,6 +42,8 @@ import excel from '../images/excel.png'
 import pdf from '../images/pdf.png'
 import file from '../images/File_Blank.png'
 
+import ImagePicker from 'react-native-image-crop-picker'
+
 const NativeCompressedModule = NativeModules.NativeCompressedModule;
 
 const { width: deviceWidth ,height: deviceHeight} = Dimensions.get('window')
@@ -88,6 +90,7 @@ class UploadPage extends Component {
             dataSource: this._dataSource.cloneWithRows(photoList),
             showUrl: '',
             modalVisible: false,
+            images: null,
         }
         this._uploadingXhrCacheList = []    //正在上传中的(包含上传失败的)xhr缓存列表, 用uri做唯一性, 该列表长度会影响当前可用的上传线程数
         this._waitForUploadQuene = []       //待上传队列, 用uri做唯一性
@@ -317,17 +320,53 @@ class UploadPage extends Component {
                     style={styles.buttonStyle}
                     textStyle={{fontSize: 17, color: 'white'}}
                     onPress={()=>{
-                            this.props.navigator.push({
-                        title: '相机胶卷',
-                        component: PicturePicker,
-                        passProps: {
-                            maxiumUploadImagesCount,
-                            currentUploadImagesCount: this.state.photoList.length,
-                            waitForAddToUploadQuene: this._waitForAddToUploadQuene,
-                            ids:this._ids,
-                            //addToUploadQuene: this._addToUploadQuene
-                        }
-                    })
+                            /*this.props.navigator.push({
+                            title: '相机胶卷',
+                            component: PicturePicker,
+                            passProps: {
+                                maxiumUploadImagesCount,
+                                currentUploadImagesCount: this.state.photoList.length,
+                                waitForAddToUploadQuene: this._waitForAddToUploadQuene,
+                                ids:this._ids,
+                                //addToUploadQuene: this._addToUploadQuene
+                                }
+                            })*/
+                              ImagePicker.openPicker({
+                                  multiple: true
+                                }).then(images => {
+                                  console.log(images);
+                                  let Uris = []
+
+                                for (let data of this._ids) {
+                                    Uris.push(data.uri)
+                                }
+                                //console.log(`Uris:`, Uris)
+                                let selected = [];
+                                for (let i = images.length - 1; i >= 0; i--) {
+                                    let data = images[i]
+                                    if (Uris.indexOf(data.path) == -1) {
+                                        //console.log(`Uris_data:`, data)
+                                        data.big_uri = data.path
+                                        data.uri = data.path
+                                        selected.push(data)
+                                    }
+                                }
+                                //this.props.waitForAddToUploadQuene(this.state.selected)
+                                this._waitForAddToUploadQuene(selected)
+                                if (this._waitForAddPhotos && this._waitForAddPhotos.length > 0) {
+                        this.setTimeout(() => {
+                            /*
+                             //@todo async this._getCompressedPhotos 返回photos数组, 遍历this._waitForAddPhotos {let compressedUri = await NativeCompressedModule.compress(...); 遍历的photo对象uri赋值compressedUri }
+                             this._getCompressedPhotos().then((photos)=>{
+                             this._addToUploadQuene(photos)
+                             })*/
+                            this._addToUploadQuene(this._waitForAddPhotos)
+                            this._waitForAddPhotos = null
+
+                        }, 300)
+
+                    }
+                                });
                 }}>
                     <Icon
                         name='md-add'  // 图标

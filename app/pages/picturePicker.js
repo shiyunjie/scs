@@ -57,21 +57,29 @@ class PicturePicker extends Component {
                 let Uris = []
 
                 for (let data of this.props.ids) {
-                    Uris.push(data.uri)
+                    //Uris.push(data.uri)
+                    Uris.push(data.big_uri)
                 }
                 //console.log(`Uris:`, Uris)
                 let selected = [];
                 for (let i = this.state.selected.length - 1; i >= 0; i--) {
                     let data = this.state.selected[i]
                     if (Uris.indexOf(data.uri) == -1) {
-                        //console.log(`Uris_data:`, data)
+                        console.log(`Uris_data:`, data)
                         data.big_uri = data.uri
+                        data.path = data.uri
+                        data.big_url = data.uri
+                        data.url= data.uri
+                        data.file_url=data.uri
                         selected.push(data)
+
                     }
 
                 }
+
                 //this.props.waitForAddToUploadQuene(this.state.selected)
                 this.props.waitForAddToUploadQuene(selected)
+
                 //this.props.addToUploadQuene(this.state.selected)
                 this.props.navigator.pop()
             })

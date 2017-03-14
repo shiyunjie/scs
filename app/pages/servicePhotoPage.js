@@ -58,8 +58,7 @@ class ServicePhoto extends Component {
             service_id: this.props.id,//服务单id
             photoList,
 
-            showUrl: '',
-            modalVisible: false,
+
         }
         this.firstFetch = true;
     }

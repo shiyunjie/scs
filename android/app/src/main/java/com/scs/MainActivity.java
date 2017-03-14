@@ -8,6 +8,7 @@ import com.facebook.react.ReactActivity;
 
 import com.oblador.vectoricons.VectorIconsPackage;
 import com.react.rnspinkit.RNSpinkitPackage;
+import com.reactnative.ivpusic.imagepicker.PickerPackage;
 import com.reactnativecomponent.alipay.RCTAlipayPackage;
 import com.reactnativecomponent.imageloader.RCTLoaderImageViewPackage;
 import com.reactnativecomponent.splashscreen.RCTSplashScreenPackage;
@@ -70,7 +71,8 @@ private final String  PRODUCTION="_IHWC3QE6EffN7QNt2kb_nx7VSXsEyNRpXRPG";
                         new RCTAlipayPackage(),
                         new RNFSPackage(),
                         new RCTcompressedImagePackage(),
-                        new CodePush(STAGING, MainActivity.this, BuildConfig.DEBUG)
+                        new CodePush(STAGING, MainActivity.this, BuildConfig.DEBUG),
+                        new PickerPackage()
 
 
                 );
