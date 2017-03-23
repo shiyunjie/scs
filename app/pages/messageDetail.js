@@ -62,7 +62,7 @@ class MessageDetail extends Component {
             this.props.navigator.navigationContext.addListener('didfocus', (event) => {
                 //console.log(`payPage didfocus...`)
                 if (event && currentRoute === event.data.route) {
-                    console.log("upload didAppear")
+                    //console.log("upload didAppear")
                     this._fetchData_read(this.props.id)
 
                 } else {
@@ -173,6 +173,14 @@ class MessageDetail extends Component {
                  */
                 this.props.navigator.pop()
                 NativeAppEventEmitter.emit('getMsg_202_code_need_login');
+                this.setState({
+                    showProgress: false,//显示加载
+                    showReload: true,//显示加载更多
+                })
+                this.setState({
+                    showProgress: false,//显示加载
+                    showReload: true,//显示加载更多
+                })
                 return
             }
             if (result.code && result.code == 10) {
@@ -189,10 +197,9 @@ class MessageDetail extends Component {
                     duration: 255,
                     children: result.msg
                 })
-                this.setState(
-                    {
+                this.setState({
                         showProgress: false,//显示加载
-                        showReload: false,//显示加载更多
+                        showReload: true,//显示加载更多
                     })
             }
 

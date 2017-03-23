@@ -145,7 +145,7 @@ class UploadPage extends Component {
                 //console.log(`payPage didfocus...`)
 
                 if (event && currentRoute === event.data.route) {
-                    console.log("upload didAppear")
+                    //console.log("upload didAppear")
 
                     if (this.firstFetch) {
                         //this._fetchData()
@@ -334,7 +334,7 @@ class UploadPage extends Component {
                               ImagePicker.openPicker({
                                   multiple: true
                                 }).then(images => {
-                                  console.log(images);
+                                  //console.log(images);
                                   let Uris = []
 
                                 for (let data of this._ids) {
@@ -599,7 +599,6 @@ class UploadPage extends Component {
                 }
                 //遍历ids如果包含,删除id
                 for (let data of this._ids) {
-
                     if (data.uri == uri) {
                         //console.log(`ids_delete${data.uri}:`, data.id)
                         this._ids.splice(this._ids.indexOf(data), 1)
@@ -731,7 +730,7 @@ class UploadPage extends Component {
             //let photoIndex = this.state.photoList.findIndex((photo) => {
             //    return uploadPhoto.uri == photo.uri
             //})
-            //let photo = this.state.photoList[ photoIndex ]
+            //let photo = this.state.photoList[photoIndex]
             //photo.uploading = false
             //photo.uploadError = true
             //this.setState({
@@ -972,7 +971,7 @@ class UploadPage extends Component {
 
 
     async _fetchData() {
-        console.log(`upload_fetchData`)
+        //console.log(`upload_fetchData`)
         try {
             let token = await getToken()
             let deviceID = await getDeviceID()

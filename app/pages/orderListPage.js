@@ -484,7 +484,7 @@ class OrderList extends Component {
                  * 发送事件去登录
                  */
                 NativeAppEventEmitter.emit('getMsg_202_code_need_login');
-                return
+                return;
             }
             if (result.code && result.code == 10) {
 
@@ -578,7 +578,7 @@ class OrderList extends Component {
                  * 发送事件去登录
                  */
                 NativeAppEventEmitter.emit('getMsg_202_code_need_login');
-                return
+                return;
             }
             if (result.code && result.code == 10) {
 

@@ -143,6 +143,8 @@ class AddOrder extends Component {
         this.countryShow = []
         this.countryEnd = []
 
+        this._isUploading=false
+
     }
 
     componentWillMount() {
@@ -495,6 +497,7 @@ class AddOrder extends Component {
                             photoList={this.state.photoList}
                             showPhoto={this._ImageZoomModal.ShowPhoto}
                             UploadPage={UploadPage}
+                            isUploading={this._isUploading}
                         />
 
                         <Text
@@ -918,7 +921,7 @@ class AddOrder extends Component {
                 return
             }
             result = JSON.parse(result)
-            console.log('gunZip:', result)
+            //console.log('gunZip:', result)
 
             if (!result) {
                 this._toast.show({
@@ -938,6 +941,7 @@ class AddOrder extends Component {
                     title: '用户登录',
                     component: LoginPage,
                 })
+                return;
             }
             if (result.code && result.code == 10) {
 
@@ -1035,7 +1039,7 @@ class AddOrder extends Component {
 
             options.data = await this.gZip(options)
 
-            console.log(`_fetch_sendCode options:`, options)
+            //console.log(`_fetch_sendCode options:`, options)
 
             let resultData = await this.fetch(options)
 
@@ -1052,7 +1056,7 @@ class AddOrder extends Component {
             if (this._modalLoadingSpinnerOverLay) {
                 this._modalLoadingSpinnerOverLay.hide({duration: 0,})
             }
-            console.log('gunZip:', result)
+            //console.log('gunZip:', result)
             if (!result) {
                 this._toast.show({
                     position: Toast.constants.gravity.center,
@@ -1071,6 +1075,7 @@ class AddOrder extends Component {
                     title: '用户登录',
                     component: LoginPage,
                 })
+                return;
             }
             if (result.code && result.code == 10) {
 

@@ -112,7 +112,7 @@ class Logistics extends Component {
             this.props.navigator.navigationContext.addListener('didfocus', (event) => {
                 //console.log(`payPage didfocus...`)
                 if (event && currentRoute === event.data.route) {
-                    console.log("upload didAppear")
+                    //console.log("upload didAppear")
 
                         this._fetch_logistics()
 

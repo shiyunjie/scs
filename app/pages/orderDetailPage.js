@@ -115,7 +115,7 @@ class OrderDetail extends Component {
             this.props.navigator.navigationContext.addListener('didfocus', (event) => {
                 //console.log(`payPage didfocus...`)
                 if (event && currentRoute === event.data.route) {
-                    console.log("upload didAppear")
+                    //console.log("upload didAppear")
                     this._fetchData()
                     if (this.firstFetch) {
 
@@ -423,7 +423,7 @@ class OrderDetail extends Component {
                 return
             }
             result = JSON.parse(result)
-            console.log('gunZip:', result)
+            //console.log('gunZip:', result)
             if (!result) {
                 this._toast.show({
                     position: Toast.constants.gravity.center,
@@ -442,6 +442,12 @@ class OrderDetail extends Component {
                     title: '用户登录',
                     component: LoginPage,
                 })
+
+                this.setState({
+                    showProgress: false,//显示加载
+                    showReload: true,//显示加载更多
+                })
+                return;
             }
             if (result.code && result.code == 10) {
 
@@ -496,6 +502,11 @@ class OrderDetail extends Component {
                     position: Toast.constants.gravity.center,
                     duration: 255,
                     children: result.msg
+                })
+
+                this.setState({
+                    showProgress: false,//显示加载
+                    showReload: true,//显示加载更多
                 })
 
             }
@@ -580,6 +591,7 @@ class OrderDetail extends Component {
                     title: '用户登录',
                     component: LoginPage,
                 })
+                return;
             }
             if (result.code && result.code == 10) {
                 Alert.alert('温馨提醒', '已重新委托', [
@@ -685,6 +697,7 @@ class OrderDetail extends Component {
                     title: '用户登录',
                     component: LoginPage,
                 })
+                return;
             }
             if (result.code && result.code == 10) {
                 Alert.alert('温馨提醒', '订单已取消', [

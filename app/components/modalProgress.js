@@ -104,7 +104,7 @@ export default class ModalProgress extends Component {
                                 style={{width:100,height:100}}
                                 source={image_logo}/>
                             <Text
-                                style={{marginTop:10,}}
+                                style={{marginTop:10,color:constants.UIActiveColor}}
                                 fontSize={16}
                                 //backgroundColor:'transparent'
                             >重新加载</Text>

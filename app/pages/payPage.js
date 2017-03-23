@@ -112,6 +112,7 @@ class PayPage extends Component {
         }
 
         pageType = this.props.pageType
+        this.firstFetch = true;
 
     }
 
@@ -124,14 +125,14 @@ class PayPage extends Component {
         let currentRoute = this.props.navigator.navigationContext.currentRoute
         this.addAppEventListener(
             this.props.navigator.navigationContext.addListener('willfocus', (event) => {
-                console.log(`PayPage willfocus...`)
-                console.log(`currentRoute`, currentRoute)
-                console.log(`event.data.route`, event.data.route)
+                //console.log(`PayPage willfocus...`)
+                //console.log(`currentRoute`, currentRoute)
+                //console.log(`event.data.route`, event.data.route)
                 if (currentRoute === event.data.route) {
-                    console.log("PayPage willAppear")
+                    //console.log("PayPage willAppear")
                     NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
                 } else {
-                    console.log("PayPage willDisappear, other willAppear")
+                    //console.log("PayPage willDisappear, other willAppear")
                 }
                 //
             })
@@ -141,9 +142,17 @@ class PayPage extends Component {
             this.props.navigator.navigationContext.addListener('didfocus', (event) => {
                 //console.log(`payPage didfocus...`)
                 if (event && currentRoute === event.data.route) {
-                    console.log("upload didAppear")
-                        this.setState({ showProgress: true,//显示加载
-                             })
+                    //console.log("upload didAppear")
+                    if(this.firstFetch) {
+                        this.setState({
+                            showProgress: true,//显示加载
+                        })
+                        this.firstFetch=false
+                    }else{
+                        if(this._modalLoadingSpinnerOverLay) {
+                            this._modalLoadingSpinnerOverLay.show()
+                        }
+                    }
                         this._fetchData()
 
                 }else {
@@ -218,6 +227,7 @@ class PayPage extends Component {
 
 
     async _fetchData() {
+        firstDataList=[]
         try {
             let token = await getToken()
             let deviceID = await getDeviceID()
@@ -267,6 +277,11 @@ class PayPage extends Component {
                     title: '用户登录',
                     component: LoginPage,
                 })
+                this.setState({
+                    showProgress: false,//显示加载
+                    showReload: true,//显示加载更多
+                })
+                return;
             }
             if (result.code && result.code == 10) {
 
@@ -276,22 +291,22 @@ class PayPage extends Component {
                 let serviceTotalAndFax = 0
                 let total = 0
                 //开始循环收到数据
-                console.log(`dataList:`,dataList.length)
+                //console.log(`dataList:`,dataList.length)
                 for (let data of dataList) {
                     //console.log(`first_cost_name:`,data)
                     //console.log(`pageType:`,pageType)
 
                     if (data.first_cost_name == '服务费总金额') {
-                        console.log(`first_cost_name:`,data)
+                        //console.log(`first_cost_name:`,data)
                         serviceTotal = pageType == 'pay' ? data.cost : data.estimate_cost
                         continue
                     } else if (data.first_cost_name == '服务费税额') {
-                        console.log(`first_cost_name:`,data)
+                        //console.log(`first_cost_name:`,data)
 
                         fax = pageType == 'pay' ? data.cost : data.estimate_cost
                         continue
                     } else if (data.first_cost_name == '服务费价税合计') {
-                        console.log(`first_cost_name:`,data)
+                        //console.log(`first_cost_name:`,data)
                         serviceTotalAndFax = pageType == 'pay' ? data.cost : data.estimate_cost
                         continue
                     }
@@ -330,7 +345,7 @@ class PayPage extends Component {
                 }
                 //console.log(`firstData:`, firstDataList)
                 //console.log(`payList:`, payList.length)
-                firstDataList
+                //firstDataList
                 //计算总价
                 for (let data of firstDataList) {
                     for (let item of data) {
@@ -360,6 +375,10 @@ class PayPage extends Component {
                     duration: 255,
                     children: result.msg
                 })
+                this.setState({
+                    showProgress: false,//显示加载
+                    showReload: true,//显示加载更多
+                })
             }
 
 
@@ -377,6 +396,10 @@ class PayPage extends Component {
                 showProgress: false,//显示加载
                 showReload: true,//显示加载更多
             })
+        }finally {
+            if(this._modalLoadingSpinnerOverLay) {
+                this._modalLoadingSpinnerOverLay.hide()
+            }
         }
 
     }
@@ -409,31 +432,7 @@ class PayPage extends Component {
     }
 
     /**
-     *<ScrollView
-     style={styles.container}
-     showsVerticalScrollIndicator={false}>
-     {this.state.dataList.map((data, index) => {
-         let select = false
-         for (let cost of data) {
-             if (this.state.payList.indexOf(cost.id) != -1 && !cost.is_pay) {
-                 select = true
-                 break
-             }
-         }
-         return (
-             <PayItem
-                 key={`key${index}`}
-                 child={data}
-                 payList={this.state.payList}
-                 //showIcon={true}
-                 showChild={false}
-                 selected={select}
-                 pageType={pageType}
-                 selectedAll={this.state.selectedAll}/>
-         )
-     })
-     }
-     </ScrollView>
+     *
      *
      first_cost_name 一级费用名称
 
@@ -458,10 +457,18 @@ class PayPage extends Component {
                         showProgress={this.state.showProgress}
                         showReload={this.state.showReload}
                         fetchData={()=>{
+
+                         if(this.firstFetch) {
                         this.setState({
-                        showProgress:true,//显示加载
+                            showProgress:true,//显示加载
                         showReload:false,//显示加载更多
-                         })
+                        })
+                        this.firstFetch=false
+                        }else{
+                            if(this._modalLoadingSpinnerOverLay) {
+                                this._modalLoadingSpinnerOverLay.show()
+                            }
+                        }
                         this._fetchData()
                         }}/> :
 
@@ -691,6 +698,7 @@ class PayPage extends Component {
                     title: '用户登录',
                     component: LoginPage,
                 })
+                return;
             }
             if (result.code && result.code == 10) {
                 this._toast.show({
@@ -699,11 +707,11 @@ class PayPage extends Component {
                     children: '账单已确认'
                 })
 
-                setTimeout(()=>{
+
                     //确认账单
                     NativeAppEventEmitter.emit('bill_has_be_conform_should_refresh', this.state.service_id)
                     this.props.navigator.pop()
-                },1000)
+
 
 
             } else {

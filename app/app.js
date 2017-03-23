@@ -112,7 +112,7 @@ class Root extends Component {
 
         //this.addAppEventListener(
         this._listener1 = NativeAppEventEmitter.addListener('setNavigationBar.index', (navigationBar) => {
-            console.log(`setNavigationBar.index navigationBar -> `, navigationBar)
+            //console.log(`setNavigationBar.index navigationBar -> `, navigationBar)
             this.setState({
                 navigationBar: navigationBar,
             })

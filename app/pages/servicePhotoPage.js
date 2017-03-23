@@ -95,7 +95,7 @@ class ServicePhoto extends Component {
             this.props.navigator.navigationContext.addListener('didfocus', (event) => {
                 //console.log(`payPage didfocus...`)
                 if (event && currentRoute === event.data.route) {
-                    console.log("upload didAppear")
+                    //console.log("upload didAppear")
 
                     if (this.firstFetch) {
                         this._fetchData()
@@ -195,7 +195,7 @@ class ServicePhoto extends Component {
 
 
     async _fetchData() {
-        console.log(`fetchData_photoList`)
+        //console.log(`fetchData_photoList`)
 
         try {
             let token = await getToken()

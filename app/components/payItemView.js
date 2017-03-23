@@ -40,14 +40,14 @@ export default class PayTabView extends Component {
         if (selectedAll) {
 
             if(!this.props.selectedAll) {
-                console.log(`_selectTab:` + this.props.selectedAll)
+                //console.log(`_selectTab:` + this.props.selectedAll)
                 this.setState({
                     selected: true,
                 })
                 this.props.selectedAll=false
             }else{
                 //已经全选过一次了
-                console.log(`this.props.selectedAll:` + this.props.selectedAll)
+                //console.log(`this.props.selectedAll:` + this.props.selectedAll)
                 //判断所有项是否有选中
                 let flag=false
                 for(data of this.props.child){

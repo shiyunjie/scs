@@ -242,7 +242,7 @@ class Login extends Component {
                 return
             }
             result = JSON.parse(result)
-            console.log('gunZip:', result)
+            //console.log('gunZip:', result)
 
             if(!result){
                 this._toast.show({

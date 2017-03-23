@@ -17,7 +17,8 @@ import {
     Alert,
     NativeModules,
     ActivityIndicator,
-
+    Modal,
+    Touchable,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import constants from '../constants/constant';
@@ -26,6 +27,7 @@ import RNFS from 'react-native-fs'
 import {doSign} from '../lib/utils'
 import {getDeviceID,getToken} from '../lib/User'
 import XhrEnhance from '../lib/XhrEnhance'
+import Toast from 'react-native-smart-toast'
 
 import doc from '../images/word.png'
 import excel from '../images/excel.png'
@@ -36,21 +38,22 @@ import ImageZoomModal from '../components/ImageZoomModal'
 import ImagePicker from 'react-native-image-crop-picker'
 const NativeCompressedModule = NativeModules.NativeCompressedModule;
 
-const { width: deviceWidth } = Dimensions.get('window');
+const { width: deviceWidth ,height:deviceHeight} = Dimensions.get('window');
 
 import PicturePicker from '../pages/picturePicker'
 
-const maxiumUploadImagesCount = 30 //最多上传图片总数
-const maxiumXhrNums = 5 //最多同时上传数量
 
- class ShowPhotoView extends Component {
+
+
+class ShowPhotoView extends Component {
     // 构造
     constructor(props) {
         super(props);
         // 初始状态
         this.state = {
             //photoList: [...this.props.photoList]
-            photoList: this.props.photoList
+            photoList: this.props.photoList,
+            cameraModalVisible: false,
         };
 
         this._uploadingXhrCacheList = []    //正在上传中的(包含上传失败的)xhr缓存列表, 用uri做唯一性, 该列表长度会影响当前可用的上传线程数
@@ -62,20 +65,20 @@ const maxiumXhrNums = 5 //最多同时上传数量
     }
 
 
-
     static propTypes = {
         ...View.propTypes, // 包含默认的View的属性
         //showPhoto: PropTypes.func,
         UploadPage: PropTypes.any.isRequired,
         photoList: PropTypes.array,
         showUpload: PropTypes.bool,
+        isUploading:PropTypes.bool,
     }
     static defaultProps = {
         photoList: [],
         showUpload: true,
+        isUploading:false
         //showPhoto: this._showPhoto
     }
-
 
 
     _showPhoto(url) {
@@ -99,29 +102,27 @@ const maxiumXhrNums = 5 //最多同时上传数量
 
     componentWillReceiveProps(nextProps) {
         let photoList = nextProps.photoList
-            console.log(`componentWillReceiveProps:`, photoList)
-            this.setState({
-                photoList: photoList,
-            })
+        //console.log(`componentWillReceiveProps:`, photoList)
+        this.setState({
+            photoList: photoList,
+        })
 
-            if (this._waitForAddPhotos && this._waitForAddPhotos.length > 0) {
-                setTimeout(() => {
-                    /*
-                     //@todo async this._getCompressedPhotos 返回photos数组, 遍历this._waitForAddPhotos {let compressedUri = await NativeCompressedModule.compress(...); 遍历的photo对象uri赋值compressedUri }
-                     this._getCompressedPhotos().then((photos)=>{
-                     this._addToUploadQuene(photos)
-                     })*/
-                    this._addToUploadQuene(this._waitForAddPhotos)
-                    this._waitForAddPhotos = null
+        if (this._waitForAddPhotos && this._waitForAddPhotos.length > 0) {
+            //setTimeout(() => {
+                /*
+                 //@todo async this._getCompressedPhotos 返回photos数组, 遍历this._waitForAddPhotos {let compressedUri = await NativeCompressedModule.compress(...); 遍历的photo对象uri赋值compressedUri }
+                 this._getCompressedPhotos().then((photos)=>{
+                 this._addToUploadQuene(photos)
+                 })*/
+                this._addToUploadQuene(this._waitForAddPhotos)
+                this._waitForAddPhotos = null
 
-                }, 300)
+            //}, 300)
 
-            }
+        }
 
 
     }
-
-
 
 
     componentWillUnmount() {
@@ -141,6 +142,170 @@ const maxiumXhrNums = 5 //最多同时上传数量
             <View
                 style={[this.props.style,{flexDirection:'row',justifyContent:'flex-start',flexWrap: 'wrap',}]}
             >
+                <Modal
+                    animationType={"fade"}
+                    transparent={true}
+                    visible={this.state.cameraModalVisible}
+                    onRequestClose={() => {
+                    this.setState({cameraModalVisible:false})
+                    this.props.isUploading=false
+                    }}>
+                    <View
+                        style={{flex:1,flexDirection:'column',justifyContent:'flex-start',
+                        alignItems:'stretch',backgroundColor: 'rgba(0, 0, 0, 0.5)',padding:10}}>
+                        <TouchableOpacity
+                            style={{flex:1}}
+                            onPress={()=>{
+                            this.setState({cameraModalVisible:false})
+                            this.props.isUploading=false
+                            }}
+                        >
+                            <View style={{flex:1}}/>
+                        </TouchableOpacity>
+                        <View
+                            style={{height:50,borderTopLeftRadius:6,
+                            borderTopRightRadius:6,backgroundColor:'white'}}>
+                            <TouchableOpacity
+                                style={{flex:1,justifyContent:'center',alignItems:'center',}}
+                                onPress={()=>{
+                                    ImagePicker.openCamera({
+                                      width: deviceWidth,
+                                      height: (deviceWidth/3)*4,
+                                      cropping: true
+                                    }).then(image => {
+                                        this.setState({
+                                        cameraModalVisible:false
+                                        })
+                                        this.props.isUploading=false
+
+                                      let Uris = []
+
+                                    for (let data of this._ids){
+                                        Uris.push(data.big_uri)
+                                    }
+                                    //console.log(`Uris:`, Uris)
+                                    let selected = []
+                                            console.log(`Uris_image:`, image)
+                                            console.log(`Uris:`, Uris)
+                                            let data=image
+                                            data.big_uri = image.path
+                                            data.uri = image.path
+                                            data.file_url=image.path
+                                            data.big_url=image.path
+                                            selected.push(image)
+
+                                    this._waitForAddToUploadQuene(selected)
+                                    if (this._waitForAddPhotos && this._waitForAddPhotos.length > 0) {
+
+                                    this._addToUploadQuene(this._waitForAddPhotos)
+                                    this._waitForAddPhotos = null
+
+                                    }
+                                    return;
+                                    }).catch(()=>{
+                                    this.setState({ cameraModalVisible:false})
+                                    this.props.isUploading=false
+                                    })
+                            }}>
+                                <Text
+                                    style={{fontSize:17,color:'#007aff'}}>
+                                    拍照
+                                </Text>
+                            </TouchableOpacity>
+                        </View>
+                        <View
+                            style={{height:50,borderBottomLeftRadius:6,
+                            borderBottomRightRadius:6,backgroundColor:'white'}}
+                        >
+                            <TouchableOpacity
+                                style={{flex:1,justifyContent:'center',alignItems:'center',}}
+                                onPress={()=>{
+
+                                ImagePicker.openPicker({
+                                  multiple: true,
+                                }).then(images => {
+                                  //console.log(images);
+                                        this.setState({
+                                        cameraModalVisible:false
+                                        })
+                                        this.props.isUploading=false
+                                        if(!images||images.length==0){
+                                        return;
+                                        }
+
+                                    let Uris = []
+
+                                    for (let data of this._ids) {
+                                        Uris.push(data.big_uri)
+                                    }
+                                    //console.log(`Uris:`, Uris)
+                                    let selected = [];
+                                    for (let i = images.length - 1; i >= 0; i--){
+                                        let data = images[i]
+                                        if (Uris.indexOf(data.path) == -1) {
+                                            console.log(`Uris_data:`, data)
+                                            console.log(`Uris:`, Uris)
+                                            data.big_uri = data.path
+                                            data.uri = data.path
+                                            data.file_url=data.path
+                                            data.big_url=data.path
+                                            selected.push(data)
+                                        }
+                                    }
+                                    //this.props.waitForAddToUploadQuene(this.state.selected)
+                                    this._waitForAddToUploadQuene(selected)
+                                    if (this._waitForAddPhotos && this._waitForAddPhotos.length > 0) {
+                                    //setTimeout(() => {
+
+                                     //@todo async this._getCompressedPhotos 返回photos数组, 遍历this._waitForAddPhotos {let compressedUri = await NativeCompressedModule.compress(...); 遍历的photo对象uri赋值compressedUri }
+                                     //this._getCompressedPhotos().then((photos)=>{
+                                     //this._addToUploadQuene(photos)
+                                     //})
+                                    this._addToUploadQuene(this._waitForAddPhotos)
+                                    this._waitForAddPhotos = null
+
+
+                                         //}, 300)
+
+                                    }
+                                 return;
+                                }).catch(()=>{
+                                this.setState({
+                                 cameraModalVisible:false
+                                 })
+                                this.props.isUploading=false
+                                })
+                            }}>
+                                <Text
+                                    style={{fontSize:17,color:'#007aff'}}>
+                                    我的照片
+                                </Text>
+                            </TouchableOpacity>
+                        </View>
+                        <View
+                            style={{height:50,marginTop:10,
+                            borderRadius:6,backgroundColor:'white'}}
+                        >
+                            <TouchableOpacity
+                                style={{flex:1,justifyContent:'center',alignItems:'center',}}
+                                onPress={()=>{
+                                this.setState({
+                                cameraModalVisible:false
+                                })
+                                this.props.isUploading=false
+                            }}>
+                                <Text
+                                    style={{fontSize:17,color:'#007aff'}}>
+                                    取消
+                                </Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </Modal>
+                <Toast
+                    ref={ component => this._photo_toast = component }
+                    marginTop={64}>
+                </Toast>
                 <ImageZoomModal
                     ref={ component => this._ImageZoomModal = component }
                     PhotoList={this.props.photoList}
@@ -150,7 +315,7 @@ const maxiumXhrNums = 5 //最多同时上传数量
                 {
                     this.state.photoList.map((item, index) => {
 
-                            if (item.file_mime&&item.file_mime.indexOf('image') == -1) {
+                            if (item.file_mime && item.file_mime.indexOf('image') == -1) {
                                 if (item.file_mime.indexOf('pdf') > -1) {
                                     return (
                                         <View
@@ -235,7 +400,7 @@ const maxiumXhrNums = 5 //最多同时上传数量
                                             }
                                         </View>
                                     )
-                                }else {
+                                } else {
                                     return (
                                         <View
                                             key={`${index}`}
@@ -267,7 +432,7 @@ const maxiumXhrNums = 5 //最多同时上传数量
 
                                 }
 
-                            }else {
+                            } else {
                                 return (
                                     <View
                                         key={`${index}`}
@@ -287,7 +452,7 @@ const maxiumXhrNums = 5 //最多同时上传数量
                                                             color={'#fff'}
                                                             size={'small'}/>
                                                         <Text
-                                                            style={{color: '#fff', padding: 5, fontSize: 14,}}>{item.uploadProgress ? Math.floor(item.uploadProgress * 100) : 0}%</Text>
+                                                            style={{color: '#fff', padding: 2, fontSize: 14,}}>{item.uploadProgress ? Math.floor(item.uploadProgress * 100) : 0}%</Text>
                                                     </View> : null
                                                 }
                                                 {
@@ -295,7 +460,7 @@ const maxiumXhrNums = 5 //最多同时上传数量
                                                         style={{flex: 1, backgroundColor: 'rgba(160, 160, 160, 0.7)', justifyContent: 'center', alignItems: 'center',}}>
 
                                                         <Text
-                                                            style={{color: '#fff', padding: 5, fontSize: 14,}}>上传失败</Text>
+                                                            style={{color: '#fff', padding: 2, fontSize: 14,}}>上传失败</Text>
                                                     </View> : null
                                                 }
                                             </Image>
@@ -324,6 +489,13 @@ const maxiumXhrNums = 5 //最多同时上传数量
                         style={{width:width,height:height,marginRight:5,marginTop:5,marginBottom:5,flexDirection:'column',
                                     justifyContent:'flex-start',alignItems:'center',padding:0}}
                         onPress={()=>{
+                        console.log(`_uploadingXhrCacheList`,this._uploadingXhrCacheList)
+                        if(this._uploadingXhrCacheList.length==0&&!this.props.isUploading){
+
+                            this.setState({
+                                cameraModalVisible:true
+                            })
+                            this.props.isUploading=true
 
                                        /* this.props.navigator.push({
                                                 title: '相机胶卷',
@@ -345,51 +517,13 @@ const maxiumXhrNums = 5 //最多同时上传数量
                                        //        }
                                        //     });
 
-                                ImagePicker.openPicker({
-                                  multiple: true,
-                                }).then(images => {
-                                  //console.log(images);
-                                        if(!images||images.length==0){
-                                        return;
-                                        }
-
-                                    let Uris = []
-
-                                    for (let data of this._ids) {
-                                        Uris.push(data.big_uri)
-                                    }
-                                    //console.log(`Uris:`, Uris)
-                                    let selected = [];
-                                    for (let i = images.length - 1; i >= 0; i--){
-                                        let data = images[i]
-                                        if (Uris.indexOf(data.path) == -1) {
-                                            console.log(`Uris_data:`, data)
-                                            console.log(`Uris:`, Uris)
-                                            data.big_uri = data.path
-                                            data.uri = data.path
-                                            data.file_url=data.path
-                                            data.big_url=data.path
-                                            selected.push(data)
-                                        }
-                                    }
-                                    //this.props.waitForAddToUploadQuene(this.state.selected)
-                                    this._waitForAddToUploadQuene(selected)
-                                    if (this._waitForAddPhotos && this._waitForAddPhotos.length > 0) {
-                                    setTimeout(() => {
-
-                                     //@todo async this._getCompressedPhotos 返回photos数组, 遍历this._waitForAddPhotos {let compressedUri = await NativeCompressedModule.compress(...); 遍历的photo对象uri赋值compressedUri }
-                                     //this._getCompressedPhotos().then((photos)=>{
-                                     //this._addToUploadQuene(photos)
-                                     //})
-                                    this._addToUploadQuene(this._waitForAddPhotos)
-                                    this._waitForAddPhotos = null
-
-                                         }, 300)
-
-                                    }
-
-                                });
-
+                            }else{
+                                this._photo_toast.show({
+                                    position: Toast.constants.gravity.center,
+                                    duration: 255,
+                                    children: '正在上传中,请稍后'
+                                })
+                            }
                        }}>
                         <Icon
                             name='ios-image'  // 图标
@@ -404,51 +538,51 @@ const maxiumXhrNums = 5 //最多同时上传数量
     }
 
 
-
-     _waitForAddToUploadQuene = (photos) => {
-         this._waitForAddPhotos = photos;
+    _waitForAddToUploadQuene = (photos) => {
+        this._waitForAddPhotos = photos;
 
         /* if (this._waitForAddPhotos && this._waitForAddPhotos.length > 0) {
-             setTimeout(() => {
-                 /!*
-                  //@todo async this._getCompressedPhotos 返回photos数组, 遍历this._waitForAddPhotos {let compressedUri = await NativeCompressedModule.compress(...); 遍历的photo对象uri赋值compressedUri }
-                  this._getCompressedPhotos().then((photos)=>{
-                  this._addToUploadQuene(photos)
-                  })*!/
-                 this._addToUploadQuene(this._waitForAddPhotos)
-                 this._waitForAddPhotos = null
+         setTimeout(() => {
+         /!*
+         //@todo async this._getCompressedPhotos 返回photos数组, 遍历this._waitForAddPhotos {let compressedUri = await NativeCompressedModule.compress(...); 遍历的photo对象uri赋值compressedUri }
+         this._getCompressedPhotos().then((photos)=>{
+         this._addToUploadQuene(photos)
+         })*!/
+         this._addToUploadQuene(this._waitForAddPhotos)
+         this._waitForAddPhotos = null
 
-             }, 300)
+         }, 300)
 
          }*/
-     }
+    }
 
-     _addToUploadQuene = (photos) => {
-         console.log(`_addToUploadQuene`, photos)
-         for (let photo of photos) {
-             let uploadTask = {
-                 uri: photo.big_uri,                 //用uri来做唯一性
-                 init: this._upload.bind(this, photo), //将上传方法对象赋值给上传任务
-             }
-             this._waitForUploadQuene.push(uploadTask)   //将上传任务加入待上传队列
-         }
-         //很明显, 这里UI要更新
-         let photoList = this.state.photoList
-         photoList = photoList.concat(photos)
+    _addToUploadQuene = (photos) => {
+        //console.log(`_addToUploadQuene`, photos)
+        for (let photo of photos) {
+            let uploadTask = {
+                uri: photo.big_uri,                 //用uri来做唯一性
+                init: this._upload.bind(this, photo), //将上传方法对象赋值给上传任务
+            }
+            this._waitForUploadQuene.push(uploadTask)   //将上传任务加入待上传队列
+        }
+        //很明显, 这里UI要更新
+        let photoList = this.state.photoList
+        photoList = photoList.concat(photos)
 
 
-         this.setState({
-             photoList:photoList
-         }, () => {
-             this._startUploadQuene()    //启动一次上传队列
-         })
-     }
+        this.setState({
+            photoList: photoList
+        }, () => {
+            this._startUploadQuene()    //启动一次上传队列
+        })
+    }
 
     _removeFromUploadQuene(url) {
-        Alert.alert('温馨提醒', '确定要删除图片吗?',
+        Alert.alert('温馨提醒', '确定要删除文件吗?',
             [{
-                text: '取消', onPress: ()=> {}
-                },
+                text: '取消', onPress: ()=> {
+                }
+            },
                 {
                     text: '确定', onPress: ()=> {
                     //先看待waitForUploadQuene上传队列中是否存在, 存在直接移除队列中的这个对象, 阻止后续的上传
@@ -476,14 +610,14 @@ const maxiumXhrNums = 5 //最多同时上传数量
                         }
                     }
 
-                   /* let deleteIndex = this.props.photoList.find((showTask) => {
-                        console.log(`photoList.find`,showTask)
-                        return url == showTask.big_url
-                    })
-                    this.props.photoList.splice(this.props.photoList.indexOf(deleteIndex), 1)
-                    */
+                    /* let deleteIndex = this.props.photoList.find((showTask) => {
+                     console.log(`photoList.find`,showTask)
+                     return url == showTask.big_url
+                     })
+                     this.props.photoList.splice(this.props.photoList.indexOf(deleteIndex), 1)
+                     */
 
-                    for(let data of this.props.photoList){
+                    for (let data of this.props.photoList) {
                         if (data.big_url == url) {
                             this.props.photoList.splice(this.props.photoList.indexOf(data), 1)
                             break
@@ -491,8 +625,8 @@ const maxiumXhrNums = 5 //最多同时上传数量
                     }
                     //console.log(`photoList.url`,url)
 
-                    let photoList=this.state.photoList
-                    for(let data of photoList){
+                    let photoList = this.state.photoList
+                    for (let data of photoList) {
                         if (data.big_url == url) {
                             photoList.splice(photoList.indexOf(data), 1)
                             break
@@ -500,40 +634,56 @@ const maxiumXhrNums = 5 //最多同时上传数量
                     }
 
                     this.setState({photoList: photoList})
-                    this._ImageZoomModal.setState({modalVisible:false})
+                    this._ImageZoomModal.setState({modalVisible: false})
                 }
                 }
 
             ])
 
-        }
-     _deleteFile(id){
-         Alert.alert('温馨提醒', '确定要删除图片吗?',
-             [{
-                 text: '取消', onPress: ()=> {}
-             },
-             {
-                 text: '确定', onPress: ()=> {
-                 for(let data of this.props.photoList){
-                     if (data.id == id) {
-                         this.props.photoList.splice(this.props.photoList.indexOf(data), 1)
-                         break
-                     }
-                 }
-                 this.setState({photoList: this.props.photoList})
-                 }
-             }
+    }
 
-             ])
+    _deleteFile(id) {
+        Alert.alert('温馨提醒', '确定要删除文件吗?',
+            [{
+                text: '取消', onPress: ()=> {
+                }
+            },
+                {
+                    text: '确定', onPress: ()=> {
+                    for (let data of this.props.photoList) {
+                        if (data.id == id) {
+                            this.props.photoList.splice(this.props.photoList.indexOf(data), 1)
+                            break
+                        }
+                    }
+                    this.setState({photoList: this.props.photoList})
+                }
+                }
 
-     }
+            ])
+
+    }
 
     _startUploadQuene() {
-        //启动上传队列, 会计算可用线程数, 并根据线程数执行对应的上传任务, 并将各个上传任务的xhr对象缓存
-        let restUploadNum = maxiumXhrNums - this._uploadingXhrCacheList.length
-        if (restUploadNum <= 0) {
+
+        //判断上限
+        let maxUploadNum=constants.maxiumUploadImagesCount-this._uploadingXhrCacheList.length-this._waitForUploadQuene.length-this._ids.length
+        if (maxUploadNum <= 0) {
+            this._photo_toast.show({
+                position: Toast.constants.gravity.center,
+                duration: 255,
+                children: '已上传文件达到上限'
+            })
             return
         }
+        //启动上传队列, 会计算可用线程数, 并根据线程数执行对应的上传任务, 并将各个上传任务的xhr对象缓存
+        let restUploadNum = constants.maxiumXhrNums - this._uploadingXhrCacheList.length
+        if (restUploadNum <= 0) {
+
+            return
+        }
+
+
         //console.log(`_startUploadQuene photoList ->`, this.state.photoList)
         let shiftNum = restUploadNum <= this._waitForUploadQuene.length ? restUploadNum : this._waitForUploadQuene.length
         for (let i = 0; i < shiftNum; i++) {
@@ -564,8 +714,6 @@ const maxiumXhrNums = 5 //最多同时上传数量
          * S sign处理完成
          * @type {XMLHttpRequest}
          */
-
-
         //console.log(`_upload photoList photoIndex`, photoList, photoIndex)
 
         let xhr = new XMLHttpRequest();
@@ -577,10 +725,8 @@ const maxiumXhrNums = 5 //最多同时上传数量
 
             let photoList = this._handlePhotoList({uploadPhoto, eventName: 'onerror'})
             this.setState({
-                photoList:photoList
+                photoList: photoList
             });
-
-
 
             this._startUploadQuene()    //再次启动上传队列(因为this._uploadingXhrCacheList的length有变化了)
         };
@@ -592,17 +738,17 @@ const maxiumXhrNums = 5 //最多同时上传数量
 
             let photoList = this._handlePhotoList({uploadPhoto, eventName: 'ontimeout'})
             this.setState({
-                photoList:photoList
+                photoList: photoList
             });
 
 
             this._startUploadQuene()    //再次启动上传队列(因为this._uploadingXhrCacheList的length有变化了)
         };
 
-        if(constants.development){
+        if (constants.development) {
             //测试模式
             xhr.open('post', 'http://posttestserver.com/post.php')
-        }else {
+        } else {
             xhr.open('post', constants.api.service)
         }
         xhr.setRequestHeader('Content-Type', 'multipart/form-data')
@@ -612,11 +758,11 @@ const maxiumXhrNums = 5 //最多同时上传数量
                 //处理获取的id
                 let eventName = 'onload'
 
-                if(constants.development){
+                if (constants.development) {
                     //开发模式
                     let myDate = new Date();
 
-                    let id=myDate.getMilliseconds()+''
+                    let id = myDate.getMilliseconds() + ''
 
                     //id加入集合
                     let file = {big_uri: uploadPhoto.big_uri, id: id}
@@ -628,25 +774,20 @@ const maxiumXhrNums = 5 //最多同时上传数量
                     //url 加入到上一个页面显示照片列表,
 
                     this.props.photoList.push({
-                        id:id,
-                        file_url:uploadPhoto.big_url,
-                        big_url:uploadPhoto.big_url,
+                        id: id,
+                        file_url: uploadPhoto.big_url,
+                        big_url: uploadPhoto.big_url,
                     })
 
-                    let photoList=this.state.photoList
-                    for(let data of photoList){
-                        if(data.big_url==uploadPhoto.big_url){
-                            data.id=id;
+                    let photoList = this.state.photoList
+                    for (let data of photoList) {
+                        if (data.big_url == uploadPhoto.big_url) {
+                            data.id = id;
                         }
 
                     }
-
-
                     this.setState({photoList: photoList})
-
-
-
-                }else {
+                } else {
 
 
                     this.gunZip(xhr.responseText).then((response)=> {
@@ -660,6 +801,7 @@ const maxiumXhrNums = 5 //最多同时上传数量
                             //console.log(`response.result:`, result.result)
                             //id加入集合
                             let file = {big_uri: uploadPhoto.big_uri, id: result.result.id}
+                            //console.log(`response.file:`, file)
                             if (this._ids.indexOf(file) == -1) {
                                 this._ids.push(file)
                                 //console.log(`ids:`, this._ids);
@@ -667,17 +809,16 @@ const maxiumXhrNums = 5 //最多同时上传数量
 
                             //url 加入到上一个页面显示照片列表,
                             this.props.photoList.push({
-                                id:id,
-                                file_url:uploadPhoto.big_uri,
-                                big_url:uploadPhoto.big_uri,
+                                id: result.result.id,
+                                file_url: uploadPhoto.big_uri,
+                                big_url: uploadPhoto.big_uri,
                             })
 
-                            let photoList=this.state.photoList
-                            for(let data of photoList){
-                                if(data.big_url==uploadPhoto.big_url){
-                                    data.id=id;
+                            let photoList = this.state.photoList
+                            for (let data of photoList) {
+                                if (data.big_url == uploadPhoto.big_url) {
+                                    data.id = result.result.id;
                                 }
-
                             }
 
                             this.setState({photoList: photoList})
@@ -692,9 +833,8 @@ const maxiumXhrNums = 5 //最多同时上传数量
 
                 let photoList = this._handlePhotoList({uploadPhoto, eventName: eventName})
                 this.setState({
-                    photoList:photoList
+                    photoList: photoList
                 });
-
 
 
                 this._startUploadQuene()    //再次启动上传队列(因为this._uploadingXhrCacheList的length有变化了)
@@ -711,6 +851,8 @@ const maxiumXhrNums = 5 //最多同时上传数量
             /* let names=uploadPhoto.big_uri.split('/')
              name=names[names.length-1]+'.jpg'*/
             name = 'android.jpg'
+        } else {
+            name = 'ios.jpg'
         }
         //console.log(` uploadPhoto`, uploadPhoto)
         formdata.append('file', {...uploadPhoto, type: 'image/jpg', name: name}); //for android, must set type:'...'
@@ -740,7 +882,7 @@ const maxiumXhrNums = 5 //最多同时上传数量
                     total: event.total,
                 })
                 this.setState({
-                    photoList:photoList
+                    photoList: photoList
                 });
 
             }
@@ -753,7 +895,7 @@ const maxiumXhrNums = 5 //最多同时上传数量
 
         let photoList = this._handlePhotoList({uploadPhoto,})
         this.setState({
-            photoList:photoList
+            photoList: photoList
         });
 
 

@@ -49,7 +49,7 @@ export default XhrEnhance = (ComposedComponent) => {
 
 
             if (constants.development) {
-                console.log(`httpMock—————— `)
+                //console.log(`httpMock—————— `)
 
 
                         let result = fetchMock(options)
@@ -187,7 +187,7 @@ export default XhrEnhance = (ComposedComponent) => {
          * @returns {Promise}
          */
         gunZip = (data) => {
-            console.log(`data`,data)
+            //console.log(`data`,data)
             if(!data){
             }
 

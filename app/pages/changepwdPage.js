@@ -284,6 +284,7 @@ class SetPassword extends Component {
                  * 发送事件去登录
                  */
                 NativeAppEventEmitter.emit('getMsg_202_code_need_login');
+                return
             }
             if (result.code && result.code == 10) {
                 /* Alert.alert('提示', '注册成功', () => {

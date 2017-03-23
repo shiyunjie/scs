@@ -38,9 +38,8 @@ import { tabBarConfig } from '../constants/sharedConfig'
 import UploadPage from '../pages/uploadPage'
 //import ImageZoomModal from '../components/ImageZoomModal'
 import ShowPhotoView from '../components/showPhotoView'
+const { width: deviceWidth } = Dimensions.get('window');
 
-const maxiumUploadImagesCount = 30 //最多上传图片总数
-const maxiumXhrNums = 5 //最多同时上传数量
 
 class ServicePhoto extends Component {
     // 构造
@@ -65,6 +64,7 @@ class ServicePhoto extends Component {
 
 
         this.firstFetch = true;
+        this._isUploading=false;
     }
 
 
@@ -84,7 +84,7 @@ class ServicePhoto extends Component {
 
                     if(this.props.type=='order') {
                         //判断委托单
-                        console.log(`OrderphotoPage setState...`)
+                        //console.log(`OrderphotoPage setState...`)
                         /*let photoList = this.state.photoList
                         this.setState({
                             photoList: photoList,
@@ -109,7 +109,7 @@ class ServicePhoto extends Component {
             this.props.navigator.navigationContext.addListener('didfocus', (event) => {
                 //console.log(`payPage didfocus...`)
                 if (event && currentRoute === event.data.route) {
-                    console.log("upload didAppear")
+                    //console.log("upload didAppear")
 
                     if (this.firstFetch) {
                         this._fetchData()
@@ -174,10 +174,11 @@ class ServicePhoto extends Component {
                                     style={[styles.contentText,{paddingTop:5,paddingBottom:5,fontSize:12}]}>上传资料</Text>
                                 <ShowPhotoView
                                     style={{flex:1,backgroundColor:'white',
-                                paddingLeft:constants.MarginLeftRight,paddingRight:constants.MarginLeftRight,}}
+                                    paddingLeft:constants.MarginLeftRight,paddingRight:constants.MarginLeftRight,}}
                                     navigator={this.props.navigator}
                                     photoList={this.state.photoList}
                                     UploadPage={UploadPage}
+                                    isUploading={this._isUploading}
                                 />
                             </ScrollView>
                         }
@@ -194,7 +195,7 @@ class ServicePhoto extends Component {
                             <Text style={{fontSize: 17, color: 'white', fontWeight: 'bold', fontFamily: '.HelveticaNeueInterface-MediumP4',}}>委托中...</Text>
                             </View>
                             }
-                                        onPress={ () => {
+                            onPress={ () => {
                                 if( this._modalLoadingSpinnerOverLay){
                                 this._modalLoadingSpinnerOverLay.show()
                             }
@@ -230,6 +231,7 @@ class ServicePhoto extends Component {
                     photoList={rowData.list}
                     //showPhoto={this._ImageZoomModal.ShowPhoto}
                     UploadPage={UploadPage}
+                    isUploading={this._isUploading}
                 />
             </View>
         )
@@ -238,7 +240,7 @@ class ServicePhoto extends Component {
 
 
     async _fetchData() {
-        console.log(`fetchData_photoList`)
+        //console.log(`fetchData_photoList`)
         try {
             let token = await getToken()
             let deviceID = await getDeviceID()
@@ -288,13 +290,13 @@ class ServicePhoto extends Component {
                     let photoList = this.state.photoList
 
                     for(let data of result.result){
-                        console.log('data:', data)
+                        //console.log('data:', data)
                         let flag=true;
                         for(let item of photoList){
-                            console.log('item:', item)
+                            //console.log('item:', item)
 
                             if(item.file_type_id==data.file_type_id){
-                                console.log('break:', photoList)
+                                //console.log('break:', photoList)
                                 item.list.push({...data,
                                     isStored: true,
                                     uploaded: true,
@@ -328,7 +330,7 @@ class ServicePhoto extends Component {
                         }
 
                     }
-                    console.log(`photoList:`,photoList)
+                    //console.log(`photoList:`,photoList)
 
                     this.setState({
                         photoList:photoList,
@@ -376,7 +378,7 @@ class ServicePhoto extends Component {
         finally {
             this.setState({
                 showProgress: false,//显示加载
-                showReload: false,//显示加载更多
+                showReload: false,//显示再次加载
             })
             //console.log(`SplashScreen.close(SplashScreen.animationType.scale, 850, 500)`)
             //SplashScreen.close(SplashScreen.animationType.scale, 850, 500)
@@ -395,7 +397,7 @@ class ServicePhoto extends Component {
             if(this.props.type=='order') {
                 //委托单
                 for (let data of this.state.photoList) {
-                    console.log('data:', data)
+                    //console.log('data:', data)
                     let fileIds = '';
                     for (let item of data.list) {
                         fileIds += item.id + ','
@@ -536,6 +538,20 @@ const styles = StyleSheet.create({
         color: constants.PointColor,
         paddingLeft: constants.MarginLeftRight,
     },
+    button: {
+        bottom: 10,
+        margin: 10,
+        width: deviceWidth - 20,
+        backgroundColor: constants.UIActiveColor,
+        //borderWidth: StyleSheet.hairlineWidth,
+        //borderColor:constants.UIActiveColor,
+
+        height: 40,
+        borderColor: constants.UIActiveColor,
+        justifyContent: 'center',
+        borderRadius: 30
+
+    },
 
 });
 
@@ -547,7 +563,6 @@ const navigationBarRouteMapper = {
         return (
             <TouchableOpacity
                 onPress={() => {
-                disabled=false
                 NativeAppEventEmitter.emit('PicturePicker.finish.saveIds')
                 }}
                 style={navigatorStyle.navBarRightButton}>

@@ -93,7 +93,7 @@ class Root extends Component {
                         NativeAppEventEmitter.emit('setNavigationBar.index', NavigationBarRouteMapperList[3])
                     }
                 } else {
-                    console.log("indexPage willDisappear, other willAppear")
+                    //console.log("indexPage willDisappear, other willAppear")
                 }
             }),
             NativeAppEventEmitter.addListener('getMsg_202_code_need_login', () => {
@@ -259,13 +259,13 @@ class Root extends Component {
                 selectedTab: '订单',
             }, () => {
                 tabBarConfig.selectedTab = this.state.selectedTab
-                console.log(`change tabBarConfig.selectedTab = `,tabBarConfig.selectedTab)
+                //console.log(`change tabBarConfig.selectedTab = `,tabBarConfig.selectedTab)
                 NativeAppEventEmitter.emit('setRootPageNavigationBar.index')
             })
         }
         else {
 
-            console.log(`_handlePressPerson`)
+            //console.log(`_handlePressPerson`)
             this._PushLogin()
 
         }

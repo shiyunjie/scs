@@ -22,7 +22,8 @@ export const constant = {
     CompEmail:'mail@example.com',
     CompAddress:'长寿路652号10号楼',
 
-
+    maxiumUploadImagesCount:30, //最多上传图片总数
+    maxiumXhrNums:5, //最多同时上传数量
 
     development:true,//开发模式mock
 
@@ -33,7 +34,8 @@ export const constant = {
     api: {
         //service:'http://192.168.1.200:8080/app/gateway/',
         //service:'http://192.168.1.248:8080/spboot/upload',
-        service:'http://192.168.1.246:8084/app/gateway/',
+        service:'http://192.168.1.134:8080/app/gateway/',
+        //service:'http://192.168.1.246:8084/app/gateway/',
         //service:'http://posttestserver.com/post.php',
         //service:'http://f154876m19.imwork.net:16374/app/gateway',
             /*indexShowPicture: '/index/showPicture',
@@ -87,7 +89,7 @@ export const constant = {
         serviceCost_payCost:337,
         uploadFinish:338,
 
-        uploadImageList:632,
+
 
         feedBack:431,
 
@@ -96,6 +98,8 @@ export const constant = {
         findSysInfoShow:531,
         delSysInfo:532,
         infoDetail:533,
+
+        uploadImageList:632,
 
 
 

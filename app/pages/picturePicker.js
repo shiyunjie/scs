@@ -65,7 +65,7 @@ class PicturePicker extends Component {
                 for (let i = this.state.selected.length - 1; i >= 0; i--) {
                     let data = this.state.selected[i]
                     if (Uris.indexOf(data.uri) == -1) {
-                        console.log(`Uris_data:`, data)
+                        //console.log(`Uris_data:`, data)
                         data.big_uri = data.uri
                         data.path = data.uri
                         data.big_url = data.uri
@@ -171,8 +171,8 @@ class PicturePicker extends Component {
             selected: images,
         });
 
-        console.log(current);
-        console.log(this.state.selected);
+        //console.log(current);
+        //console.log(this.state.selected);
     }
 }
 

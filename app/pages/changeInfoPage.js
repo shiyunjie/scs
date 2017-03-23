@@ -106,7 +106,7 @@ class ChangeInfo extends Component {
             this.props.navigator.navigationContext.addListener('didfocus', (event) => {
                 //console.log(`payPage didfocus...`)
                 if (event && currentRoute === event.data.route) {
-                    console.log("upload didAppear")
+                    //console.log("upload didAppear")
 
                     if (this.firstFetch) {
                         this._fetchData_loadInfo()
@@ -476,7 +476,7 @@ class ChangeInfo extends Component {
 
             options.data = await this.gZip(options)
 
-            console.log(`_fetch_sendCode options:`, options)
+            //console.log(`_fetch_sendCode options:`, options)
 
             let resultData = await this.fetch(options)
 

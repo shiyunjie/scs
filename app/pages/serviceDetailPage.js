@@ -135,15 +135,15 @@ class ServiceDetail extends Component {
         let currentRoute = this.props.navigator.navigationContext.currentRoute
         this.addAppEventListener(
             this.props.navigator.navigationContext.addListener('willfocus', (event) => {
-                console.log(`OrderDetail willfocus...`)
-                console.log(`currentRoute`, currentRoute)
-                console.log(`event.data.route`, event.data.route)
+                //console.log(`OrderDetail willfocus...`)
+                //console.log(`currentRoute`, currentRoute)
+                //console.log(`event.data.route`, event.data.route)
                 if (currentRoute === event.data.route) {
-                    console.log("OrderDetail willAppear")
+                    //console.log("OrderDetail willAppear")
                     NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
                     setTimeout(()=>disable=true,1000)
                 } else {
-                    console.log("OrderDetail willDisappear, other willAppear")
+                    //console.log("OrderDetail willDisappear, other willAppear")
                 }
                 //
             })
@@ -161,7 +161,7 @@ class ServiceDetail extends Component {
             this.props.navigator.navigationContext.addListener('didfocus', (event) => {
                 //console.log(`payPage didfocus...`)
                 if (event && currentRoute === event.data.route) {
-                    console.log("upload didAppear")
+                    //console.log("upload didAppear")
                     this._fetchData()
                     if (this.firstFetch) {
 
@@ -232,6 +232,11 @@ class ServiceDetail extends Component {
                     component: LoginPage,
                 })
                 disable=false
+                this.setState({
+                    showProgress: false,//显示加载
+                    showReload: true,//显示加载更多
+                })
+                return;
             }
             if (result.code && result.code == 10) {
 
@@ -306,6 +311,10 @@ class ServiceDetail extends Component {
                     position: Toast.constants.gravity.center,
                     duration: 255,
                     children: result.msg
+                })
+                this.setState({
+                    showProgress: false,//显示加载
+                    showReload: true,//显示加载更多
                 })
             }
 
@@ -385,6 +394,7 @@ class ServiceDetail extends Component {
                     component: LoginPage,
                 })
                 disable=false
+                return
             }
             if (result.code && result.code == 10) {
                 this._toast.show({
@@ -433,7 +443,7 @@ class ServiceDetail extends Component {
     }
 
     async _fetchPhotoList() {
-        console.log(`fetchData_photoList`)
+        //console.log(`fetchData_photoList`)
         try {
             let token = await getToken()
             let deviceID = await getDeviceID()

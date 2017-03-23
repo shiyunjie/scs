@@ -13,6 +13,7 @@ import {
     Platform,
     NativeAppEventEmitter,
     TouchableOpacity,
+    ScrollView,
     Alert,
 } from 'react-native';
 
@@ -44,14 +45,14 @@ class Edit extends Component {
         let currentRoute = this.props.navigator.navigationContext.currentRoute
         this.addAppEventListener(
         this.props.navigator.navigationContext.addListener('willfocus', (event) => {
-            console.log(`orderPage willfocus...`)
-            console.log(`currentRoute`, currentRoute)
+            //console.log(`orderPage willfocus...`)
+            //console.log(`currentRoute`, currentRoute)
             //console.log(`event.data.route`, event.data.route)
             if (event&&currentRoute === event.data.route) {
-                console.log("orderPage willAppear")
+                //console.log("orderPage willAppear")
                 NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
             } else {
-                console.log("orderPage willDisappear, other willAppear")
+                //console.log("orderPage willDisappear, other willAppear")
             }
             //
         })
@@ -61,7 +62,7 @@ class Edit extends Component {
 
     render() {
         return (
-            <View
+            <ScrollView
                 style={styles.container}>
               <View
                   style={{flex:1,}}>
@@ -139,7 +140,7 @@ class Edit extends Component {
                 </Toast>
                 <LoadingSpinnerOverlay
                     ref={ component => this._modalLoadingSpinnerOverLay = component }/>
-            </View>
+            </ScrollView>
         );
     }
 
