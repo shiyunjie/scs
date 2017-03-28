@@ -68,14 +68,17 @@ class Edit extends Component {
                   style={{flex:1,}}>
                   <TextInput
                       ref={ component => this._input_text = component }
-                      style={{flex:1,
+                      style={{height:200,
                       fontSize:15,
                       backgroundColor:'white',
                       textAlignVertical:'top',
-                      margin:constants.MarginLeftRight,
+                      marginLeft:constants.MarginLeftRight,
+                      marginRight:constants.MarginLeftRight,
                       borderWidth: StyleSheet.hairlineWidth,
                       borderColor: constants.UIInActiveColor,
-                      justifyContent:'flex-start'
+                      justifyContent:'flex-start',
+                      paddingLeft:5,
+                      paddingRight:5
                       }}
                       clearButtonMode="while-editing"
                       placeholder='请提供宝贵意见'
@@ -176,9 +179,9 @@ class Edit extends Component {
             }
             result=JSON.parse(result)
         //console.log('gunZip:',result)
-            if(this._modalLoadingSpinnerOverLay) {
-                this._modalLoadingSpinnerOverLay.hide({duration: 0,})
-            }
+        //    if(this._modalLoadingSpinnerOverLay) {
+        //        this._modalLoadingSpinnerOverLay.hide({duration: 0,})
+        //    }
             if(!result){
                 this._toast.show({
                     position: Toast.constants.gravity.center,
@@ -188,6 +191,9 @@ class Edit extends Component {
                 return
             }
             if(result.code&&result.code==-54){
+                if(this._modalLoadingSpinnerOverLay) {
+                    this._modalLoadingSpinnerOverLay.hide({duration: 0,})
+                }
                 /**
                  * 发送事件去登录
                  */
@@ -198,17 +204,25 @@ class Edit extends Component {
             /* Alert.alert('提示', '注册成功', () => {
              this.props.navigator.popToTop()
              })*/
-            this._toast.show({
-                position: Toast.constants.gravity.center,
-                duration: 255,
-                children: '提交成功'
-            })
-           /* Alert.alert('温馨提醒','提交成功',
-                [{text:'确定',onPress:()=>this.props.navigator.pop()}]
-            )*/
-            setTimeout(()=>this.props.navigator.pop(),1000)
+            //this._toast.show({
+            //    position: Toast.constants.gravity.center,
+            //    duration: 255,
+            //    children: '提交成功'
+            //})
+            Alert.alert('温馨提醒','提交成功',
+                [{text:'确定',onPress:()=>{
+                    if(this._modalLoadingSpinnerOverLay) {
+                        this._modalLoadingSpinnerOverLay.hide({duration: 0,})
+                    }
+                    this.props.navigator.pop()}
+                }]
+            )
+            //setTimeout(()=>this.props.navigator.pop(),1000)
 
         }else{
+            if(this._modalLoadingSpinnerOverLay) {
+                this._modalLoadingSpinnerOverLay.hide({duration: 0,})
+            }
             this._toast.show({
                 position: Toast.constants.gravity.center,
                 duration: 255,
@@ -219,6 +233,9 @@ class Edit extends Component {
 
     }
     catch (error) {
+        if(this._modalLoadingSpinnerOverLay) {
+            this._modalLoadingSpinnerOverLay.hide({duration: 0,})
+        }
         //console.log(error)
         if(this._toast) {
             this._toast.show({
@@ -236,11 +253,9 @@ class Edit extends Component {
             //disabled: false
         })
             this._input_text.editable=true
-            if(this._modalLoadingSpinnerOverLay) {
-                this._modalLoadingSpinnerOverLay.hide({duration: 0,})
-            }
-        //console.log(`SplashScreen.close(SplashScreen.animationType.scale, 850, 500)`)
-        //SplashScreen.close(SplashScreen.animationType.scale, 850, 500)
+            //if(this._modalLoadingSpinnerOverLay) {
+            //    this._modalLoadingSpinnerOverLay.hide({duration: 0,})
+            //}
     }
     }
 
@@ -276,7 +291,6 @@ const styles = StyleSheet.create({
         flex: 1,
         paddingTop: Platform.OS == 'ios' ? 64 : 56,
         flexDirection: 'column',
-        alignItems: 'stretch',
         backgroundColor: constants.UIBackgroundColor,
     },
     button: {

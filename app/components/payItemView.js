@@ -38,7 +38,7 @@ export default class PayTabView extends Component {
 
         let selectedAll = nextProps.selectedAll
         if (selectedAll) {
-
+                //全部选中
             if(!this.props.selectedAll) {
                 //console.log(`_selectTab:` + this.props.selectedAll)
                 this.setState({
@@ -64,6 +64,11 @@ export default class PayTabView extends Component {
                     selected: !flag,
                 })
             }
+        }else{
+            //取消全选
+            this.setState({
+                selected: false,
+            })
         }
     }
 

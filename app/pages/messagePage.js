@@ -28,7 +28,7 @@ import ItemView from '../components/messageViewItem'
 import HeaderView from '../components/listViewheaderView';
 import navigatorStyle from '../styles/navigatorStyle'       //navigationBar样式
 import Icon from 'react-native-vector-icons/Ionicons';
-
+import LoadingSpinnerOverlay from 'react-native-smart-loading-spinner-overlay'
 import SwipeRow from '../components/SwipeRow'
 //import Swipeable from '../components/swipeable'
 
@@ -137,6 +137,8 @@ class MessageList extends Component {
                     marginTop={64}>
 
                 </Toast>
+                <LoadingSpinnerOverlay
+                    ref={ component => this._modalLoadingSpinnerOverLay = component }/>
             </View>
         );
     }
@@ -563,6 +565,7 @@ class MessageList extends Component {
     }
 
     async _fetchData_delete(id) {
+        this._modalLoadingSpinnerOverLay.show()
         try {
             let token = await getToken()
             let deviceID = await getDeviceID()
@@ -654,6 +657,10 @@ class MessageList extends Component {
                     duration: 255,
                     children: error
                 })
+            }
+        }finally {
+            if (this._modalLoadingSpinnerOverLay) {
+                this._modalLoadingSpinnerOverLay.hide()
             }
         }
 

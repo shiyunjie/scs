@@ -91,7 +91,7 @@ export default class IndexSwiper extends Component {
 
     render() {
         return (
-            <View style={{height: 150,width:deviceWidth}}>
+            <View style={{height: deviceWidth/3,width:deviceWidth}}>
                 <Carousel
                     width={deviceWidth}
                     delay={3000}
@@ -103,13 +103,23 @@ export default class IndexSwiper extends Component {
                     inactiveIndicatorText='•'>
                     {
                         this.props.dataSource.map((item, index) => {
-                            return (
-                                <Image
-                                    key={index}
-                                    style={{width: this.props.width, height: 150}}
-                                    //defaultSource={image_default_banner}
-                                    source={{uri: `${item.big_url}`}}/>
-                            )
+                            if (item.sort_no) {
+                                return (
+
+                                    <Image
+                                        key={index}
+                                        style={{width: this.props.width, height: deviceWidth/3}}
+                                        source={{uri: `${item.file_url}`}}/>
+
+                                )
+                            } else {
+                                return (
+                                    <Image
+                                        key={index}
+                                        style={{width: this.props.width, height: deviceWidth/3}}
+                                        source={item}/>
+                                )
+                            }
                         })
                     }
                 </Carousel>

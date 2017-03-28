@@ -25,7 +25,7 @@ import SplashScreen from 'react-native-smart-splash-screen'
 let codePushOptions = { checkFrequency: CodePush.CheckFrequency.ON_APP_RESUME };
 //let codePushOptions = { checkFrequency: CodePush.CheckFrequency.MANUAL };
 
-const HttpRSAModule = NativeModules.HttpRSAModule;
+
 
 class Root extends Component {
     constructor (props, context) {
@@ -93,13 +93,7 @@ class Root extends Component {
 
     componentWillMount () {
         CodePush.disallowRestart();//页面加载的禁止重启，在加载完了可以允许重启
-        //检查版本更新
-        /* if(Platform.OS=='android'){
-         //检查更新app
-         HttpRSAModule.UpdateApp('http://o2o.doorto.cn/upload/app/o2o/onlineshop.apk')
-         }else{
-         HttpRSAModule.UpdateApp('https://itunes.apple.com/cn/app/dao-tu-sheng-huo-chao-shi/id1037683195?mt=8')
-         }*/
+
     }
 
     componentWillUnmount () {

@@ -35,6 +35,7 @@ import XhrEnhance from '../lib/XhrEnhance' //http
 import Toast from 'react-native-smart-toast'
 import ProgressView from '../components/modalProgress'
 let firstDataList = []
+let allDataList=[]
 /*let firstDataList = [[{
  first_cost_name: '一级费用名称',
 
@@ -171,15 +172,31 @@ class PayPage extends Component {
 
                 let total = 0
                 if (event) {
-                    //全选
-                    for (let data of firstDataList) {
-                        for (let item of data) {
-                            if (item.is_pay == 0 && payList.indexOf(item.id) == -1) {
-                                payList.push(item.id)
+                    //点击全选
+
+
+                    //判断是否全选逻辑
+                    //console.log(`allDataList:`,allDataList.length)
+                    //console.log(`payList:`,payList.length)
+                    if(payList.length<allDataList.length) {
+                        //全选
+                        for (let data of firstDataList) {
+                            for (let item of data) {
+                                if (item.is_pay == 0 && payList.indexOf(item.id) == -1) {
+                                    payList.push(item.id)
+                                }
                             }
                         }
+                        this._selectAllTab(true)
+                    }else{
+                        //取消全选
+                        for(let data of allDataList){
+                            if(payList.indexOf(data.id) != -1&&data.is_pay == 0){
+                                payList.splice(payList.indexOf(data.id),1)
+                            }
+                        }
+                        this._selectAllTab(false)
                     }
-                    this._selectAllTab(true)
 
                     //计算总价
                     for (let data of firstDataList) {
@@ -213,7 +230,7 @@ class PayPage extends Component {
             })
         )
 
-        firstDataList = []
+        //firstDataList = []
         /*        payList=[]
          hasPayList=[]
          this.setState({payList:payList})*/
@@ -228,6 +245,7 @@ class PayPage extends Component {
 
     async _fetchData() {
         firstDataList=[]
+        allDataList=[]
         try {
             let token = await getToken()
             let deviceID = await getDeviceID()
@@ -304,12 +322,16 @@ class PayPage extends Component {
                         //console.log(`first_cost_name:`,data)
 
                         fax = pageType == 'pay' ? data.cost : data.estimate_cost
-                        continue
+                        //continue
                     } else if (data.first_cost_name == '服务费价税合计') {
                         //console.log(`first_cost_name:`,data)
                         serviceTotalAndFax = pageType == 'pay' ? data.cost : data.estimate_cost
                         continue
                     }
+
+                    //计算全选时到集合,不包含'服务费总金额'和'服务费价税合计'
+                    allDataList.push(data)
+
 
                     if (data.is_pay == 1 && payList.indexOf(data.id) == -1) {
                         //已经支付到加入已支付集合
@@ -358,7 +380,7 @@ class PayPage extends Component {
                 this.setState({
                     showProgress: false,//显示加载
                     showReload: false,//显示加载更多
-                    payList: payList,
+                    //payList: payList,
                     //dataList: firstDataList,
                     DataSource: dataSource.cloneWithRows(firstDataList),
                     serviceTotal: serviceTotal,
@@ -412,7 +434,7 @@ class PayPage extends Component {
 
         let select = false
         for (let cost of data) {
-            if (this.state.payList.indexOf(cost.id) != -1 && !cost.is_pay) {
+            if (payList.indexOf(cost.id) != -1 && !cost.is_pay) {
                 select = true
                 break
             }
@@ -421,7 +443,7 @@ class PayPage extends Component {
             <PayItem
                 key={`key${rowID}`}
                 child={data}
-                payList={this.state.payList}
+                payList={payList}
                 //showIcon={true}
                 showChild={false}
                 selected={select}
@@ -802,14 +824,14 @@ const navigationBarRouteMapper = {
             return (
                 <TouchableOpacity
                     onPress={ ()=> {
-                    //全选逻辑
-                    for(data of firstDataList){
+
+                   /* for(data of firstDataList){
                         for(item of data){
                             if(payList.indexOf(item.id)==-1){
                                 payList.push(item.id)
                                 }
                             }
-                        }
+                        }*/
                         //统计总价
                          NativeAppEventEmitter.emit('in_payPage_need_set_total',true)
                     } }

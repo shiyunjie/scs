@@ -491,9 +491,9 @@ class ChangeInfo extends Component {
             }
             result = JSON.parse(result)
             //console.log(`gunZip:`, result)
-            if(this._modalLoadingSpinnerOverLay) {
-                this._modalLoadingSpinnerOverLay.hide({duration: 0,})
-            }
+            //if(this._modalLoadingSpinnerOverLay) {
+            //    this._modalLoadingSpinnerOverLay.hide({duration: 0,})
+            //}
             if(!result){
                 this._toast.show({
                     position: Toast.constants.gravity.center,
@@ -503,6 +503,9 @@ class ChangeInfo extends Component {
                 return
             }
             if (result.code && result.code == -54) {
+                if(this._modalLoadingSpinnerOverLay) {
+                    this._modalLoadingSpinnerOverLay.hide({duration: 0,})
+                }
                 /**
                  * 发送事件去登录
                  */
@@ -515,18 +518,26 @@ class ChangeInfo extends Component {
                  })*/
 
 
-                this._toast.show({
+               /* this._toast.show({
                     position: Toast.constants.gravity.center,
                     duration: 255,
                     children: '修改成功'
-                })
-               /* Alert.alert('温馨提醒','修改成功',
-                    [{text:'确定',onPress:()=>this.props.navigator.pop()}]
-                  )*/
-                setTimeout(()=>this.props.navigator.pop(),1000)
+                })*/
+                Alert.alert('温馨提醒','修改成功',
+                    [{text:'确定',onPress:()=>{
+                        if(this._modalLoadingSpinnerOverLay) {
+                            this._modalLoadingSpinnerOverLay.hide({duration: 0,})
+                        }
+                        this.props.navigator.pop()
+                    }}]
+                  )
+                //setTimeout(()=>this.props.navigator.pop(),1000)
 
 
             } else {
+                if(this._modalLoadingSpinnerOverLay) {
+                    this._modalLoadingSpinnerOverLay.hide({duration: 0,})
+                }
                 this._toast.show({
                     position: Toast.constants.gravity.center,
                     duration: 255,
@@ -536,6 +547,9 @@ class ChangeInfo extends Component {
 
 
         } catch (error) {
+            if(this._modalLoadingSpinnerOverLay) {
+                this._modalLoadingSpinnerOverLay.hide({duration: 0,})
+            }
             //console.log(error)
             if (this._toast) {
                 this._toast.show({
@@ -552,11 +566,9 @@ class ChangeInfo extends Component {
                 loading: false,
                 //disabled: false
             })
-            if(this._modalLoadingSpinnerOverLay) {
-                this._modalLoadingSpinnerOverLay.hide({duration: 0,})
-            }
-            //console.log(`SplashScreen.close(SplashScreen.animationType.scale, 850, 500)`)
-            //SplashScreen.close(SplashScreen.animationType.scale, 850, 500)
+            //if(this._modalLoadingSpinnerOverLay) {
+            //    this._modalLoadingSpinnerOverLay.hide({duration: 0,})
+            //}
         }
 
     }

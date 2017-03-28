@@ -16,6 +16,8 @@ import {
     TouchableOpacity,
     Dimensions,
     NativeAppEventEmitter,
+    NativeModules,
+    Alert,
 } from 'react-native';
 
 import SplashScreen from 'react-native-smart-splash-screen'
@@ -37,29 +39,23 @@ import AppEventListenerEnhance from 'react-native-smart-app-event-listener-enhan
 
 
 import image_banner from '../images/banner.png'
+import index_image_1 from '../images/index_01.png'
+import index_image_2 from '../images/index_02.png'
 import image_button from '../images/button.png'
 import image_logo from '../images/horse.png'
-import {getDeviceID,getToken} from '../lib/User'
+import {getDeviceID,getToken,getVersion} from '../lib/User'
 
 
 //import { index_showPicture, } from '../mock/xhr-mock'   //mock data
 
-
+const HttpRSAModule = NativeModules.HttpRSAModule;
 const { width: deviceWidth,height:deviceHeight} = Dimensions.get('window');
-let refreshedDataSource = [{
-    file_url: 'http://www.doorto.cn/images/banner-03.jpg',
-    big_url: 'http://www.doorto.cn/images/banner-03.jpg',
-    id: '2',
-}, {
-    file_url: 'http://www.doorto.cn/images/banner-01.jpg',
-    big_url: 'http://www.doorto.cn/images/banner-01.jpg',
-    id: '1',
-}]
+let refreshedDataSource = [image_banner,image_banner]
 
 let advertisementDataSource = [
-    image_banner,
-    image_banner,
-    image_banner,
+    index_image_1,
+    index_image_2,
+
 ]
 
 
@@ -85,12 +81,17 @@ class Index extends Component {
             dataSource: this._dataSource.cloneWithRows(dataList),
 
         }
-        if(constants.development){
+        if (constants.development) {
 
         }
     }
 
     componentWillMount() {
+
+        //检查版本更新
+        this._checkUpdate()
+
+
         //NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
         //let currentRoute = this.props.navigator.navigationContext.currentRoute
         //this.addAppEventListener(
@@ -161,7 +162,7 @@ class Index extends Component {
     }
 
     _addOrder = ()=> {
-        getToken().then((token)=>{
+        getToken().then((token)=> {
             //console.log('token', token)
             if (token && token != '') {
 
@@ -172,7 +173,7 @@ class Index extends Component {
                         action: 'add'
                     }
                 });
-            }else{
+            } else {
                 this.props.navigator.push({
                     title: '用户登录',
                     component: LoginPage,
@@ -215,7 +216,7 @@ class Index extends Component {
             //console.log('gunZip:', result)
             result = JSON.parse(result)
 
-            if(!result){
+            if (!result) {
                 this._toast.show({
                     position: Toast.constants.gravity.center,
                     duration: 255,
@@ -223,7 +224,6 @@ class Index extends Component {
                 })
                 return
             }
-
 
 
             if (result.code && result.code == 10) {
@@ -248,7 +248,7 @@ class Index extends Component {
         catch (error) {
             //console.log(error)
 
-            if(this._toast) {
+            if (this._toast) {
                 this._toast.show({
                     position: Toast.constants.gravity.center,
                     duration: 255,
@@ -261,6 +261,61 @@ class Index extends Component {
             this._pullToRefreshListView.endRefresh()
             //console.log(`SplashScreen.close(SplashScreen.animationType.scale, 850, 500)`)
             //SplashScreen.close(SplashScreen.animationType.scale, 850, 500)
+        }
+
+    }
+
+    async _checkUpdate() {
+
+        let version= await getVersion()
+        version.replace('version','')
+        let options = {
+            method: 'post',
+            url: constants.api.service,
+            //url: constants.api.indexShowPicture,
+            data: {
+                iType: constants.iType.sysInfo_checkUpdate,
+
+            }
+        }
+        options.data = await this.gZip(options)
+
+        try {
+
+            let resultData = await this.fetch(options)
+            //console.log('resultData:', resultData)
+            let result = await this.gunZip(resultData)
+            if (!result) {
+
+                return
+            }
+            //console.log('gunZip:', result)
+            result = JSON.parse(result)
+
+            if (!result) {
+
+                return
+            }
+
+
+            if (result.code && result.code == 10) {
+                if(result.result.version!=version) {
+                    if (Platform.OS == 'android') {
+                        //检查更新app
+                        HttpRSAModule.UpdateApp('http://o2o.doorto.cn/upload/app/o2o/onlineshop.apk')
+
+                    } else {
+                        //HttpRSAModule.UpdateApp('https://itunes.apple.com/cn/app/dao-tu-sheng-huo-chao-shi/id1037683195?mt=8')
+                        Alert.alert('升级提醒','发现新版本,现在要升级吗?',[
+                            {text:'确定',onPress:()=>HttpRSAModule.UpdateApp('https://itunes.apple.com/cn/app/dao-tu-sheng-huo-chao-shi/id1037683195?mt=8')},
+                            {text:'取消',onPress:()=>{}},
+                        ])
+                        }
+                }
+            }
+        }
+        catch (error) {
+            //console.log(error)
         }
 
     }
@@ -336,17 +391,17 @@ class Index extends Component {
         else if (rowID == 1) {
             return (
                 <View style={styles.swiper}>
-                        <Button
-                            touchableType={Button.constants.touchableTypes.fadeContent}
-                            style={{flex:1,}}
-                            textStyle={{fontSize: 14, color: 'white'}}
-                            onPress={this._addOrder}
-                        >
+                    <Button
+                        touchableType={Button.constants.touchableTypes.fadeContent}
+                        style={{flex:1,}}
+                        textStyle={{fontSize: 14, color: 'white'}}
+                        onPress={this._addOrder}
+                    >
                         <Image source={rowData.buttonImage}
                                style={{width:150,height:95,justifyContent:'center',alignItems:'center'}}>
                             <Text style={{color:'white'}}>{rowData.buttonText}</Text>
                         </Image>
-                       </Button>
+                    </Button>
 
                 </View>
             )
@@ -356,12 +411,22 @@ class Index extends Component {
                 <View>
                     {
                         rowData.map((item, index) => {
-                            return (
-                                <View key={`item-${index}`}
-                                      style={{overflow: 'hidden',borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: '#ccc',marginBottom:10,}}>
-                                    <Image source={item} style={{height:200,width:deviceWidth}}/>
-                                </View>
-                            )
+                            if (index == 0) {
+                                return (
+
+                                    <View key={`item-${index}`}
+                                          style={{overflow: 'hidden',borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: '#ccc',marginBottom:10,}}>
+                                        <Image source={item} style={{width:deviceWidth,height:deviceWidth/12*5}}/>
+                                    </View>
+                                )
+                            } else {
+                                return (
+                                    <View key={`item-${index}`}
+                                          style={{overflow: 'hidden',borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: '#ccc',marginBottom:10,}}>
+                                        <Image source={item} style={{width:deviceWidth,height:deviceWidth/12*3.6}}/>
+                                    </View>
+                                )
+                            }
                         })
                     }
                 </View>
@@ -424,43 +489,43 @@ const styles = StyleSheet.create({
 
 /*const navigationBarRouteMapper = {
 
-    LeftButton: function (route, navigator, index, navState) {
-        if (index === 0) {
-            return null;
-        }
+ LeftButton: function (route, navigator, index, navState) {
+ if (index === 0) {
+ return null;
+ }
 
-        var previousRoute = navState.routeStack[index - 1];
-        return (
-            <TouchableOpacity
-                onPress={() => navigator.pop()}
-                style={navigatorStyle.navBarLeftButton}>
-                <View style={navigatorStyle.navBarLeftButtonAndroid}>
-                    <Icon
-                        style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText,{fontSize: 20,}]}
-                        name={'ios-arrow-back'}
-                        size={constants.IconSize}
-                        color={'white'}/>
-                </View>
-            </TouchableOpacity>
+ var previousRoute = navState.routeStack[index - 1];
+ return (
+ <TouchableOpacity
+ onPress={() => navigator.pop()}
+ style={navigatorStyle.navBarLeftButton}>
+ <View style={navigatorStyle.navBarLeftButtonAndroid}>
+ <Icon
+ style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText,{fontSize: 20,}]}
+ name={'ios-arrow-back'}
+ size={constants.IconSize}
+ color={'white'}/>
+ </View>
+ </TouchableOpacity>
 
-        );
-    },
+ );
+ },
 
-    RightButton: function (route, navigator, index, navState) {
+ RightButton: function (route, navigator, index, navState) {
 
-    },
+ },
 
-    Title: function (route, navigator, index, navState) {
-        return (
-            Platform.OS == 'ios' ?
-                <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText]}>
-                    首页
-                </Text> : <View style={navigatorStyle.navBarTitleAndroid}>
-                <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText]}>
-                    首页
-                </Text>
-            </View>
-        )
-    },
+ Title: function (route, navigator, index, navState) {
+ return (
+ Platform.OS == 'ios' ?
+ <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText]}>
+ 首页
+ </Text> : <View style={navigatorStyle.navBarTitleAndroid}>
+ <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText]}>
+ 首页
+ </Text>
+ </View>
+ )
+ },
 
-}*/
+ }*/

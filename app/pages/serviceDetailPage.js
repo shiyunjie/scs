@@ -12,6 +12,7 @@ import {
     TextInput,
     Linking,
     NativeAppEventEmitter,
+    Alert,
 } from 'react-native';
 
 
@@ -35,7 +36,7 @@ import ImageZoomModal from '../components/ImageZoomModal'
 import ShowPhotoView from '../components/showPhotoView'
 //import ServicePhotoPage from './servicePhotoPage'
 import OrderPhotoPage from './orderPhotoPage'
-let disable=false
+let disable = false
 let service_id
 class ServiceDetail extends Component {
     // 构造
@@ -120,7 +121,7 @@ class ServiceDetail extends Component {
 
             consignor_name: '',// 发货人
 
-            photoList:[]
+            photoList: []
         }
         service_id = this.props.id
         this.firstFetch = true;
@@ -128,8 +129,9 @@ class ServiceDetail extends Component {
     }
 
     componentDidMount() {
-        setTimeout(()=>disable=true,1000)
+        setTimeout(()=>disable = true, 1000)
     }
+
     componentWillMount() {
         NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
         let currentRoute = this.props.navigator.navigationContext.currentRoute
@@ -141,7 +143,7 @@ class ServiceDetail extends Component {
                 if (currentRoute === event.data.route) {
                     //console.log("OrderDetail willAppear")
                     NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
-                    setTimeout(()=>disable=true,1000)
+                    setTimeout(()=>disable = true, 1000)
                 } else {
                     //console.log("OrderDetail willDisappear, other willAppear")
                 }
@@ -162,12 +164,12 @@ class ServiceDetail extends Component {
                 //console.log(`payPage didfocus...`)
                 if (event && currentRoute === event.data.route) {
                     //console.log("upload didAppear")
-                    this._fetchData()
-                    if (this.firstFetch) {
 
+                    if (this.firstFetch) {
+                        this._fetchData()
                         this.firstFetch = false;
                     }
-                }else {
+                } else {
                     //console.log("orderPage willDisappear, other willAppear")
                 }
 
@@ -178,7 +180,7 @@ class ServiceDetail extends Component {
 
 
     async _fetchData() {
-        if(!this.firstFetch){
+        if (!this.firstFetch) {
             this._modalLoadingSpinnerOverLay.show()
         }
         try {
@@ -213,7 +215,7 @@ class ServiceDetail extends Component {
             }
             result = JSON.parse(result)
             //console.log('gunZip:', result)
-            if(!result){
+            if (!result) {
                 this._toast.show({
                     position: Toast.constants.gravity.center,
                     duration: 255,
@@ -231,7 +233,7 @@ class ServiceDetail extends Component {
                     title: '用户登录',
                     component: LoginPage,
                 })
-                disable=false
+                disable = false
                 this.setState({
                     showProgress: false,//显示加载
                     showReload: true,//显示加载更多
@@ -241,69 +243,69 @@ class ServiceDetail extends Component {
             if (result.code && result.code == 10) {
 
                 this.setState({
-                        showProgress: false,//显示加载
-                        showReload: false,//显示加载更多
-                        service_no: result.result.service_no,// 服务单号
-                        order_status_name: result.result.order_status_name,// 服务单状态名称
-                        order_status: result.result.order_status,// 服务单状态
-                        remark: result.result.remark,// 备注
-                        trade_terms: result.result.trade_terms,// 贸易条款
-                        country_name: result.result.country_name,// 起运国
-                        destination_name: result.result.destination_name,// 目的国
-                        logistics_status_name: result.result.logistics_status_name,// 物流状态名称
-                        time_name: result.result.time_name,// 接单时间
-                        import_clearance: result.result.import_clearance,// 进口清关,0否，1是
-                        international_logistics: result.result.international_logistics,// 国际物流,0否，1是
+                    showProgress: false,//显示加载
+                    showReload: false,//显示加载更多
+                    service_no: result.result.service_no,// 服务单号
+                    order_status_name: result.result.order_status_name,// 服务单状态名称
+                    order_status: result.result.order_status,// 服务单状态
+                    remark: result.result.remark,// 备注
+                    trade_terms: result.result.trade_terms,// 贸易条款
+                    country_name: result.result.country_name,// 起运国
+                    destination_name: result.result.destination_name,// 目的国
+                    logistics_status_name: result.result.logistics_status_name,// 物流状态名称
+                    time_name: result.result.time_name,// 接单时间
+                    import_clearance: result.result.import_clearance,// 进口清关,0否，1是
+                    international_logistics: result.result.international_logistics,// 国际物流,0否，1是
 
-                        export_country_land: result.result.export_country_land,// 出口国陆运,0否，1是
+                    export_country_land: result.result.export_country_land,// 出口国陆运,0否，1是
 
-                        booking_service_name: result.result.booking_service_name,// 订舱服务,0海运，1空运
+                    booking_service_name: result.result.booking_service_name,// 订舱服务,0海运，1空运
 
-                        domestic_logistics: result.result.domestic_logistics,// 国内物流,0否，1是
+                    domestic_logistics: result.result.domestic_logistics,// 国内物流,0否，1是
 
-                        credit_letter: result.result.credit_letter,// 信用证0否，1是
+                    credit_letter: result.result.credit_letter,// 信用证0否，1是
 
-                        client_name: result.result.client_name,// 委托人
+                    client_name: result.result.client_name,// 委托人
 
-                        client_phone: result.result.client_phone,// 联系电话
+                    client_phone: result.result.client_phone,// 联系电话
 
-                        commission_content: result.result.commission_content,// 委托内容
+                    commission_content: result.result.commission_content,// 委托内容
 
-                        ship_company_code: result.result.ship_company_code,// 船公司代码
+                    ship_company_code: result.result.ship_company_code,// 船公司代码
 
-                        ship_company_name: result.result.ship_company_name,// 船公司名称
-                        pot_cd: result.result.pot_cd,// 申报口岸
+                    ship_company_name: result.result.ship_company_name,// 船公司名称
+                    pot_cd: result.result.pot_cd,// 申报口岸
 
-                        ship_name_english: result.result.ship_name_english,// 英文船名
+                    ship_name_english: result.result.ship_name_english,// 英文船名
 
-                        voyage: result.result.voyage,// 航次
+                    voyage: result.result.voyage,// 航次
 
-                        bill_num: result.result.bill_num,// 提单号
+                    bill_num: result.result.bill_num,// 提单号
 
-                        destination_port_name: result.result.destination_port_name,// 目的港
+                    destination_port_name: result.result.destination_port_name,// 目的港
 
-                        box_quantity_information: result.result.box_quantity_information,// 箱型数量信息
+                    box_quantity_information: result.result.box_quantity_information,// 箱型数量信息
 
-                        suitcase_yard: result.result.suitcase_yard,// 提箱堆场
+                    suitcase_yard: result.result.suitcase_yard,// 提箱堆场
 
-                        packing_place: result.result.packing_place,// 装箱地点
+                    packing_place: result.result.packing_place,// 装箱地点
 
-                        number: result.result.number,// 件数
+                    number: result.result.number,// 件数
 
-                        weight: result.result.weight,// 毛重
+                    weight: result.result.weight,// 毛重
 
-                        volume: result.result.volume,// 体积
+                    volume: result.result.volume,// 体积
 
-                        contract_number: result.result.contract_number,// 合同号
+                    contract_number: result.result.contract_number,// 合同号
 
-                        billing_number: result.result.billing_number,// 发票号
+                    billing_number: result.result.billing_number,// 发票号
 
-                        consignee_name: result.result.consignee_name,// 收货人
+                    consignee_name: result.result.consignee_name,// 收货人
 
-                        consignor_name: result.result.consignor_name,// 发货人
+                    consignor_name: result.result.consignor_name,// 发货人
 
 
-                    })
+                })
                 this._fetchPhotoList()
 
             } else {
@@ -322,7 +324,7 @@ class ServiceDetail extends Component {
         }
         catch (error) {
             //console.log(error)
-            if(this._toast) {
+            if (this._toast) {
                 this._toast.show({
                     position: Toast.constants.gravity.center,
                     duration: 255,
@@ -335,8 +337,8 @@ class ServiceDetail extends Component {
             })
         }
         finally {
-            if(!this.firstFetch&&this._modalLoadingSpinnerOverLay){
-               this._modalLoadingSpinnerOverLay.hide()
+            if (!this.firstFetch && this._modalLoadingSpinnerOverLay) {
+                this._modalLoadingSpinnerOverLay.hide()
             }
             //console.log(`SplashScreen.close(SplashScreen.animationType.scale, 850, 500)`)
             //SplashScreen.close(SplashScreen.animationType.scale, 850, 500)
@@ -344,7 +346,7 @@ class ServiceDetail extends Component {
     }
 
     async _fetch_cancel() {
-        if(this._modalLoadingSpinnerOverLay) {
+        if (this._modalLoadingSpinnerOverLay) {
             this._modalLoadingSpinnerOverLay.show()
         }
         try {
@@ -372,10 +374,10 @@ class ServiceDetail extends Component {
 
             result = JSON.parse(result)
             //console.log('gunZip:', result)
-            if(this._modalLoadingSpinnerOverLay) {
+            if (this._modalLoadingSpinnerOverLay) {
                 this._modalLoadingSpinnerOverLay.hide({duration: 0,})
             }
-            if(!result){
+            if (!result) {
                 this._toast.show({
                     position: Toast.constants.gravity.center,
                     duration: 255,
@@ -393,7 +395,7 @@ class ServiceDetail extends Component {
                     title: '用户登录',
                     component: LoginPage,
                 })
-                disable=false
+                disable = false
                 return
             }
             if (result.code && result.code == 10) {
@@ -403,13 +405,12 @@ class ServiceDetail extends Component {
                     children: '取消订单成功'
                 })
 
-                setTimeout(()=>{
+                setTimeout(()=> {
                     //更改订单状态
                     NativeAppEventEmitter.emit('serviceDetail_hasCancel_should_resetState', this.state.id)
 
                     this.props.navigator.pop()
-                },1000)
-
+                }, 1000)
 
 
             } else {
@@ -424,7 +425,7 @@ class ServiceDetail extends Component {
         }
         catch (error) {
             //console.log(error)
-            if(this._toast) {
+            if (this._toast) {
                 this._toast.show({
                     position: Toast.constants.gravity.center,
                     duration: 255,
@@ -434,7 +435,7 @@ class ServiceDetail extends Component {
 
         }
         finally {
-            if(this._modalLoadingSpinnerOverLay) {
+            if (this._modalLoadingSpinnerOverLay) {
                 this._modalLoadingSpinnerOverLay.hide({duration: 0,})
             }
             //console.log(`SplashScreen.close(SplashScreen.animationType.scale, 850, 500)`)
@@ -490,8 +491,20 @@ class ServiceDetail extends Component {
 
                 //let photoList = this.state.photoList
                 //photoList = photoList.concat(result.result)
+                let photoList = []
+
+                for (let data of result.result) {
+                    photoList.push(
+                        {
+                            ...data,
+                            isStored: true,
+                            uploaded: true,
+                            uploading: false,
+                        })
+                }
+                //photoList = photoList.concat(result.result)
                 this.setState({
-                    photoList:result.result
+                    photoList: photoList
 
                 })
 
@@ -521,6 +534,102 @@ class ServiceDetail extends Component {
     }
 
 
+    async _fetch_photoList_finish() {
+
+        try {
+            let token = await getToken()
+            let deviceID = await getDeviceID()
+            let fileIds = '';
+
+
+            //服务单
+            for (let data of this.state.photoList) {
+                fileIds += data.id + ','
+            }
+
+
+            let options = {
+                method: 'post',
+                url: constants.api.service,
+                data: {
+                    iType: constants.iType.uploadFinish,
+                    id: this.state.id,
+                    file_ids: fileIds,
+                    deviceId: deviceID,
+                    token: token,
+                }
+            }
+
+            options.data = await this.gZip(options)
+
+
+            let resultData = await this.fetch(options)
+
+            let result = await this.gunZip(resultData)
+            if (!result) {
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: '服务器打盹了,稍后再试试吧'
+                })
+                return
+            }
+            result = JSON.parse(result)
+            //console.log('gunZip:', result)
+            if (this._modalLoadingSpinnerOverLay) {
+                this._modalLoadingSpinnerOverLay.hide({duration: 0,})
+            }
+            if (!result) {
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: '服务器打盹了,稍后再试试吧'
+                })
+                return
+            }
+            if (result.code && result.code == 10) {
+
+                //console.log('token', result.result)
+
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: '保存成功'
+                })
+
+
+            } else {
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: result.msg
+                })
+            }
+
+
+        }
+        catch (error) {
+            //console.log(error)
+            if (this._toast) {
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: error
+                })
+            }
+
+
+        }
+        finally {
+            if (this._modalLoadingSpinnerOverLay) {
+                this._modalLoadingSpinnerOverLay.hide({duration: 0,})
+            }
+            //console.log(`SplashScreen.close(SplashScreen.animationType.scale, 850, 500)`)
+            //SplashScreen.close(SplashScreen.animationType.scale, 850, 500)
+        }
+    }
+
+
     /**
      *                       <View
      style={[{height:30,backgroundColor:constants.UIInActiveColor},
@@ -543,7 +652,7 @@ class ServiceDetail extends Component {
                          })
                         this._fetchData()
                         }}
-                     /> :
+                    /> :
                     <ScrollView style={styles.container}
                                 showsVerticalScrollIndicator={false}>
                         <View style={[{marginTop:10,flexDirection:'row',alignItems:'center',
@@ -599,35 +708,7 @@ class ServiceDetail extends Component {
 
                                 </TouchableOpacity>
                             }
-                            { this.state.order_status == 30 || this.state.order_status == 80 || this.state.order_status == 90 ||
-                            this.state.order_status == 100 ? null :<TouchableOpacity
-                                style={[styles.line,{justifyContent:'center',alignItems:'center',
-                                    paddingTop:10,paddingBottom:10,},{flex:1}]}
-                                onPress={()=>{
-                                    //this.props.navigator.push({
-                                    //            title: '上传资料',
-                                    //            component: UploadPage,
-                                    //            passProps: {
-                                    //                id:service_id,
-                                    //            }
-                                    //        });
 
-                                     this.props.navigator.push({
-                                                title: '服务单资料',
-                                                component: OrderPhotoPage,
-                                                passProps: {
-                                                    id:service_id,
-                                                    type:'service'
-                                                }
-                                            });
-                                            disable=false
-                                    } }
-                            >
-                                <Text style={{color:constants.UIActiveColor,fontSize:12,}}>上传</Text>
-
-                            </TouchableOpacity>
-                               //上传
-                            }
                             {this.state.order_status == 10 || this.state.order_status == 20 || this.state.order_status == 40 ||
                             this.state.order_status == 70 ?
                                 <TouchableOpacity
@@ -674,8 +755,8 @@ class ServiceDetail extends Component {
 
                                         });
                                         disable=false
-                                            }}>{this.state.logistics_status_name!=null&&this.state.logistics_status_name!=''?
-                            this.state.logistics_status_name+'>':''}</Text>
+                                            }}>{this.state.logistics_status_name != null && this.state.logistics_status_name != '' ?
+                            this.state.logistics_status_name + '>' : ''}</Text>
                         </View>
                         <View style={styles.viewItem}>
                             <Text style={[{flex:1},styles.labelText]}>贸易条款</Text>
@@ -701,23 +782,56 @@ class ServiceDetail extends Component {
                             <Text style={[{flex:1},styles.labelText]}>目的国家</Text>
                             <Text style={[{flex:3},styles.contentText]}>{this.state.destination_name}</Text>
                         </View>
-                        {this.state.order_status == 30 || this.state.order_status == 80 || this.state.order_status == 90 ||
-                        this.state.order_status == 100 ||!(this.state.photoList&&this.state.photoList.length)? null :
+
+
+                        <View style={{flex:1}}>
                             <Text
                                 style={[styles.contentText,{paddingTop:5,paddingBottom:5,fontSize:12},
-                               ]}>上传资料</Text>
-                        }
-                        {this.state.order_status == 30 || this.state.order_status == 80 || this.state.order_status == 90 ||
-                        this.state.order_status == 100 ||!(this.state.photoList&&this.state.photoList.length) ? null :
+                                       ]}>上传资料</Text>
                             <ShowPhotoView
                                 style={{flex:1,backgroundColor:'white',
-                            paddingLeft:constants.MarginLeftRight,paddingRight:constants.MarginLeftRight,}}
+                                    paddingLeft:constants.MarginLeftRight,paddingRight:constants.MarginLeftRight,}}
                                 navigator={this.props.navigator}
                                 photoList={this.state.photoList}
-                                showPhoto={this._ImageZoomModal.ShowPhoto}
-                                showUpload={false}
+                                showUpload={!(this.state.order_status == 30 || this.state.order_status == 80 || this.state.order_status == 90 ||
+                                    this.state.order_status == 100 || !(this.state.photoList && this.state.photoList.length))}
                                 UploadPage={UploadPage}
                             />
+                        </View>
+
+                        { this.state.order_status == 30 || this.state.order_status == 80 || this.state.order_status == 90 ||
+                        this.state.order_status == 100 ? null :
+                            <View style={[{flex:1,flexDirection:'row',backgroundColor:'white',},]}>
+                                <TouchableOpacity
+                                    style={[styles.line,{justifyContent:'center',alignItems:'center',
+                                    paddingTop:10,paddingBottom:10,},{flex:1}]}
+                                    onPress={()=>{
+                                    //this.props.navigator.push({
+                                    //            title: '上传资料',
+                                    //            component: UploadPage,
+                                    //            passProps: {
+                                    //                id:service_id,
+                                    //            }
+                                    //        });
+
+                                     /*this.props.navigator.push({
+                                                title: '服务单资料',
+                                                component: OrderPhotoPage,
+                                                passProps: {
+                                                    id:service_id,
+                                                    type:'service'
+                                                }
+                                            });
+                                            disable=false*/
+                                            this._fetch_photoList_finish()
+
+                                    } }
+                                >
+                                    <Text style={{color:constants.UIActiveColor,fontSize:12,}}>保存上传</Text>
+
+                                </TouchableOpacity>
+                            </View>
+                            //上传
                         }
                         <Text
                             style={[styles.contentText,{paddingTop:5,paddingBottom:5,fontSize:12}]}>贸易支付</Text>
@@ -888,17 +1002,17 @@ class ServiceDetail extends Component {
                         {this.state.order_status == 30 || this.state.order_status == 70 ?
                             <Text
                                 style={[styles.contentText,{paddingTop:5,paddingBottom:5,fontSize:12}
-                            ]}>拒绝原因</Text>:null
+                            ]}>拒绝原因</Text> : null
                         }
                         {this.state.order_status == 30 || this.state.order_status == 70 ?
-                        <View style={[styles.viewItem,]}>
-                            <Text style={[{height:100},styles.contentText]}
-                                  multiline={true}//多行输入
-                                  numberOfLines={8}>
-                                {this.state.remark}
-                            </Text>
+                            <View style={[styles.viewItem,]}>
+                                <Text style={[{height:100},styles.contentText]}
+                                      multiline={true}//多行输入
+                                      numberOfLines={8}>
+                                    {this.state.remark}
+                                </Text>
 
-                        </View>:null
+                            </View> : null
                         }
                     </ScrollView>}
                 <ImageZoomModal

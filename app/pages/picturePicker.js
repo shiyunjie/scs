@@ -61,6 +61,9 @@ class PicturePicker extends Component {
                     Uris.push(data.big_uri)
                 }
                 //console.log(`Uris:`, Uris)
+
+
+
                 let selected = [];
                 for (let i = this.state.selected.length - 1; i >= 0; i--) {
                     let data = this.state.selected[i]
@@ -69,17 +72,26 @@ class PicturePicker extends Component {
                         data.big_uri = data.uri
                         data.path = data.uri
                         data.big_url = data.uri
-                        data.url= data.uri
                         data.file_url=data.uri
+                        data.uploaded= false
+                        data.uploading= true
                         selected.push(data)
 
                     }
 
                 }
 
+                /*//控制上传集合长度
+                let num=this.props.maxiumUploadImagesCount-this.props.currentUploadImagesCount
+                if(selected.length>num&&num!=0){
+                    selected.splice(num-1,selected.length-num);
+                }else if(num==0){
+                    return
+                }*/
+
                 //this.props.waitForAddToUploadQuene(this.state.selected)
                 this.props.waitForAddToUploadQuene(selected)
-
+                NativeAppEventEmitter.emit('needstart.uploadphoto.setstate')
                 //this.props.addToUploadQuene(this.state.selected)
                 this.props.navigator.pop()
             })
@@ -222,7 +234,7 @@ const navigationBarRouteMapper = {
                     <Text
                         style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText,{fontSize:14}]}
                         color={'white'}>
-                        发送
+                        完成
                     </Text>
                 </View>
             </TouchableOpacity>)

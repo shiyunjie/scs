@@ -32,6 +32,7 @@ import TabView from './components/tabView'
 
 import { tabBarConfig } from './constants/sharedConfig'
 
+
 let backFirstClick = 0//判断一次点击回退键
 
 class Root extends Component {
@@ -71,6 +72,10 @@ class Root extends Component {
             //console.log('DeviceInfo:' + uniqueID + `,version:` + version)
 
         }
+
+
+
+
         //NativeAppEventEmitter.sendEvent('getMsg_202_code_need_login')
 
         NativeAppEventEmitter.emit('setNavigationBar.index', NavigationBarRouteMapperList[0])

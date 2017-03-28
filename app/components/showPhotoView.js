@@ -57,11 +57,11 @@ class ShowPhotoView extends Component {
         };
 
         this._uploadingXhrCacheList = []    //正在上传中的(包含上传失败的)xhr缓存列表, 用uri做唯一性, 该列表长度会影响当前可用的上传线程数
-        this._waitForUploadQuene = []       //待上传队列, 用uri做唯一性
-        this._waitForAddPhotos = null
-        this._ids = [];
-        this.ImgTemp = '';
-        this._initCustomData()
+        //this._waitForUploadQuene = []       //待上传队列, 用uri做唯一性
+        //this._waitForAddPhotos = null
+        //this._ids = [];
+        //this.ImgTemp = '';
+        //this._initCustomData()
     }
 
 
@@ -107,25 +107,25 @@ class ShowPhotoView extends Component {
             photoList: photoList,
         })
 
-        if (this._waitForAddPhotos && this._waitForAddPhotos.length > 0) {
+       /* if (this._waitForAddPhotos && this._waitForAddPhotos.length > 0) {
             //setTimeout(() => {
-                /*
+                /!*
                  //@todo async this._getCompressedPhotos 返回photos数组, 遍历this._waitForAddPhotos {let compressedUri = await NativeCompressedModule.compress(...); 遍历的photo对象uri赋值compressedUri }
                  this._getCompressedPhotos().then((photos)=>{
                  this._addToUploadQuene(photos)
-                 })*/
+                 })*!/
                 this._addToUploadQuene(this._waitForAddPhotos)
                 this._waitForAddPhotos = null
 
             //}, 300)
 
-        }
+        }*/
 
 
     }
 
 
-    componentWillUnmount() {
+   /* componentWillUnmount() {
         //结束正在上传中的线程
         this._uploadingXhrCacheList.forEach(xhrCache => {
             let { xhr, } = xhrCache
@@ -133,175 +133,184 @@ class ShowPhotoView extends Component {
                 xhr.abort()
             }
         })
-    }
+    }*/
+/*    _pickMultiple(){
+        ImagePicker.openPicker({
+            multiple: true,
+        }).then(images => {
+            //console.log(images);
+            this.setState({
+                cameraModalVisible:false
+            })
+            if(!images||images.length==0){
+                return;
+            }
+
+            let Uris = []
+
+            for (let data of this._ids) {
+                Uris.push(data.big_uri)
+            }
+            //console.log(`Uris:`, Uris)
+            let selected = [];
+            for (let i = images.length - 1; i >= 0; i--){
+                let data = images[i]
+                if (Uris.indexOf(data.path) == -1) {
+                    console.log(`Uris_data:`, data)
+                    console.log(`Uris:`, Uris)
+                    data.big_uri = data.path
+                    data.uri = data.path
+                    data.file_url=data.path
+                    data.big_url=data.path
+                    selected.push(data)
+                }
+            }
+            //this.props.waitForAddToUploadQuene(this.state.selected)
+            this._waitForAddToUploadQuene(selected)
+            if (this._waitForAddPhotos && this._waitForAddPhotos.length > 0) {
+                //setTimeout(() => {
+
+                //@todo async this._getCompressedPhotos 返回photos数组, 遍历this._waitForAddPhotos {let compressedUri = await NativeCompressedModule.compress(...); 遍历的photo对象uri赋值compressedUri }
+                //this._getCompressedPhotos().then((photos)=>{
+                //this._addToUploadQuene(photos)
+                //})
+                this._addToUploadQuene(this._waitForAddPhotos)
+                this._waitForAddPhotos = null
 
 
-    render() {
-        let width = height = (deviceWidth - constants.MarginLeftRight * 2 - 20) / 4
-        return (
-            <View
-                style={[this.props.style,{flexDirection:'row',justifyContent:'flex-start',flexWrap: 'wrap',}]}
-            >
-                <Modal
-                    animationType={"fade"}
-                    transparent={true}
-                    visible={this.state.cameraModalVisible}
-                    onRequestClose={() => {
+                //}, 300)
+
+            }
+
+            this.props.isUploading=false
+        }).catch(()=>{
+            this.setState({
+                cameraModalVisible:false
+            })
+            this.props.isUploading=false
+        })
+    }*/
+
+/*    _pickCamera() {
+        ImagePicker.openCamera({
+            width: deviceWidth,
+            height: (deviceWidth/3)*4,
+            cropping: true
+        }).then(image => {
+            this.setState({
+                cameraModalVisible:false
+            })
+
+
+            let Uris = []
+
+            for (let data of this._ids){
+                Uris.push(data.big_uri)
+            }
+            //console.log(`Uris:`, Uris)
+            let selected = []
+            console.log(`Uris_image:`, image)
+            console.log(`Uris:`, Uris)
+            let data=image
+            data.big_uri = image.path
+            data.uri = image.path
+            data.file_url=image.path
+            data.big_url=image.path
+            selected.push(image)
+
+            this._waitForAddToUploadQuene(selected)
+            if (this._waitForAddPhotos && this._waitForAddPhotos.length > 0) {
+
+                this._addToUploadQuene(this._waitForAddPhotos)
+                this._waitForAddPhotos = null
+
+            }
+            this.props.isUploading=false
+        }).catch(()=>{
+            this.setState({ cameraModalVisible:false})
+            this.props.isUploading=false
+        })
+    }*/
+/**
+ * <Modal
+ animationType={"none"}
+ transparent={true}
+ visible={this.state.cameraModalVisible}
+ onRequestClose={() => {
                     this.setState({cameraModalVisible:false})
                     this.props.isUploading=false
                     }}>
-                    <View
-                        style={{flex:1,flexDirection:'column',justifyContent:'flex-start',
+ <View
+ style={{flex:1,flexDirection:'column',justifyContent:'flex-start',
                         alignItems:'stretch',backgroundColor: 'rgba(0, 0, 0, 0.5)',padding:10}}>
-                        <TouchableOpacity
-                            style={{flex:1}}
-                            onPress={()=>{
+ <TouchableOpacity
+ style={{flex:1}}
+ onPress={()=>{
                             this.setState({cameraModalVisible:false})
                             this.props.isUploading=false
                             }}
-                        >
-                            <View style={{flex:1}}/>
-                        </TouchableOpacity>
-                        <View
-                            style={{height:50,borderTopLeftRadius:6,
+ >
+ <View style={{flex:1}}/>
+ </TouchableOpacity>
+ <View
+ style={{height:50,borderTopLeftRadius:6,
                             borderTopRightRadius:6,backgroundColor:'white'}}>
-                            <TouchableOpacity
-                                style={{flex:1,justifyContent:'center',alignItems:'center',}}
-                                onPress={()=>{
-                                    ImagePicker.openCamera({
-                                      width: deviceWidth,
-                                      height: (deviceWidth/3)*4,
-                                      cropping: true
-                                    }).then(image => {
-                                        this.setState({
-                                        cameraModalVisible:false
-                                        })
-                                        this.props.isUploading=false
-
-                                      let Uris = []
-
-                                    for (let data of this._ids){
-                                        Uris.push(data.big_uri)
-                                    }
-                                    //console.log(`Uris:`, Uris)
-                                    let selected = []
-                                            console.log(`Uris_image:`, image)
-                                            console.log(`Uris:`, Uris)
-                                            let data=image
-                                            data.big_uri = image.path
-                                            data.uri = image.path
-                                            data.file_url=image.path
-                                            data.big_url=image.path
-                                            selected.push(image)
-
-                                    this._waitForAddToUploadQuene(selected)
-                                    if (this._waitForAddPhotos && this._waitForAddPhotos.length > 0) {
-
-                                    this._addToUploadQuene(this._waitForAddPhotos)
-                                    this._waitForAddPhotos = null
-
-                                    }
-                                    return;
-                                    }).catch(()=>{
-                                    this.setState({ cameraModalVisible:false})
-                                    this.props.isUploading=false
-                                    })
-                            }}>
-                                <Text
-                                    style={{fontSize:17,color:'#007aff'}}>
-                                    拍照
-                                </Text>
-                            </TouchableOpacity>
-                        </View>
-                        <View
-                            style={{height:50,borderBottomLeftRadius:6,
+ <TouchableOpacity
+ style={{flex:1,justifyContent:'center',alignItems:'center',}}
+ onPress={()=>{
+                                this._pickCamera()
+                                }}>
+ <Text
+ style={{fontSize:17,color:'#007aff'}}>
+ 拍照
+ </Text>
+ </TouchableOpacity>
+ </View>
+ <View
+ style={{height:50,borderBottomLeftRadius:6,
                             borderBottomRightRadius:6,backgroundColor:'white'}}
-                        >
-                            <TouchableOpacity
-                                style={{flex:1,justifyContent:'center',alignItems:'center',}}
-                                onPress={()=>{
-
-                                ImagePicker.openPicker({
-                                  multiple: true,
-                                }).then(images => {
-                                  //console.log(images);
-                                        this.setState({
-                                        cameraModalVisible:false
-                                        })
-                                        this.props.isUploading=false
-                                        if(!images||images.length==0){
-                                        return;
-                                        }
-
-                                    let Uris = []
-
-                                    for (let data of this._ids) {
-                                        Uris.push(data.big_uri)
-                                    }
-                                    //console.log(`Uris:`, Uris)
-                                    let selected = [];
-                                    for (let i = images.length - 1; i >= 0; i--){
-                                        let data = images[i]
-                                        if (Uris.indexOf(data.path) == -1) {
-                                            console.log(`Uris_data:`, data)
-                                            console.log(`Uris:`, Uris)
-                                            data.big_uri = data.path
-                                            data.uri = data.path
-                                            data.file_url=data.path
-                                            data.big_url=data.path
-                                            selected.push(data)
-                                        }
-                                    }
-                                    //this.props.waitForAddToUploadQuene(this.state.selected)
-                                    this._waitForAddToUploadQuene(selected)
-                                    if (this._waitForAddPhotos && this._waitForAddPhotos.length > 0) {
-                                    //setTimeout(() => {
-
-                                     //@todo async this._getCompressedPhotos 返回photos数组, 遍历this._waitForAddPhotos {let compressedUri = await NativeCompressedModule.compress(...); 遍历的photo对象uri赋值compressedUri }
-                                     //this._getCompressedPhotos().then((photos)=>{
-                                     //this._addToUploadQuene(photos)
-                                     //})
-                                    this._addToUploadQuene(this._waitForAddPhotos)
-                                    this._waitForAddPhotos = null
-
-
-                                         //}, 300)
-
-                                    }
-                                 return;
-                                }).catch(()=>{
-                                this.setState({
-                                 cameraModalVisible:false
-                                 })
-                                this.props.isUploading=false
-                                })
+ >
+ <TouchableOpacity
+ style={{flex:1,justifyContent:'center',alignItems:'center',}}
+ onPress={()=>{
+                                this._pickMultiple()
                             }}>
-                                <Text
-                                    style={{fontSize:17,color:'#007aff'}}>
-                                    我的照片
-                                </Text>
-                            </TouchableOpacity>
-                        </View>
-                        <View
-                            style={{height:50,marginTop:10,
+ <Text
+ style={{fontSize:17,color:'#007aff'}}>
+ 我的照片
+ </Text>
+ </TouchableOpacity>
+ </View>
+ <View
+ style={{height:50,marginTop:10,
                             borderRadius:6,backgroundColor:'white'}}
-                        >
-                            <TouchableOpacity
-                                style={{flex:1,justifyContent:'center',alignItems:'center',}}
-                                onPress={()=>{
+ >
+ <TouchableOpacity
+ style={{flex:1,justifyContent:'center',alignItems:'center',}}
+ onPress={()=>{
                                 this.setState({
                                 cameraModalVisible:false
                                 })
                                 this.props.isUploading=false
                             }}>
-                                <Text
-                                    style={{fontSize:17,color:'#007aff'}}>
-                                    取消
-                                </Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                </Modal>
+ <Text
+ style={{fontSize:17,color:'#007aff'}}>
+ 取消
+ </Text>
+ </TouchableOpacity>
+ </View>
+ </View>
+ </Modal>
+ * */
+
+    render() {
+        let width = (deviceWidth - constants.MarginLeftRight * 2 - 20) / 4
+        let height=width
+        return (
+            <View
+                style={[this.props.style,{flexDirection:'row',justifyContent:'flex-start',flexWrap: 'wrap',},this.props.photoList.length>3?{paddingRight:0}:{}]}
+            >
+
                 <Toast
                     ref={ component => this._photo_toast = component }
                     marginTop={64}>
@@ -312,8 +321,50 @@ class ShowPhotoView extends Component {
                     DeletePhoto={this._removeFromUploadQuene.bind(this)}
                     showDeleteButton={this.props.showUpload}
                 />
+                {this.props.showUpload ?
+                    <TouchableOpacity
+                        key={`last`}
+                        style={{height:height,marginTop:5,marginBottom:5,marginRight:10,flexDirection:'column',
+                                    justifyContent:'flex-start',alignItems:'flex-start',padding:0}}
+                        onPress={()=>{
+                                //this._pickMultiple()
+                                            /* this.props.navigator.push({
+                                                title: '相机胶卷',
+                                                component: PicturePicker,
+                                                passProps: {
+                                                    maxiumUploadImagesCount,
+                                                    currentUploadImagesCount: this.state.photoList.length,
+                                                    waitForAddToUploadQuene: this._waitForAddToUploadQuene,
+                                                    ids:this._ids,
+                                                    //addToUploadQuene: this._addToUploadQuene
+                                                    }
+                                                })*/
+                                       this.props.navigator.push({
+                                            title: '上传资料',
+                                            component: UploadPage,
+                                            passProps: {
+                                               id:'',
+                                               showList:this.props.photoList,
+                                               }
+                                            });
+
+
+                       }}>
+                        <Icon
+                            name='ios-images'  // 图标
+                            size={width-25}
+                            color={constants.LabelColor}/>
+
+                        <Text style={{fontSize:10,color:constants.LabelColor}}>点击上传</Text>
+
+
+                    </TouchableOpacity> : null
+                }
                 {
                     this.state.photoList.map((item, index) => {
+                        if(index>2&&this.props.showUpload){
+                            return
+                        }
 
                             if (item.file_mime && item.file_mime.indexOf('image') == -1) {
                                 if (item.file_mime.indexOf('pdf') > -1) {
@@ -443,33 +494,13 @@ class ShowPhotoView extends Component {
                                             onPress={()=>this._showPhoto(item.big_url)}>
 
                                             <Image style={{width:width,height:height}}
-                                                   source={{uri:`${item.file_url}`}}>
-                                                {
-                                                    item.uploading ? <View
-                                                        style={{flex: 1, backgroundColor: 'rgba(160, 160, 160, 0.5)', justifyContent: 'center', alignItems: 'center',}}>
-                                                        <ActivityIndicator
-                                                            animating={true}
-                                                            color={'#fff'}
-                                                            size={'small'}/>
-                                                        <Text
-                                                            style={{color: '#fff', padding: 2, fontSize: 14,}}>{item.uploadProgress ? Math.floor(item.uploadProgress * 100) : 0}%</Text>
-                                                    </View> : null
-                                                }
-                                                {
-                                                    item.uploadError ? <View
-                                                        style={{flex: 1, backgroundColor: 'rgba(160, 160, 160, 0.7)', justifyContent: 'center', alignItems: 'center',}}>
-
-                                                        <Text
-                                                            style={{color: '#fff', padding: 2, fontSize: 14,}}>上传失败</Text>
-                                                    </View> : null
-                                                }
-                                            </Image>
-
+                                                   source={{uri:`${item.file_url}`}}/>
                                         </TouchableOpacity>
                                         {this.props.showUpload ?
                                             <TouchableOpacity
                                                 style={{position:'absolute',top:1,right:1, backgroundColor: 'transparent',}}
-                                                onPress={this._removeFromUploadQuene.bind(this,item.big_url)}>
+                                                onPress={this._removeFromUploadQuene.bind(this,item.big_url)}
+                                            >
                                                 <Icon
                                                     name="ios-remove-circle"
                                                     size={constants.IconSize-5}
@@ -483,80 +514,38 @@ class ShowPhotoView extends Component {
                         }
                     )
                 }
-                {this.props.showUpload ?
+                {this.props.showUpload&&this.props.photoList.length>3?
                     <TouchableOpacity
-                        key={`last`}
-                        style={{width:width,height:height,marginRight:5,marginTop:5,marginBottom:5,flexDirection:'column',
-                                    justifyContent:'flex-start',alignItems:'center',padding:0}}
+                        key={`more`}
+                        style={{flex:1,paddingLeft:5,padding:5,paddingBottom:5,paddingRight:15,flexDirection:'column',
+                                    justifyContent:'center',alignItems:'flex-end'}}
                         onPress={()=>{
-                        console.log(`_uploadingXhrCacheList`,this._uploadingXhrCacheList)
-                        if(this._uploadingXhrCacheList.length==0&&!this.props.isUploading){
-
-                            this.setState({
-                                cameraModalVisible:true
-                            })
-                            this.props.isUploading=true
-
-                                       /* this.props.navigator.push({
-                                                title: '相机胶卷',
-                                                component: PicturePicker,
-                                                passProps: {
-                                                    maxiumUploadImagesCount,
-                                                    currentUploadImagesCount: this.state.photoList.length,
-                                                    waitForAddToUploadQuene: this._waitForAddToUploadQuene,
-                                                    ids:this._ids,
-                                                    //addToUploadQuene: this._addToUploadQuene
-                                                    }
-                                                })*/
-                                       //this.props.navigator.push({
-                                       //     title: '上传资料',
-                                       //     component: UploadPage,
-                                       //     passProps: {
-                                       //        id:'',
-                                       //        showList:this.props.photoList,
-                                       //        }
-                                       //     });
-
-                            }else{
-                                this._photo_toast.show({
-                                    position: Toast.constants.gravity.center,
-                                    duration: 255,
-                                    children: '正在上传中,请稍后'
-                                })
-                            }
-                       }}>
+                                       this.props.navigator.push({
+                                            title: '上传资料',
+                                            component: UploadPage,
+                                            passProps: {
+                                               id:'',
+                                               showList:this.props.photoList,
+                                               }
+                                            });
+                                      }}>
                         <Icon
-                            name='ios-image'  // 图标
-                            size={width-20}
+                            name='ios-more'  // 图标
+                            size={constants.IconSize-5}
                             color={constants.LabelColor}/>
-                        <Text
-                            style={{fontSize:12,color:constants.LabelColor}}>点击上传</Text>
-
                     </TouchableOpacity> : null
                 }
+
             </View>)
     }
 
 
-    _waitForAddToUploadQuene = (photos) => {
+   /* _waitForAddToUploadQuene = (photos) => {
         this._waitForAddPhotos = photos;
 
-        /* if (this._waitForAddPhotos && this._waitForAddPhotos.length > 0) {
-         setTimeout(() => {
-         /!*
-         //@todo async this._getCompressedPhotos 返回photos数组, 遍历this._waitForAddPhotos {let compressedUri = await NativeCompressedModule.compress(...); 遍历的photo对象uri赋值compressedUri }
-         this._getCompressedPhotos().then((photos)=>{
-         this._addToUploadQuene(photos)
-         })*!/
-         this._addToUploadQuene(this._waitForAddPhotos)
-         this._waitForAddPhotos = null
+    }*/
 
-         }, 300)
-
-         }*/
-    }
-
-    _addToUploadQuene = (photos) => {
+/*    _addToUploadQuene = (photos) => {
         //console.log(`_addToUploadQuene`, photos)
         for (let photo of photos) {
             let uploadTask = {
@@ -575,7 +564,7 @@ class ShowPhotoView extends Component {
         }, () => {
             this._startUploadQuene()    //启动一次上传队列
         })
-    }
+    }*/
 
     _removeFromUploadQuene(url) {
         Alert.alert('温馨提醒', '确定要删除文件吗?',
@@ -585,30 +574,30 @@ class ShowPhotoView extends Component {
             },
                 {
                     text: '确定', onPress: ()=> {
-                    //先看待waitForUploadQuene上传队列中是否存在, 存在直接移除队列中的这个对象, 阻止后续的上传
-                    let uploadTaskIndex = this._waitForUploadQuene.find(uploadTask => {
-                        return url == uploadTask.big_uri
-                    })
-                    this._waitForUploadQuene.splice(uploadTaskIndex, 1)
-
-                    //再看uploadingXhrCacheList中是否存在(会包含上传失败的xhr), 存在就移除, 这个list的长度会影响当前的上传可用线程数
-                    let xhrCache = this._uploadingXhrCacheList.find((xhrCache) => {
-                        return url == xhrCache.big_uri
-                    })
-                    let xhr = xhrCache && xhrCache.xhr
-                    if (xhr && (xhr.status != 200 || xhr.readyState != 4)) {
-                        xhr.abort()
-                    }
-
-                    //遍历ids如果包含,删除id
-                    for (let data of this._ids) {
-
-                        if (data.big_uri == url) {
-                            //console.log(`ids_delete${data.big_uri}:`, data.id)
-                            this._ids.splice(this._ids.indexOf(data), 1)
-                            break
-                        }
-                    }
+                    ////先看待waitForUploadQuene上传队列中是否存在, 存在直接移除队列中的这个对象, 阻止后续的上传
+                    //let uploadTaskIndex = this._waitForUploadQuene.find(uploadTask => {
+                    //    return url == uploadTask.big_uri
+                    //})
+                    //this._waitForUploadQuene.splice(uploadTaskIndex, 1)
+                    //
+                    ////再看uploadingXhrCacheList中是否存在(会包含上传失败的xhr), 存在就移除, 这个list的长度会影响当前的上传可用线程数
+                    //let xhrCache = this._uploadingXhrCacheList.find((xhrCache) => {
+                    //    return url == xhrCache.big_uri
+                    //})
+                    //let xhr = xhrCache && xhrCache.xhr
+                    //if (xhr && (xhr.status != 200 || xhr.readyState != 4)) {
+                    //    xhr.abort()
+                    //}
+                    //
+                    ////遍历ids如果包含,删除id
+                    //for (let data of this._ids) {
+                    //
+                    //    if (data.big_uri == url) {
+                    //        //console.log(`ids_delete${data.big_uri}:`, data.id)
+                    //        this._ids.splice(this._ids.indexOf(data), 1)
+                    //        break
+                    //    }
+                    //}
 
                     /* let deleteIndex = this.props.photoList.find((showTask) => {
                      console.log(`photoList.find`,showTask)
@@ -664,7 +653,7 @@ class ShowPhotoView extends Component {
 
     }
 
-    _startUploadQuene() {
+/*    _startUploadQuene() {
 
         //判断上限
         let maxUploadNum=constants.maxiumUploadImagesCount-this._uploadingXhrCacheList.length-this._waitForUploadQuene.length-this._ids.length
@@ -695,13 +684,13 @@ class ShowPhotoView extends Component {
         }
         //console.log('end this.state.photoList', this.state.photoList)
         //console.log('end this.state.dataSource', this.state.dataSource)
-    }
+    }*/
 
-    _upload(uploadPhoto) {
+/*    _upload(uploadPhoto) {
         //console.log(`_upload uploadPhoto.big_uri = `, uploadPhoto.uri)
-        /**
+        /!**
          * 处理 S  sign
-         */
+         *!/
         let options = {
             method: 'post',
             url: constants.api.service,
@@ -710,10 +699,10 @@ class ShowPhotoView extends Component {
         }
 
 
-        /**
+        /!**
          * S sign处理完成
          * @type {XMLHttpRequest}
-         */
+         *!/
         //console.log(`_upload photoList photoIndex`, photoList, photoIndex)
 
         let xhr = new XMLHttpRequest();
@@ -848,8 +837,8 @@ class ShowPhotoView extends Component {
         //formdata.append('file', { ...uploadPhoto, type: 'image/jpg', name: uploadPhoto.filename }); //for android, must set type:'...'
         let name = uploadPhoto.filename
         if (Platform.OS == 'android') {
-            /* let names=uploadPhoto.big_uri.split('/')
-             name=names[names.length-1]+'.jpg'*/
+            /!* let names=uploadPhoto.big_uri.split('/')
+             name=names[names.length-1]+'.jpg'*!/
             name = 'android.jpg'
         } else {
             name = 'ios.jpg'
@@ -861,14 +850,14 @@ class ShowPhotoView extends Component {
         //console.log(`options.data.s`, options.data.s)
         formdata.append('s', options.data.s);
         //formdata.append("text", options.data.s);
-        /**
+        /!**
          * 这里处理sign
-         */
+         *!/
         options.data.sign = this._doRSASign(options.data.s)
         //console.log(` options.data.sign:`, options.data.sign)
-        /**
+        /!**
          * 处理sign结束
-         */
+         *!/
         formdata.append('sign', options.data.sign);
 
         xhr.upload.onprogress = (event) => {
@@ -901,13 +890,13 @@ class ShowPhotoView extends Component {
 
         let xhrCache = {xhr, big_uri: uploadPhoto.big_uri}    //用uri来做唯一性
         return xhrCache
-    }
+    }*/
 
-    _doRSASign(data) {
+   /* _doRSASign(data) {
         return doSign(data)
-    }
+    }*/
 
-    _handlePhotoList({uploadPhoto, eventName, loaded, total,}) {
+    /*_handlePhotoList({uploadPhoto, eventName, loaded, total,}) {
         let uploadingXhrCacheIndex = this._uploadingXhrCacheList.findIndex((xhrCache) => {
             return uploadPhoto.big_uri == xhrCache.big_uri
         })
@@ -947,8 +936,9 @@ class ShowPhotoView extends Component {
                 break;
         }
         return [...this.state.photoList.slice(0, photoIndex), photo, ...this.state.photoList.slice(photoIndex + 1, this.state.photoList.length)];
-    }
+    }*/
 
 }
 
-export default XhrEnhance(ShowPhotoView)
+//export default XhrEnhance(ShowPhotoView)
+export default ShowPhotoView

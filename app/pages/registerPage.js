@@ -92,7 +92,7 @@ class Register extends Component {
         const routers = this.props.navigator.getCurrentRoutes();
         if (routers.length > 1) {
             Alert.alert('温馨提醒','确定退出吗?',[
-                {text:'确定',onPress:()=>this.props.navigator.popToRoute(routes[1])},
+                {text:'确定',onPress:()=>this.props.navigator.popToRoute(routers[1])},
                 {text:'取消',onPress:()=>{}},
 
             ])
@@ -376,10 +376,13 @@ class Register extends Component {
             }
             result=JSON.parse(result)
             //console.log('gunZip:',result)
-            if(this._modalLoadingSpinnerOverLay) {
+            /*if(this._modalLoadingSpinnerOverLay) {
                 this._modalLoadingSpinnerOverLay.hide({duration: 0,})
-            }
+            }*/
             if(!result){
+                if(this._modalLoadingSpinnerOverLay) {
+                    this._modalLoadingSpinnerOverLay.hide({duration: 0,})
+                }
                 this._toast.show({
                     position: Toast.constants.gravity.center,
                     duration: 255,
@@ -396,15 +399,30 @@ class Register extends Component {
                 AsyncStorage.setItem('phone',this.state.phone)
                 AsyncStorage.setItem('realName',this.state.realName)
 
-                this._toast.show({
+                /*this._toast.show({
                     position: Toast.constants.gravity.center,
                     duration: 255,
                     children: '注册成功'
-                })
-                setTimeout(()=>this.props.navigator.popToRoute(routes[1]),1000)
+                })*/
+                if(this._modalLoadingSpinnerOverLay) {
+                    this._modalLoadingSpinnerOverLay.hide({duration: 0,})
+                }
+                Alert.alert('温馨提醒','提交成功',
+                    [{text:'确定',onPress:()=>{
+                        if(this._modalLoadingSpinnerOverLay) {
+                            this._modalLoadingSpinnerOverLay.hide({duration: 0,})
+                        }
+                        const routers = this.props.navigator.getCurrentRoutes();
+                        this.props.navigator.popToRoute(routers[1])}
+                    }]
+                )
+                //setTimeout(()=>this.props.navigator.popToRoute(routes[1]),1000)
 
 
             }else{
+                if(this._modalLoadingSpinnerOverLay) {
+                    this._modalLoadingSpinnerOverLay.hide({duration: 0,})
+                }
                 this._toast.show({
                     position: Toast.constants.gravity.center,
                     duration: 255,
@@ -414,6 +432,9 @@ class Register extends Component {
 
         }
         catch (error) {
+            if(this._modalLoadingSpinnerOverLay) {
+                this._modalLoadingSpinnerOverLay.hide({duration: 0,})
+            }
             //console.log(error)
             if(this._toast) {
                 this._toast.show({
@@ -430,11 +451,9 @@ class Register extends Component {
                 //disabled: false
             })
             this.setState({editable:true})
-            if(this._modalLoadingSpinnerOverLay) {
-                this._modalLoadingSpinnerOverLay.hide({duration: 0,})
-            }
-            //console.log(`SplashScreen.close(SplashScreen.animationType.scale, 850, 500)`)
-            //SplashScreen.close(SplashScreen.animationType.scale, 850, 500)
+            //if(this._modalLoadingSpinnerOverLay) {
+            //    this._modalLoadingSpinnerOverLay.hide({duration: 0,})
+            //}
         }
     }
 }
@@ -480,11 +499,12 @@ const navigationBarRouteMapper = {
         }
 
         var previousRoute = navState.routeStack[ index - 1 ];
+        const routers = navigator.getCurrentRoutes();
         return (
             <TouchableOpacity
                 onPress={() => Alert.alert('温馨提醒','确定退出吗?',[
              {text:'取消',onPress:()=>{}},
-             {text:'确定',onPress:()=>navigator.popToRoute(routes[1])}
+             {text:'确定',onPress:()=>navigator.popToRoute(routers[1])}
              ])}
                 style={navigatorStyle.navBarLeftButton}>
                 <View style={navigatorStyle.navBarLeftButtonAndroid}>

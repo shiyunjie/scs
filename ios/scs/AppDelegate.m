@@ -46,7 +46,6 @@
                         channel:nil apsForProduction:nil];
   NSURL *jsCodeLocation;
 
-  
 //  jsCodeLocation = [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index.ios" fallbackResource:nil];
 
   // Use CodePush to resolve your JS bundle location, so that your app will run the version of the code distributed via CodePush

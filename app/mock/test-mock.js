@@ -47,12 +47,12 @@ export const testMock = fetchMock.mock(/\/app\/gateway/, (url, opts) => {
                             result: [{
                                 file_url: 'http://www.doorto.cn/images/banner-02.jpg',
                                 big_url: 'http://www.doorto.cn/images/banner-02.jpg',
-                                id: '2',
+                                sort_no:1
                             },
                                 {
                                     file_url: 'http://www.doorto.cn/images/banner-01.jpg',
                                     big_url: 'http://www.doorto.cn/images/banner-01.jpg',
-                                    id: '1',
+                                    sort_no:2
                                 },
                             ]
                         }
@@ -861,6 +861,33 @@ export const testMock = fetchMock.mock(/\/app\/gateway/, (url, opts) => {
                                         estimate_cost: 0,
                                         cost: 0,
                                         id: '402881665986f1fe015986f57931002d',
+                                        is_cal: 0,
+                                        is_pay: 0 },
+                                    { first_cost_name: '服务费总金额',
+                                        cost_name: '服务费总金额',
+                                        estimate_cost: 6,
+                                        cost: 6,
+                                        id: '402881665986f1fe015986f579311999',
+                                        is_cal: 0,
+                                        is_pay: 0 },{ first_cost_name: '服务费总金额',
+                                        cost_name: '服务费总金额',
+                                        estimate_cost: 6,
+                                        cost: 6,
+                                        id: '402881665986f1fe015986f579311999',
+                                        is_cal: 0,
+                                        is_pay: 0 },
+                                    { first_cost_name: '服务费税额',
+                                        cost_name: '服务费税额',
+                                        estimate_cost: 0.6,
+                                        cost: 0.6,
+                                        id: '402881665986f1fe015986f579311999',
+                                        is_cal: 0,
+                                        is_pay: 0 },
+                                    { first_cost_name: '服务费价税合计',
+                                        cost_name: '服务费价税合计',
+                                        estimate_cost: 6.6,
+                                        cost: 6.6,
+                                        id: '402881665986f1fe015986f579311999',
                                         is_cal: 0,
                                         is_pay: 0 },]
                             }

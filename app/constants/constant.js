@@ -23,18 +23,18 @@ export const constant = {
     CompAddress:'长寿路652号10号楼',
 
     maxiumUploadImagesCount:30, //最多上传图片总数
-    maxiumXhrNums:5, //最多同时上传数量
+    maxiumXhrNums:4, //最多同时上传数量
 
-    development:true,//开发模式mock
+    development:false,//开发模式mock
 
     requestTimeout: 30000,  //默认请求超时30秒
     requestMethod: 'GET',   //默认请求方法为GET
 
 
     api: {
-        //service:'http://192.168.1.200:8080/app/gateway/',
+        service:'http://192.168.1.250:8080/app/gateway/',
         //service:'http://192.168.1.248:8080/spboot/upload',
-        service:'http://192.168.1.134:8080/app/gateway/',
+        //service:'http://192.168.1.134:8080/app/gateway/',
         //service:'http://192.168.1.246:8084/app/gateway/',
         //service:'http://posttestserver.com/post.php',
         //service:'http://f154876m19.imwork.net:16374/app/gateway',
@@ -94,6 +94,7 @@ export const constant = {
         feedBack:431,
 
         sysInfo_helpCenter:432,
+        sysInfo_checkUpdate:433,
 
         findSysInfoShow:531,
         delSysInfo:532,

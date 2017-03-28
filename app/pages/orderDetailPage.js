@@ -42,6 +42,7 @@ class OrderDetail extends Component {
     // 构造
     constructor(props) {
         super(props);
+
         // 初始状态
         this.state = {
             showProgress: true,//显示加载
@@ -88,7 +89,7 @@ class OrderDetail extends Component {
             aliPay: 0,// 支付宝 ,0否，1是
             receiving_address: '',// 收货地址
 
-            photoList: []
+            photoList: [],
         };
         this.firstFetch = true;
     }
@@ -116,9 +117,9 @@ class OrderDetail extends Component {
                 //console.log(`payPage didfocus...`)
                 if (event && currentRoute === event.data.route) {
                     //console.log("upload didAppear")
-                    this._fetchData()
-                    if (this.firstFetch) {
 
+                    if (this.firstFetch) {
+                        this._fetchData()
                         this.firstFetch = false;
                     }
                 } else {
@@ -179,7 +180,7 @@ class OrderDetail extends Component {
                                 {this.state.order_status == 40 ?
                                     <View style={{flexDirection:'row',marginTop:5,}}>
                                         <Text
-                                            style={[{flex:1,paddingLeft:0,fontSize:12,color:constants.UIActiveColor},]}>请点击上传按钮,按分类补充材料</Text>
+                                            style={[{flex:1,paddingLeft:0,fontSize:12,color:constants.UIActiveColor},]}>请按分类补充材料</Text>
                                     </View> : null
                                 }
                             </View>
@@ -203,33 +204,7 @@ class OrderDetail extends Component {
 
                                 </TouchableOpacity> : null
                             }
-                            {this.state.order_status == 40 ?
-                                <TouchableOpacity
-                                    style={[styles.line,{justifyContent:'center',alignItems:'center',
-                                    paddingTop:10,paddingBottom:10,},{flex:1}]}
-                                    onPress={()=>{
-                                    //this.props.navigator.push({
-                                    //            title: '上传资料',
-                                    //            component: UploadPage,
-                                    //            passProps: {
-                                    //                id:service_id,
-                                    //            }
-                                    //        });
 
-                                     this.props.navigator.push({
-                                                title: '委托单资料',
-                                                component: OrderPhotoPage,
-                                                passProps: {
-                                                    id:this.state.id,
-                                                    type:'order'
-                                                }
-                                            });
-                                    } }
-                                >
-                                    <Text style={{color:constants.UIActiveColor,fontSize:12,}}>上传</Text>
-
-                                </TouchableOpacity> : null
-                            }
                             {this.state.order_status == 0 || this.state.order_status == 30 ?
                                 <TouchableOpacity
                                     style={[styles.line,{justifyContent:'center',alignItems:'center',paddingTop:10,paddingBottom:10,},
@@ -297,19 +272,69 @@ class OrderDetail extends Component {
                             <Text style={[{flex:1},styles.labelText]}>目的国家</Text>
                             <Text style={[{flex:4},styles.contentText]}>{this.state.destination_name}</Text>
                         </View>
-                        {this.state.photoList&&this.state.photoList.length>0?
-                            <Text
-                                style={[styles.labelText,{marginLeft:constants.MarginLeftRight,paddingTop:5,paddingBottom:5,}]}>上传资料</Text>:null
+                        {this.state.order_status != 40 ?
+                            <View
+                                style={{flex:1}}>
+                                <Text
+                                    style={[styles.labelText,{marginLeft:constants.MarginLeftRight,paddingTop:5,paddingBottom:5,}]}>上传资料</Text>
+
+                                <ShowPhotoView
+                                    style={{flex:1,backgroundColor:'white',
+                                    paddingLeft:constants.MarginLeftRight,paddingRight:constants.MarginLeftRight,}}
+                                    navigator={this.props.navigator}
+                                    photoList={this.state.photoList}
+                                    showPhoto={this._ImageZoomModal.ShowPhoto}
+                                    UploadPage={UploadPage}
+                                    showUpload={false}
+                                />
+                            </View> : this.state.photoList.map((item, index) => {
+                            return (
+
+                                <View
+                                    key={`photoLis_${index}`}
+                                    style={{flex:1,flexDirection:'column', overflow: 'hidden',}}>
+                                    <Text
+                                        style={[styles.contentText,{paddingTop:5,paddingBottom:5,fontSize:12}]}>{item.title}</Text>
+                                    <ShowPhotoView
+                                        style={{flex:1,backgroundColor:'white',
+                                                paddingLeft:constants.MarginLeftRight,paddingRight:constants.MarginLeftRight,}}
+                                        navigator={this.props.navigator}
+                                        photoList={item.list}
+                                        UploadPage={UploadPage}
+                                    />
+                                </View> )
+                        })
                         }
-                        <ShowPhotoView
-                            style={{flex:1,backgroundColor:'white',
-                            paddingLeft:constants.MarginLeftRight,paddingRight:constants.MarginLeftRight,}}
-                            navigator={this.props.navigator}
-                            photoList={this.state.photoList}
-                            showPhoto={this._ImageZoomModal.ShowPhoto}
-                            UploadPage={UploadPage}
-                            showUpload={false}
-                        />
+                        {this.state.order_status == 40 ?
+                            <View style={[{flex:1,flexDirection:'row',backgroundColor:'white',},]}>
+                                <TouchableOpacity
+                                    style={[styles.line,{justifyContent:'center',alignItems:'center',
+                                    paddingTop:10,paddingBottom:10,},{flex:1}]}
+                                    onPress={()=>{
+                                    //this.props.navigator.push({
+                                    //            title: '上传资料',
+                                    //            component: UploadPage,
+                                    //            passProps: {
+                                    //                id:service_id,
+                                    //            }
+                                    //        });
+
+                                    /* this.props.navigator.push({
+                                                title: '委托单资料',
+                                                component: OrderPhotoPage,
+                                                passProps: {
+                                                    id:this.state.id,
+                                                    type:'order'
+                                                }
+                                            });*/
+                                            this._fetch_photoList_finish()
+                                    } }
+                                >
+                                    <Text style={{color:constants.UIActiveColor,fontSize:12,}}>保存上传</Text>
+
+                                </TouchableOpacity>
+                            </View>:null
+                        }
                         <Text
                             style={[styles.contentText,{paddingTop:5,paddingBottom:5,fontSize:12}]}>支付</Text>
 
@@ -495,6 +520,9 @@ class OrderDetail extends Component {
                         photoList: result.result.list //相关照片
                     }
                 )
+                if (result.result.commissionOrder.order_status == 40) {
+                    this._fetchData_photoList()
+                }
 
             } else {
 
@@ -550,7 +578,7 @@ class OrderDetail extends Component {
                 url: constants.api.service,
                 data: {
                     iType: constants.iType.commissionOrder_reCommission,
-                    commission_id: this.state.id,
+                    id: this.state.id,
                     deviceId: deviceID,
                     token: token,
                 }
@@ -582,6 +610,9 @@ class OrderDetail extends Component {
                 return
             }
             if (result.code && result.code == -54) {
+                if (!this.firstFetch && this._modalLoadingSpinnerOverLay) {
+                    this._modalLoadingSpinnerOverLay.hide({duration: 0,})
+                }
                 /**
                  * 发送事件去登录
                  */
@@ -595,7 +626,8 @@ class OrderDetail extends Component {
             }
             if (result.code && result.code == 10) {
                 Alert.alert('温馨提醒', '已重新委托', [
-                    {text: '确定', onPress: ()=>{
+                    {
+                        text: '确定', onPress: ()=> {
                         if (!this.firstFetch && this._modalLoadingSpinnerOverLay) {
                             this._modalLoadingSpinnerOverLay.hide({duration: 0,})
                         }
@@ -603,10 +635,14 @@ class OrderDetail extends Component {
                         NativeAppEventEmitter.emit('orderDetail_hasReCommision_should_resetState', this.state.id)
 
                         this.props.navigator.pop()
-                    }},])
+                    }
+                    },])
 
 
             } else {
+                if (!this.firstFetch && this._modalLoadingSpinnerOverLay) {
+                    this._modalLoadingSpinnerOverLay.hide({duration: 0,})
+                }
 
                 this._toast.show({
                     position: Toast.constants.gravity.center,
@@ -639,7 +675,6 @@ class OrderDetail extends Component {
             //SplashScreen.close(SplashScreen.animationType.scale, 850, 500)
         }
     }
-
 
 
     async _fetchData_cancel() {
@@ -688,6 +723,9 @@ class OrderDetail extends Component {
                 return
             }
             if (result.code && result.code == -54) {
+                if (this._modalLoadingSpinnerOverLay) {
+                    this._modalLoadingSpinnerOverLay.hide({duration: 0,})
+                }
                 /**
                  * 发送事件去登录
                  */
@@ -701,7 +739,8 @@ class OrderDetail extends Component {
             }
             if (result.code && result.code == 10) {
                 Alert.alert('温馨提醒', '订单已取消', [
-                    {text: '确定', onPress: ()=>{
+                    {
+                        text: '确定', onPress: ()=> {
                         //修改订单状态
                         if (this._modalLoadingSpinnerOverLay) {
                             this._modalLoadingSpinnerOverLay.hide({duration: 0,})
@@ -709,9 +748,13 @@ class OrderDetail extends Component {
                         NativeAppEventEmitter.emit('orderDetail_hasCancel_should_resetState', this.state.id)
 
                         this.props.navigator.pop()
-                    }},])
+                    }
+                    },])
 
             } else {
+                if (this._modalLoadingSpinnerOverLay) {
+                    this._modalLoadingSpinnerOverLay.hide({duration: 0,})
+                }
                 this._toast.show({
                     position: Toast.constants.gravity.center,
                     duration: 255,
@@ -741,6 +784,257 @@ class OrderDetail extends Component {
             //console.log(`SplashScreen.close(SplashScreen.animationType.scale, 850, 500)`)
             //SplashScreen.close(SplashScreen.animationType.scale, 850, 500)
 
+        }
+    }
+
+
+    async _fetchData_photoList() {
+        //console.log(`fetchData_photoList`)
+        try {
+            let token = await getToken()
+            let deviceID = await getDeviceID()
+
+            let options = {
+                method: 'post',
+                url: constants.api.service,
+                data: {
+                    iType: constants.iType.commissionOrder_missFileShow,
+                    id: this.props.id,
+                    deviceId: deviceID,
+                    token: token,
+                }
+            }
+            //console.log(`_fetchData options:`, options)
+            options.data = await this.gZip(options)
+
+
+            let resultData = await this.fetch(options)
+
+            let result = await this.gunZip(resultData)
+            if (!result) {
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: '服务器打盹了,稍后再试试吧'
+                })
+                return
+            }
+            result = JSON.parse(result)
+            //console.log('gunZip:', result)
+            if (!result) {
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: '服务器打盹了,稍后再试试吧'
+                })
+                return
+            }
+            if (result.code && result.code == 10) {
+
+                //console.log('result_result:', result.result)
+
+                //let photoList = this.state.photoList
+                let photoList = []
+                if(constants.development) {
+                    for (let data of result.result) {
+                        //console.log('data:', data)
+                        let flag = true;
+                        for (let item of photoList) {
+                            //console.log('item:', item)
+
+                            if (item.file_type_id == data.file_type_id) {
+                                //console.log('break:', photoList)
+                                item.list.push({
+                                    ...data,
+                                    isStored: true,
+                                    uploaded: true,
+                                    uploading: false,
+                                })
+                                flag = false;
+                                break;
+                            }
+
+                            flag = true;
+                        }
+
+                        if (flag) {
+
+                            if (data.id) {
+                                photoList.push({
+                                    file_type_id: data.file_type_id,
+                                    title: data.file_type_name,
+                                    list: [{
+                                        ...data,
+                                        isStored: true,
+                                        uploaded: true,
+                                        uploading: false,
+                                    }]
+                                })
+                            } else {
+                                photoList.push({
+                                    file_type_id: data.file_type_id,
+                                    title: data.file_type_name,
+                                    list: []
+                                })
+                            }
+
+                        }
+
+                    }
+                }else{
+                    for (let data of result.result) {
+                        let list=[]
+                        for(let item of data.nCommisonFileVoList){
+                            list.push({
+                                ...item,
+                                isStored: true,
+                                uploaded: true,
+                                uploading: false,
+                            })
+                        }
+                        photoList.push({
+                            file_type_id: data.file_type_id,
+                            title: data.file_type_name,
+                            list: list
+                        })
+
+                    }
+                }
+                //console.log(`photoList:`,photoList)
+
+                this.setState({
+                    photoList: photoList,
+                })
+
+
+            } else {
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: result.msg
+                })
+            }
+
+
+        }
+        catch (error) {
+            //console.log(error)
+            if (this._toast) {
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: error
+                })
+            }
+        }
+        finally {
+            this.setState({
+                showProgress: false,//显示加载
+                showReload: false,//显示再次加载
+            })
+            //console.log(`SplashScreen.close(SplashScreen.animationType.scale, 850, 500)`)
+            //SplashScreen.close(SplashScreen.animationType.scale, 850, 500)
+        }
+    }
+
+    async _fetch_photoList_finish() {
+
+        try {
+            let token = await getToken()
+            let deviceID = await getDeviceID()
+            let ids = [];
+
+                //委托单
+                for (let data of this.state.photoList) {
+                    //console.log('data:', data)
+                    let fileIds = '';
+                    for (let item of data.list) {
+                        fileIds += item.id + ','
+                    }
+                    ids.push({
+                        file_type_id: data.file_type_id,
+                        file_ids: fileIds
+                    })
+
+                }
+
+            let options = {
+                method: 'post',
+                url: constants.api.service,
+                data: {
+                    iType: constants.iType.commissionOrder_missFileSave,
+                    list: ids,
+                    deviceId: deviceID,
+                    token: token,
+                }
+            }
+
+            options.data = await this.gZip(options)
+
+
+            let resultData = await this.fetch(options)
+
+            let result = await this.gunZip(resultData)
+            if (!result) {
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: '服务器打盹了,稍后再试试吧'
+                })
+                return
+            }
+            result = JSON.parse(result)
+            //console.log('gunZip:', result)
+            if (this._modalLoadingSpinnerOverLay) {
+                this._modalLoadingSpinnerOverLay.hide({duration: 0,})
+            }
+            if (!result) {
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: '服务器打盹了,稍后再试试吧'
+                })
+                return
+            }
+            if (result.code && result.code == 10) {
+
+                //console.log('token', result.result)
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: '保存成功'
+                })
+
+
+
+            } else {
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: result.msg
+                })
+            }
+
+
+        }
+        catch (error) {
+            //console.log(error)
+            if (this._toast) {
+                this._toast.show({
+                    position: Toast.constants.gravity.center,
+                    duration: 255,
+                    children: error
+                })
+            }
+
+
+        }
+        finally {
+            if (this._modalLoadingSpinnerOverLay) {
+                this._modalLoadingSpinnerOverLay.hide({duration: 0,})
+            }
+            //console.log(`SplashScreen.close(SplashScreen.animationType.scale, 850, 500)`)
+            //SplashScreen.close(SplashScreen.animationType.scale, 850, 500)
         }
     }
 

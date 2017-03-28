@@ -60,10 +60,10 @@ export default class ImageZoomModal extends Component {
                 <View
                     style={{width:deviceWidth,height:Platform.OS == 'ios' ? 64 : 56
                     ,backgroundColor:'black',flexDirection:'row',position:'absolute',top:0,
-                    justifyContent:'center',alignItems: 'center',paddingTop:10}}
+                    justifyContent:'center',alignItems: 'center',paddingTop:18}}
                 >
                     <TouchableOpacity
-                        style={{flex:1,paddingLeft:20}}
+                        style={{flex:1,paddingLeft:25}}
                         onPress={()=>this.setState({modalVisible:false})}>
                         <Icon
                             name={'ios-arrow-back'}

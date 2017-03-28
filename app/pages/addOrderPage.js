@@ -315,14 +315,14 @@ class AddOrder extends Component {
                             style={[{marginTop:10,height:50,}]}
                             onPress={()=>{
                              //查找下标
-                             console.log(`this.state.type:`,this.state.type);
+                             //console.log(`this.state.type:`,this.state.type);
                             let index=0;
 
                              for(let i=0;i<this.typeShow.length;i++){
                              if(this.typeShow[i]==this.state.type){
 
                                  index=i;
-                                  console.log(`index:`,index);
+                                  //console.log(`index:`,index);
                                  break;
                                  }
                              }
@@ -419,7 +419,7 @@ class AddOrder extends Component {
                              if(this.countryShow[i]==this.state.start){
 
                                  index=i;
-                                  console.log(`index:`,index);
+                                  //console.log(`index:`,index);
                                  break;
                                  }
                              }
@@ -458,7 +458,7 @@ class AddOrder extends Component {
                              if(this.countryEnd[i]==this.state.reach){
 
                                  index=i;
-                                  console.log(`index:`,index);
+                                  //console.log(`index:`,index);
                                  break;
                                  }
                              }
@@ -495,7 +495,6 @@ class AddOrder extends Component {
                             paddingLeft:constants.MarginLeftRight,paddingRight:constants.MarginLeftRight,}}
                             navigator={this.props.navigator}
                             photoList={this.state.photoList}
-                            showPhoto={this._ImageZoomModal.ShowPhoto}
                             UploadPage={UploadPage}
                             isUploading={this._isUploading}
                         />
