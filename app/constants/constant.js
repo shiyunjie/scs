@@ -25,14 +25,14 @@ export const constant = {
     maxiumUploadImagesCount:30, //最多上传图片总数
     maxiumXhrNums:4, //最多同时上传数量
 
-    development:false,//开发模式mock
+    development:true,//开发模式mock
 
     requestTimeout: 30000,  //默认请求超时30秒
     requestMethod: 'GET',   //默认请求方法为GET
 
 
     api: {
-        service:'http://192.168.1.250:8080/app/gateway/',
+        service:'http://192.168.1.250:8084/app/gateway/',
         //service:'http://192.168.1.248:8080/spboot/upload',
         //service:'http://192.168.1.134:8080/app/gateway/',
         //service:'http://192.168.1.246:8084/app/gateway/',
