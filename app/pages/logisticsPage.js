@@ -294,9 +294,7 @@ class Logistics extends Component {
                 return
             }
             if (result.code && result.code == 10) {
-                /* Alert.alert('提示', '注册成功', () => {
-                 this.props.navigator.popToTop()
-                 })*/
+
                 let DataList = result.result
                 this.setState({
                     dataList: DataList,

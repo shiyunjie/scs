@@ -18,6 +18,7 @@ import {
     NativeAppEventEmitter,
     NativeModules,
     Alert,
+    Linking,
 } from 'react-native';
 
 import SplashScreen from 'react-native-smart-splash-screen'
@@ -40,7 +41,8 @@ import AppEventListenerEnhance from 'react-native-smart-app-event-listener-enhan
 
 import image_banner from '../images/banner.png'
 import index_image_1 from '../images/index_01.png'
-import index_image_2 from '../images/index_02.png'
+import index_image_2 from '../images/index_03.png'
+import index_image_3 from '../images/index_04.png'
 import image_button from '../images/button.png'
 import image_logo from '../images/horse.png'
 import {getDeviceID,getToken,getVersion} from '../lib/User'
@@ -50,11 +52,11 @@ import {getDeviceID,getToken,getVersion} from '../lib/User'
 
 const HttpRSAModule = NativeModules.HttpRSAModule;
 const { width: deviceWidth,height:deviceHeight} = Dimensions.get('window');
-let refreshedDataSource = [image_banner,image_banner]
+let refreshedDataSource = [image_banner,index_image_1]
 
 let advertisementDataSource = [
-    index_image_1,
     index_image_2,
+    index_image_3
 
 ]
 
@@ -93,29 +95,36 @@ class Index extends Component {
 
 
         //NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
-        //let currentRoute = this.props.navigator.navigationContext.currentRoute
-        //this.addAppEventListener(
-        //    this.props.navigator.navigationContext.addListener('willfocus', (event) => {
-        //        //console.log(`indexPage willfocus...`)
-        //        //console.log(`currentRoute`, currentRoute)
-        //        //console.log(`event.data.route`, event.data.route)
-        //        if (currentRoute === event.data.route) {
-        //            //console.log("indexPage willAppear")
-        //            //this._pullToRefreshListView.beginRefresh()
-        //            let { refreshBackAnimating, loadMoreBackAnimating, _scrollView, _scrollY, } = this._pullToRefreshListView
-        //            if (!refreshBackAnimating && !loadMoreBackAnimating) {
-        //                _scrollView.scrollTo({y: _scrollY - 5, animated: true,})
-        //                _scrollView.scrollTo({y: _scrollY + 5, animated: true,})
-        //                //console.log(`_scrollY + StyleSheet.hairlineWidth`, _scrollY + StyleSheet.hairlineWidth)
-        //            }
-        //            //NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
-        //            NativeAppEventEmitter.emit('setRootPageNavigationBar.index')
-        //        } else {
-        //            //console.log("indexPage willDisappear, other willAppear")
-        //        }
-        //        //
-        //    })
-        //)
+        let currentRoute = this.props.navigator.navigationContext.currentRoute
+        this.addAppEventListener(
+            this.props.navigator.navigationContext.addListener('willfocus', (event) => {
+                //console.log(`indexPage willfocus...`)
+                //console.log(`currentRoute`, currentRoute)
+                //console.log(`event.data.route`, event.data.route)
+                if (currentRoute === event.data.route) {
+                    //console.log("indexPage willAppear")
+                    //this._pullToRefreshListView.beginRefresh()
+                    let { refreshBackAnimating, loadMoreBackAnimating, _scrollView, _scrollY, } = this._pullToRefreshListView
+                    if (!refreshBackAnimating && !loadMoreBackAnimating) {
+                        _scrollView.scrollTo({y: _scrollY - 5, animated: true,})
+                        _scrollView.scrollTo({y: _scrollY + 5, animated: true,})
+                        //console.log(`_scrollY + StyleSheet.hairlineWidth`, _scrollY + StyleSheet.hairlineWidth)
+                    }
+
+                    //检查版本更新
+                    this._checkUpdate()
+                    //NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
+                    //NativeAppEventEmitter.emit('setRootPageNavigationBar.index')
+                } else {
+                    //console.log("indexPage willDisappear, other willAppear")
+                }
+                //
+            })
+        )
+
+    }
+
+    componentDidUpdate() {
 
     }
 
@@ -266,16 +275,19 @@ class Index extends Component {
     }
 
     async _checkUpdate() {
-
+        let token = '999'
+        let deviceID = '999'
         let version= await getVersion()
-        version.replace('version','')
+        version=version.replace('Version:','')
         let options = {
             method: 'post',
             url: constants.api.service,
             //url: constants.api.indexShowPicture,
             data: {
                 iType: constants.iType.sysInfo_checkUpdate,
-
+                type:Platform.OS == 'android'?0:1,
+                deviceId: deviceID,
+                token: token,
             }
         }
         options.data = await this.gZip(options)
@@ -289,7 +301,7 @@ class Index extends Component {
 
                 return
             }
-            //console.log('gunZip:', result)
+            console.log('gunZip:', result)
             result = JSON.parse(result)
 
             if (!result) {
@@ -302,12 +314,13 @@ class Index extends Component {
                 if(result.result.version!=version) {
                     if (Platform.OS == 'android') {
                         //检查更新app
-                        HttpRSAModule.UpdateApp('http://o2o.doorto.cn/upload/app/o2o/onlineshop.apk')
+                        //HttpRSAModule.UpdateApp('http://o2o.doorto.cn/upload/app/o2o/onlineshop.apk')
+                        HttpRSAModule.UpdateApp(result.result.url)
 
                     } else {
                         //HttpRSAModule.UpdateApp('https://itunes.apple.com/cn/app/dao-tu-sheng-huo-chao-shi/id1037683195?mt=8')
                         Alert.alert('升级提醒','发现新版本,现在要升级吗?',[
-                            {text:'确定',onPress:()=>HttpRSAModule.UpdateApp('https://itunes.apple.com/cn/app/dao-tu-sheng-huo-chao-shi/id1037683195?mt=8')},
+                            {text:'确定',onPress:()=> Linking.openURL(result.result.url).catch(err => console.error('An error occurred', err))},
                             {text:'取消',onPress:()=>{}},
                         ])
                         }
@@ -411,19 +424,18 @@ class Index extends Component {
                 <View>
                     {
                         rowData.map((item, index) => {
-                            if (index == 0) {
+                            if(index == 0){
                                 return (
-
                                     <View key={`item-${index}`}
-                                          style={{overflow: 'hidden',borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: '#ccc',marginBottom:10,}}>
-                                        <Image source={item} style={{width:deviceWidth,height:deviceWidth/12*5}}/>
+                                          style={{overflow: 'hidden',borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: '#ccc',}}>
+                                        <Image source={item} style={{width:deviceWidth,height:deviceWidth/12*13.3}}/>
                                     </View>
                                 )
-                            } else {
+                            }else{
                                 return (
                                     <View key={`item-${index}`}
                                           style={{overflow: 'hidden',borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: '#ccc',marginBottom:10,}}>
-                                        <Image source={item} style={{width:deviceWidth,height:deviceWidth/12*3.6}}/>
+                                        <Image source={item} style={{width:deviceWidth,height:deviceWidth/12*25}}/>
                                     </View>
                                 )
                             }

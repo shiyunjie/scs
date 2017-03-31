@@ -178,6 +178,11 @@ class OnLinePay extends Component {
                             </View>
                     }
                         onPress={ () => {
+
+                        Alert.alert('温馨提醒','该功能尚未开放')
+
+                        return
+
                         this._button_alipay.setState({
 
                             loading: true,

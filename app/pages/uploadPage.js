@@ -120,7 +120,8 @@ class UploadPage extends Component {
                 //console.log(`event.data.route`, event.data.route)
                 if (event && currentRoute === event.data.route) {
                     //console.log("orderPage willAppear")
-                    /* NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
+                    NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
+                    /*
                      if (this._waitForAddPhotos && this._waitForAddPhotos.length > 0) {
                      this.setTimeout(() => {
                      /!*
@@ -1349,13 +1350,14 @@ const navigationBarRouteMapper = {
         return (
             <TouchableOpacity
                 onPress={() => {
+                //console.log(`NativeAppEventEmitter`)
                    NativeAppEventEmitter.emit('photoUploadPage.need.navigator.pop')
                 }}
                 style={navigatorStyle.navBarRightButton}>
-                <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText]}>
+                <Text style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText,{fontSize:14}]}>
                     完成
                 </Text>
             </TouchableOpacity>
         )
-    },
+    }
 };

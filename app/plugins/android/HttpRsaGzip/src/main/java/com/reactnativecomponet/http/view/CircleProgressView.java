@@ -45,7 +45,7 @@ public class CircleProgressView extends View {
         backgroundPaint = new Paint();
         backgroundPaint.setAntiAlias(true);
         backgroundPaint.setDither(true);
-        backgroundPaint.setColor(Color.parseColor("#F1F2F4"));
+        backgroundPaint.setColor(Color.WHITE);
         backgroundPaint.setStyle(Paint.Style.FILL);
 
         barPaint = new Paint();

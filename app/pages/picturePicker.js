@@ -53,7 +53,7 @@ class PicturePicker extends Component {
             })
         )
         this.addAppEventListener(
-            NativeAppEventEmitter.addListener('PicturePicker.selected.setState', () => {
+            NativeAppEventEmitter.addListener('PicturePicker.selected.setState.pop', () => {
                 let Uris = []
 
                 for (let data of this.props.ids) {
@@ -227,7 +227,8 @@ const navigationBarRouteMapper = {
         return (
             <TouchableOpacity
                 onPress={() => {
-                NativeAppEventEmitter.emit('PicturePicker.selected.setState')
+                NativeAppEventEmitter.emit('PicturePicker.selected.setState.pop')
+
             }}
                 style={navigatorStyle.navBarRightButton}>
                 <View style={navigatorStyle.navBarLeftButtonAndroid}>
@@ -270,7 +271,7 @@ const navigationBarRouteMapper = {
 //        return (
 //            <TouchableOpacity
 //                onPress={() => {
-//                NativeAppEventEmitter.emit('PicturePicker.selected.setState')
+//                NativeAppEventEmitter.emit('PicturePicker.selected.setState.pop')
 //            }}
 //                style={navigatorStyle.navBarRightButton}>
 //                <View style={navigatorStyle.navBarLeftButtonAndroid}>

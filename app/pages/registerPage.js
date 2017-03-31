@@ -19,6 +19,7 @@ import {
     Modal,
     NativeAppEventEmitter,
     Alert,
+    ScrollView,
     AsyncStorage,
     BackAndroid,
 } from 'react-native';
@@ -35,7 +36,7 @@ import XhrEnhance from '../lib/XhrEnhance' //http
 import {getDeviceID,getToken} from '../lib/User'
 import {hex_md5} from '../lib/md5'
 import ValidateTextInput from '../components/validateTextInput'
-
+import agreement from '../constants/agreement'
 import LoadingSpinnerOverlay from 'react-native-smart-loading-spinner-overlay'
 //import { register_secondStep, errorXhrMock } from '../mock/xhr-mock'   //mock data
 
@@ -112,16 +113,20 @@ class Register extends Component {
                     transparent={true}
                     visible={this.state.modalVisible}
                     onRequestClose={() => {this.setState({modalVisible:false});}}>
-                  <View style={[styles.container,{flex:1,backgroundColor:'white'}]}>
-                      <Text>协议</Text>
-                      <TouchableHighlight underlayColor={'#ccc'}
-                                          style={{flex:1,backgroundColor: '#fff',justifyContent:'center',flexDirection:'column',alignItems:'center'}}
-                                          onPress={()=>{this.setState({modalVisible:false});}}>
-                          <Text style={{flex:1,fontSize: 20,margin:10}}
-                          >关闭</Text>
+                  <ScrollView
+                      style={[{flex:1,backgroundColor:'white',paddingLeft:10,paddingRight:10,
+                      marginTop: Platform.OS == 'ios' ? 64 : 56,}]}
+                      showsVerticalScrollIndicator={false}>
+                        <View>
+                          <Text style={{fontSize:14,color:constants.LabelColor}}>{agreement}</Text>
 
-                      </TouchableHighlight>
-                  </View>
+                          <TouchableHighlight underlayColor={'#ccc'}
+                                              style={{flex:1,backgroundColor: '#fff',justifyContent:'center',flexDirection:'column',alignItems:'center'}}
+                                              onPress={()=>{this.setState({modalVisible:false});}}>
+                              <Text style={{flex:1,fontSize: 16,margin:10,color:constants.PointColor}}>关闭</Text>
+                          </TouchableHighlight>
+                        </View>
+                  </ScrollView>
                 </Modal>
 
                 <ValidateTextInput
@@ -404,9 +409,7 @@ class Register extends Component {
                     duration: 255,
                     children: '注册成功'
                 })*/
-                if(this._modalLoadingSpinnerOverLay) {
-                    this._modalLoadingSpinnerOverLay.hide({duration: 0,})
-                }
+
                 Alert.alert('温馨提醒','提交成功',
                     [{text:'确定',onPress:()=>{
                         if(this._modalLoadingSpinnerOverLay) {

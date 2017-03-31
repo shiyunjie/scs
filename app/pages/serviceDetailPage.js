@@ -75,11 +75,12 @@ class ServiceDetail extends Component {
 
             export_country_land: '',// 出口国陆运,0否，1是
 
-            booking_service_name: '',// 订舱服务,0海运，1空运
+            booking_service: '',// 订舱服务,0海运，1空运
 
             domestic_logistics: '',// 国内物流,0否，1是
 
             credit_letter: '',// 信用证0否，1是
+            pay_type:'',//支付方式
 
             client_name: '',// 委托人
 
@@ -256,21 +257,14 @@ class ServiceDetail extends Component {
                     time_name: result.result.time_name,// 接单时间
                     import_clearance: result.result.import_clearance,// 进口清关,0否，1是
                     international_logistics: result.result.international_logistics,// 国际物流,0否，1是
-
                     export_country_land: result.result.export_country_land,// 出口国陆运,0否，1是
-
-                    booking_service_name: result.result.booking_service_name,// 订舱服务,0海运，1空运
-
+                    booking_service: result.result.booking_service,// 订舱服务,0海运，1空运
                     domestic_logistics: result.result.domestic_logistics,// 国内物流,0否，1是
-
                     credit_letter: result.result.credit_letter,// 信用证0否，1是
-
+                    pay_type:result.result.pay_type,// 支付方式
                     client_name: result.result.client_name,// 委托人
-
                     client_phone: result.result.client_phone,// 联系电话
-
                     commission_content: result.result.commission_content,// 委托内容
-
                     ship_company_code: result.result.ship_company_code,// 船公司代码
 
                     ship_company_name: result.result.ship_company_name,// 船公司名称
@@ -839,7 +833,7 @@ class ServiceDetail extends Component {
                         <View style={styles.viewItem}>
                             <Text style={[{flex:1},styles.labelText]}>支付方式</Text>
                             <Text
-                                style={[{flex:3},styles.contentText]}>{this.state.credit_letter == 1 ? '信用证' : ``}</Text>
+                                style={[{flex:3},styles.contentText]}>{this.state.pay_type}</Text>
                         </View>
 
                         <Text
@@ -858,7 +852,7 @@ class ServiceDetail extends Component {
                                     style={[{flex:1},styles.contentText]}>{this.state.import_clearance == 1 ? '进口清关、' : ``}
                                     {this.state.international_logistics == 1 ? '国际物流、' : ``}
                                     {this.state.export_country_land == 1 ? '出口国陆运、' : ``}
-                                    {this.state.booking_service_name == 0 ? '订舱服务海运、' : ``}
+                                    {this.state.booking_service == 0 ? '订舱服务海运、' : ``}
                                     {this.state.domestic_logistics == 1 ? '国内物流、' : ``}</Text>
                             </View>
                         </View>

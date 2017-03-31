@@ -234,6 +234,9 @@ class Login extends Component {
 
             let result = await this.gunZip(resultData)
             if (!result) {
+                if(this._modalLoadingSpinnerOverLay){
+                    this._modalLoadingSpinnerOverLay.hide({duration: 0,})
+                }
                 this._toast.show({
                     position: Toast.constants.gravity.center,
                     duration: 255,
@@ -245,6 +248,9 @@ class Login extends Component {
             //console.log('gunZip:', result)
 
             if(!result){
+                if(this._modalLoadingSpinnerOverLay){
+                    this._modalLoadingSpinnerOverLay.hide({duration: 0,})
+                }
                 this._toast.show({
                     position: Toast.constants.gravity.center,
                     duration: 255,
@@ -267,6 +273,9 @@ class Login extends Component {
                     duration: 255,
                     children: '登录成功'
                 })*/
+                if(this._modalLoadingSpinnerOverLay){
+                    this._modalLoadingSpinnerOverLay.hide({duration: 0,})
+                }
 
                     this.props.navigator.popToTop()
 
@@ -276,6 +285,9 @@ class Login extends Component {
 
 
             } else {
+                if(this._modalLoadingSpinnerOverLay){
+                    this._modalLoadingSpinnerOverLay.hide({duration: 0,})
+                }
                 this._toast.show({
                     position: Toast.constants.gravity.center,
                     duration: 255,
@@ -287,6 +299,9 @@ class Login extends Component {
         }
         catch (error) {
             //console.log(error)
+            if(this._modalLoadingSpinnerOverLay){
+                this._modalLoadingSpinnerOverLay.hide({duration: 0,})
+            }
             if(this._toast) {
                 this._toast.show({
                     position: Toast.constants.gravity.center,
@@ -303,9 +318,7 @@ class Login extends Component {
             })
             this._input_phone.editable=true
             this._input_password.editable=true
-            if(this._modalLoadingSpinnerOverLay){
-                this._modalLoadingSpinnerOverLay.hide({duration: 0,})
-            }
+
 
             //console.log(`SplashScreen.close(SplashScreen.animationType.scale, 850, 500)`)
             //SplashScreen.close(SplashScreen.animationType.scale, 850, 500)

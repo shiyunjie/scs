@@ -181,7 +181,7 @@ total_cost 服务费总计
                     time={rowData.create_time_str}
                     rightText={rowData.order_status_name}
                     logistics={rowData.logistics_status_str}
-                    cost={rowData.total_cost}
+                    cost={rowData.total_cost+''}
                     showCost={true}
                     route={`${rowData.departure_name} -- -- ${rowData.destination_name}`}
                     style={[{overflow: 'hidden'}]}/>

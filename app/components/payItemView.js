@@ -270,7 +270,12 @@ export default class PayTabView extends Component {
                                             NativeAppEventEmitter.emit('in_payPage_need_set_total',false)}}>
 
                                     <View style={{flex:1,flexDirection:'column',alignItems:'stretch'}}>
-                                        <Text style={[styles.labelText,{flex:1,fontSize:12,}]}>{item.cost_name}</Text>
+                                        <View style={{flex:1,flexDirection:'row',}}>
+                                            <Text style={[styles.labelText,{flex:1,fontSize:12,}]}>{item.cost_name}</Text>
+                                            <Text
+                                                style={[styles.labelText,{flex:1,color:constants.UIActiveColor,fontSize:12,}]}>
+                                                {item.is_pay == 0 ? '未支付' : '已支付'}</Text>
+                                        </View>
                                         <View style={styles.textDetail}>
                                             <View style={{flex:1,flexDirection:'row'}}>
                                                 <Text style={[styles.contentText,{fontSize:12,}]}>{this.props.cost_1_title}</Text>
@@ -281,10 +286,8 @@ export default class PayTabView extends Component {
                                                 <Text style={[styles.contentText,{fontSize:12,color:constants.UIActiveColor}]}>￥{item.cost}</Text>
 
                                             </View>
-                                            <Text
-                                                style={[styles.contentText,{color:constants.UIActiveColor,fontSize:12,}]}>
-                                                {item.is_pay == 0 ? '未支付' : '已支付'}</Text>
-                                            <View style={{flex:1}}/>
+
+
                                         </View>
                                     </View>
                                     {this.state.pageType=='pay'&&item.is_pay == 0&&item.cost!=0?

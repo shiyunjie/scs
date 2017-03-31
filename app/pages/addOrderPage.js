@@ -22,6 +22,7 @@ import {
     DeviceEventEmitter,
     KeyboardAvoidingView,
     Image,
+    Alert,
 } from 'react-native';
 /**
  * md-checkmark-circle
@@ -112,22 +113,22 @@ class AddOrder extends Component {
             id: this.props.id ? this.props.id : '',
             items: items,
             pay: this.props.credit_letter ? this.props.credit_letter : 0,
-            cash:this.props.cash?this.props.cash:0,// 现金 ,0否，1是
+            cash: this.props.cash ? this.props.cash : 0,// 现金 ,0否，1是
 
-            trans:this.props.trans?this.props.trans:0,// 转账 ,0否，1是
+            trans: this.props.trans ? this.props.trans : 0,// 转账 ,0否，1是
 
-            aliPay:this.props.aliPay?this.props.aliPay:1,//支付宝 ,0否，1是
-            selectedItems: selectedItems,
+            aliPay:this.props.id ? this.props.aliPay : 1,//支付宝 ,0否，1是
+            //selectedItems: selectedItems,
             type: this.props.trade_terms ? this.props.trade_terms : typeData[0].value,
             start: this.props.departure_name ? this.props.departure_name : countryData[0].name,
             reach: this.props.destination_name ? this.props.destination_name : countryData[0].name,
             clearance: this.props.import_clearance ? this.props.import_clearance : 1,//进口清关
-            logistics: this.props.international_logistics ? this.props.international_logistics : 1,//需求国际物流
-            land: this.props.export_country_land ? this.props.export_country_land : 1,//出口国陆运
+            logistics: this.props.id? this.props.international_logistics : 1,//需求国际物流
+            land: this.props.id? this.props.export_country_land : 1,//出口国陆运
             sea_air: this.props.booking_service_name ? this.props.booking_service_name : 0,//海运
-            internal: this.props.domestic_logistics ? this.props.domestic_logistics : 1,//国内物流
-            receiving_address:this.props.receiving_address?this.props.receiving_address:'',//收获地址
-            photoList: this.props.photoList?this.props.photoList:[],
+            internal: this.props.id? this.props.domestic_logistics : 1,//国内物流
+            receiving_address: this.props.receiving_address ? this.props.receiving_address : '',//收获地址
+            photoList: this.props.photoList ? this.props.photoList : [],
 
         }
         //this._realName = /^[A-Za-z]{2,20}$|^[\u4E00-\u9FA5]{2,8}$/
@@ -143,7 +144,9 @@ class AddOrder extends Component {
         this.countryShow = []
         this.countryEnd = []
 
-        this._isUploading=false
+        this._isUploading = false
+
+        this._commission_content = /^.{1,300}$/;
 
     }
 
@@ -172,7 +175,7 @@ class AddOrder extends Component {
                 } else if (label == '联系电话') {
 
                     this.setState({phone: context})
-                }else if(label == '收货地址'){
+                } else if (label == '收货地址') {
                     this.setState({receiving_address: context})
                 }
             })
@@ -294,6 +297,7 @@ class AddOrder extends Component {
 
 
     render() {
+        console.log(`this.state:`,this.state)
         //let width = (deviceWidth - constants.MarginLeftRight * 2 - 20) / 4
         return (
             <View style={{flex:1}}>
@@ -301,7 +305,7 @@ class AddOrder extends Component {
                     <ProgressView
                         showProgress={this.state.showProgress}
                         showReload={this.state.showReload}
-                        fetchData={()=>{}}/>:
+                        fetchData={()=>{}}/> :
 
                     <ScrollView
                         ref={ (component) => this._scrollView = component}
@@ -504,7 +508,7 @@ class AddOrder extends Component {
                         <TouchableOpacity
                             style={{height:50,}}
                             onPress={()=>{
-                        let select
+                       /* let select
                                  if (this.state.clearance==1) {
 
                                         select=0
@@ -512,7 +516,7 @@ class AddOrder extends Component {
 
                                         select=1
                                  }
-                                 this.setState({clearance:select});
+                                 this.setState({clearance:select});*/
                                   }}>
                             <ItemView
                                 color={this.state.clearance==1?constants.UIActiveColor:constants.UIInActiveColor}
@@ -543,10 +547,9 @@ class AddOrder extends Component {
                                 rightText=''
                             />
                         </TouchableOpacity>
-
-                        <TouchableOpacity
-                            style={this.state.logistics==1?{height:50,}:{height:0,}}
-                            onPress={()=>{
+                        {this.state.logistics==1?
+                            <TouchableOpacity
+                                onPress={()=>{
                                  let select
                                  if (this.state.land==1) {
                                        //取消
@@ -557,23 +560,25 @@ class AddOrder extends Component {
                                  }
                                  this.setState({land:select});
                                   }}>
-                            <ItemView
-                                color={this.state.land==1?constants.UIActiveColor:constants.UIInActiveColor}
-                                name={this.state.land==1?'md-checkmark-circle':'ios-radio-button-off-outline'}
-                                title='出口国陆运'
-                                rightText=''
-                            />
-                        </TouchableOpacity>
-                        <View style={[this.state.logistics==1?{height:50,}:{height:0,},{flexDirection:'row',alignItems:'stretch',
+                                <ItemView
+                                    color={this.state.land==1?constants.UIActiveColor:constants.UIInActiveColor}
+                                    name={this.state.land==1?'md-checkmark-circle':'ios-radio-button-off-outline'}
+                                    title='出口国陆运'
+                                    rightText=''
+                                />
+                            </TouchableOpacity>:null
+                        }
+                        {this.state.logistics==1?
+                            <View style={[{flexDirection:'row',alignItems:'stretch',
                             paddingLeft:constants.MarginLeftRight,backgroundColor:'white',}]}>
-                            <View style={{flexDirection:'row',backgroundColor:'white',alignItems:'center',
+                                <View style={{flexDirection:'row',backgroundColor:'white',alignItems:'center',
                             borderColor: constants.UIInActiveColor,borderBottomWidth:StyleSheet.hairlineWidth,}}>
-                                <Text
-                                    style={[styles.labelText,{textAlignVertical:'center',color:constants.PointColor}]}>订舱服务</Text>
-                            </View>
-                            <TouchableOpacity
-                                style={{flex:1,borderColor: constants.UIInActiveColor,borderBottomWidth:StyleSheet.hairlineWidth,}}
-                                onPress={()=>{
+                                    <Text
+                                        style={[styles.labelText,{textAlignVertical:'center',color:constants.PointColor}]}>订舱服务</Text>
+                                </View>
+                                <TouchableOpacity
+                                    style={{flex:1,borderColor: constants.UIInActiveColor,borderBottomWidth:StyleSheet.hairlineWidth,}}
+                                    onPress={()=>{
                                  let select
                                  let airSelect
                                  if (this.state.sea_air==0) {
@@ -587,18 +592,18 @@ class AddOrder extends Component {
                                  }
                                  this.setState({sea_air:select,});
                                   }}>
-                                <ItemView
-                                    color={this.state.sea_air==0?constants.UIActiveColor:constants.UIInActiveColor}
-                                    name={this.state.sea_air==0?'md-checkmark-circle':'ios-radio-button-off-outline'}
-                                    hasLine={false}
-                                    showRightText={false}
-                                    title='海运'
-                                    rightText=''
-                                />
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                style={{flex:1,borderColor: constants.UIInActiveColor,borderBottomWidth:StyleSheet.hairlineWidth,}}
-                                onPress={()=>{
+                                    <ItemView
+                                        color={this.state.sea_air==0?constants.UIActiveColor:constants.UIInActiveColor}
+                                        name={this.state.sea_air==0?'md-checkmark-circle':'ios-radio-button-off-outline'}
+                                        hasLine={false}
+                                        showRightText={false}
+                                        title='海运'
+                                        rightText=''
+                                    />
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    style={{flex:1,borderColor: constants.UIInActiveColor,borderBottomWidth:StyleSheet.hairlineWidth,}}
+                                    onPress={()=>{
                                 /* let select
                                  if (this.state.sea_air==1) {
                                        //取消
@@ -609,17 +614,18 @@ class AddOrder extends Component {
                                  }
                                  this.setState({sea_air:select});*/
                                   }}>
-                                <ItemView
-                                    color={this.state.sea_air==1?constants.UIActiveColor:constants.UIBackgroundColor}
-                                    name={this.state.sea_air==1?'md-checkmark-circle':'ios-radio-button-off-outline'}
-                                    hasLine={false}
-                                    showRightText={false}
-                                    title='空运'
-                                    titleColor={constants.UIBackgroundColor}
-                                    rightText=''
-                                />
-                            </TouchableOpacity>
-                        </View>
+                                    <ItemView
+                                        color={this.state.sea_air==1?constants.UIActiveColor:constants.UIBackgroundColor}
+                                        name={this.state.sea_air==1?'md-checkmark-circle':'ios-radio-button-off-outline'}
+                                        hasLine={false}
+                                        showRightText={false}
+                                        title='空运'
+                                        titleColor={constants.UIBackgroundColor}
+                                        rightText=''
+                                    />
+                                </TouchableOpacity>
+                            </View>:null
+                        }
                         <TouchableOpacity
                             style={{height:50,}}
                             onPress={()=>{
@@ -644,19 +650,13 @@ class AddOrder extends Component {
                         <TouchableOpacity
                             style={{height:50,}}
                             onPress={()=>{
-                                 let select
-                                 if (this.state.cash==1) {
-                                        //select=0
-                                 }else{
-                                        select=1
-                                 }
-                                 if(select){
+
                                      this.setState({
-                                     cash:select,
+                                     cash:1,
                                      trans:0,
                                      aliPay:0
                                      });
-                                 }
+
                                   }}>
                             <ItemView
                                 color={this.state.cash==1?constants.UIActiveColor:constants.UIInActiveColor}
@@ -669,19 +669,13 @@ class AddOrder extends Component {
                         <TouchableOpacity
                             style={{height:50,}}
                             onPress={()=>{
-                                 let select
-                                 if (this.state.trans==1) {
-                                        //select=0
-                                 }else{
-                                        select=1
-                                 }
-                                 if(select){
+
                                      this.setState({
                                      cash:0,
-                                     trans:select,
+                                     trans:1,
                                      aliPay:0
                                      });
-                                 }
+
                                   }}>
                             <ItemView
                                 color={this.state.trans==1?constants.UIActiveColor:constants.UIInActiveColor}
@@ -694,19 +688,13 @@ class AddOrder extends Component {
                         <TouchableOpacity
                             style={{height:50,}}
                             onPress={()=>{
-                                 let select
-                                 if (this.state.aliPay==1) {
-                                        //select=0
-                                 }else{
-                                        select=1
-                                 }
-                                 if(select){
+
                                      this.setState({
                                      cash:0,
                                      trans:0,
-                                     aliPay:select
+                                     aliPay:1
                                      });
-                                 }
+
                                   }}>
                             <ItemView
                                 color={this.state.aliPay==1?constants.UIActiveColor:constants.UIInActiveColor}
@@ -787,6 +775,15 @@ class AddOrder extends Component {
                                         return
                                         }
 
+                                        /*if(!this._commission_content.test(this.state.commission_content.replace(/^\s*!/g,""))){
+                                            this._toast.show({
+                                            position: Toast.constants.gravity.center,
+                                            duration: 255,
+                                            children: '委托内容不能为空'
+                                        })
+                                        return
+                                        }*/
+
                                         if(this.state.photoList&&this.state.photoList.length>0){
 
                                         }else{
@@ -824,7 +821,7 @@ class AddOrder extends Component {
                                                     this.props.navigator.pop();
                                                 }, 3000)*/
                                         }}>
-                                发起委托
+                                {this.state.id==''?'发起委托':'保存'}
                             </Button>
                         </View>
 
@@ -866,9 +863,9 @@ class AddOrder extends Component {
             let destination = countryData[this.countryEnd.indexOf(this.state.reach)]
             //console.log(`destination_id_reach`, destination)
             let destination_id = destination.id
-            let file_ids=''
-            for(let data of this.state.photoList){
-                file_ids+=data.id+','
+            let file_ids = ''
+            for (let data of this.state.photoList) {
+                file_ids += data.id + ','
             }
 
             let token = await getToken()
@@ -893,12 +890,12 @@ class AddOrder extends Component {
                         client_name: this.state.realName,
                         client_phone: this.state.phone,
                         commission_content: this.state.commission_content,
-                        receiving_address:this.state.receiving_address,
-                        cash:this.state.cash,
-                        trans:this.state.trans,
-                        aliPay:this.state.aliPay,
+                        receiving_address: this.state.receiving_address,
+                        cash: this.state.cash,
+                        trans: this.state.trans,
+                        aliPay: this.state.aliPay,
                     },
-                    file_ids:file_ids,
+                    file_ids: file_ids,
                     deviceId: deviceID,
                     token: token,
                 }
@@ -912,6 +909,7 @@ class AddOrder extends Component {
 
             let result = await this.gunZip(resultData)
             if (!result) {
+
                 this._toast.show({
                     position: Toast.constants.gravity.center,
                     duration: 255,
@@ -923,6 +921,7 @@ class AddOrder extends Component {
             //console.log('gunZip:', result)
 
             if (!result) {
+
                 this._toast.show({
                     position: Toast.constants.gravity.center,
                     duration: 255,
@@ -931,6 +930,9 @@ class AddOrder extends Component {
                 return
             }
             if (result.code && result.code == -54) {
+                if (this._modalLoadingSpinnerOverLay) {
+                    this._modalLoadingSpinnerOverLay.hide({duration: 0,})
+                }
                 /**
                  * 发送事件去登录
                  */
@@ -943,6 +945,9 @@ class AddOrder extends Component {
                 return;
             }
             if (result.code && result.code == 10) {
+                if (this._modalLoadingSpinnerOverLay) {
+                    this._modalLoadingSpinnerOverLay.hide({duration: 0,})
+                }
 
                 this._toast.show({
                     position: Toast.constants.gravity.center,
@@ -953,9 +958,28 @@ class AddOrder extends Component {
                     title: '发起委托',
                     component: AddOrderfinishPage,
                 })
-
+                this.setState({
+                    photoList: [],
+                    commission_content:'',
+                    pay:  0,
+                    cash:0,// 现金 ,0否，1是
+                    trans:0,// 转账 ,0否，1是
+                    aliPay:1,//支付宝 ,0否，1是
+                    //selectedItems: selectedItems,
+                    type:typeData[0].value,
+                    start:countryData[0].name,
+                    reach:countryData[0].name,
+                    clearance:1,//进口清关
+                    logistics:1,//需求国际物流
+                    land:1,//出口国陆运
+                    sea_air:0,//海运
+                    internal:1,//国内物流
+                })
 
             } else {
+                if (this._modalLoadingSpinnerOverLay) {
+                    this._modalLoadingSpinnerOverLay.hide({duration: 0,})
+                }
                 this._toast.show({
                     position: Toast.constants.gravity.center,
                     duration: 255,
@@ -966,6 +990,9 @@ class AddOrder extends Component {
 
         }
         catch (error) {
+            if (this._modalLoadingSpinnerOverLay) {
+                this._modalLoadingSpinnerOverLay.hide({duration: 0,})
+            }
             //console.log(error)
             if (this._toast) {
                 this._toast.show({
@@ -980,11 +1007,9 @@ class AddOrder extends Component {
              loading: false,
              //disabled: false
              })*/
-            if (this._modalLoadingSpinnerOverLay) {
-                this._modalLoadingSpinnerOverLay.hide({duration: 0,})
-            }
-            //console.log(`SplashScreen.close(SplashScreen.animationType.scale, 850, 500)`)
-            //SplashScreen.close(SplashScreen.animationType.scale, 850, 500)
+            //if (this._modalLoadingSpinnerOverLay) {
+            //    this._modalLoadingSpinnerOverLay.hide({duration: 0,})
+            //}
         }
     }
 
@@ -997,9 +1022,9 @@ class AddOrder extends Component {
             let destination = countryData[this.countryEnd.indexOf(this.state.reach)]
             //console.log(`destination_id_reach`, destination)
             let destination_id = destination.id
-            let file_ids=''
-            for(let data of this.state.photoList){
-                file_ids+=data.id+','
+            let file_ids = ''
+            for (let data of this.state.photoList) {
+                file_ids += data.id + ','
             }
 
             let token = await getToken()
@@ -1025,12 +1050,12 @@ class AddOrder extends Component {
                         client_name: this.state.realName,
                         client_phone: this.state.phone,
                         commission_content: this.state.commission_content,
-                        receiving_address:this.state.receiving_address,
-                        cash:this.state.cash,
-                        trans:this.state.trans,
-                        aliPay:this.state.aliPay,
+                        receiving_address: this.state.receiving_address,
+                        cash: this.state.cash,
+                        trans: this.state.trans,
+                        aliPay: this.state.aliPay,
                     },
-                    file_ids:file_ids,
+                    file_ids: file_ids,
                     deviceId: deviceID,
                     token: token,
                 }
@@ -1052,9 +1077,7 @@ class AddOrder extends Component {
                 return
             }
             result = JSON.parse(result)
-            if (this._modalLoadingSpinnerOverLay) {
-                this._modalLoadingSpinnerOverLay.hide({duration: 0,})
-            }
+
             //console.log('gunZip:', result)
             if (!result) {
                 this._toast.show({
@@ -1065,6 +1088,9 @@ class AddOrder extends Component {
                 return
             }
             if (result.code && result.code == -54) {
+                if (this._modalLoadingSpinnerOverLay) {
+                    this._modalLoadingSpinnerOverLay.hide({duration: 0,})
+                }
                 /**
                  * 发送事件去登录
                  */
@@ -1083,13 +1109,28 @@ class AddOrder extends Component {
                 NativeAppEventEmitter.emit('orderDetail_hasUpdate_should_resetState', this.state.id)
 
 
-                this.props.navigator.push({
+                Alert.alert('温馨提醒', '修改成功?',
+                    [{
+                            text: '确定', onPress: ()=> {
+                            if (this._modalLoadingSpinnerOverLay) {
+                                this._modalLoadingSpinnerOverLay.hide({duration: 0,})
+                            }
+                            this.props.navigator.pop()
+                        }
+                        }
+
+                    ])
+
+               /* this.props.navigator.push({
                     title: '修改委托',
                     component: AddOrderfinishPage,
-                })
+                })*/
 
 
             } else {
+                if (this._modalLoadingSpinnerOverLay) {
+                    this._modalLoadingSpinnerOverLay.hide({duration: 0,})
+                }
                 this._toast.show({
                     position: Toast.constants.gravity.center,
                     duration: 255,
@@ -1100,6 +1141,9 @@ class AddOrder extends Component {
 
         }
         catch (error) {
+            if (this._modalLoadingSpinnerOverLay) {
+                this._modalLoadingSpinnerOverLay.hide({duration: 0,})
+            }
             //console.log(error)
             if (this._toast) {
                 this._toast.show({
@@ -1115,11 +1159,9 @@ class AddOrder extends Component {
              loading: false,
              //disabled: false
              })*/
-            if (this._modalLoadingSpinnerOverLay) {
-                this._modalLoadingSpinnerOverLay.hide({duration: 0,})
-            }
-            //console.log(`SplashScreen.close(SplashScreen.animationType.scale, 850, 500)`)
-            //SplashScreen.close(SplashScreen.animationType.scale, 850, 500)
+            //if (this._modalLoadingSpinnerOverLay) {
+            //    this._modalLoadingSpinnerOverLay.hide({duration: 0,})
+            //}
         }
     }
 
@@ -1135,7 +1177,7 @@ class AddOrder extends Component {
                 <ProgressBarAndroid
                     style={{margin: 10,}}
                     color={'#fff'}
-                    styleAttr={'Small'}/>
+                    styleAttr={'small'}/>
 
             ) : (
             <ActivityIndicatorIOS

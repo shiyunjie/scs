@@ -16,11 +16,11 @@ export const constant = {
     Tel:'tel:021-52990900',
     pullDownStayDistance:50,  //下拉刷新后停留的高度
 
-    CompName:'润码网络科技',
+    CompName:'润码(上海)网络科技有限公司',
     CompTel:'021-52990900',
     CompFax:'021-62608981-8030',
-    CompEmail:'mail@example.com',
-    CompAddress:'长寿路652号10号楼',
+    CompEmail:'supplychain@sh-defan.net',
+    CompAddress:'上海市长寿路652号10号楼107室',
 
     maxiumUploadImagesCount:30, //最多上传图片总数
     maxiumXhrNums:4, //最多同时上传数量
@@ -32,10 +32,10 @@ export const constant = {
 
 
     api: {
-        service:'http://192.168.1.250:8084/app/gateway/',
+        //service:'http://192.168.1.250:8084/app/gateway/',
         //service:'http://192.168.1.248:8080/spboot/upload',
         //service:'http://192.168.1.134:8080/app/gateway/',
-        //service:'http://192.168.1.246:8084/app/gateway/',
+        service:'http://192.168.1.212:8080/app/gateway/',
         //service:'http://posttestserver.com/post.php',
         //service:'http://f154876m19.imwork.net:16374/app/gateway',
             /*indexShowPicture: '/index/showPicture',
@@ -94,7 +94,7 @@ export const constant = {
         feedBack:431,
 
         sysInfo_helpCenter:432,
-        sysInfo_checkUpdate:433,
+        sysInfo_checkUpdate:401,
 
         findSysInfoShow:531,
         delSysInfo:532,

@@ -524,7 +524,7 @@ export const testMock = fetchMock.mock(/\/app\/gateway/, (url, opts) => {
 
                                         export_country_land: 1,// 出口国陆运,0否，1是
 
-                                        booking_service_name: 0,// 订舱服务,0海运，1空运
+                                        booking_service: 0,// 订舱服务,0海运，1空运
 
                                         domestic_logistics: 1,// 国内物流,0否，1是
 
@@ -593,7 +593,7 @@ export const testMock = fetchMock.mock(/\/app\/gateway/, (url, opts) => {
 
                                     export_country_land: 1,// 出口国陆运,0否，1是
 
-                                    booking_service_name: 0,// 订舱服务,0海运，1空运
+                                    booking_service: 0,// 订舱服务,0海运，1空运
 
                                     domestic_logistics: 1,// 国内物流,0否，1是
 
@@ -1523,6 +1523,15 @@ export const testMock = fetchMock.mock(/\/app\/gateway/, (url, opts) => {
                                 result: {},
                             }
                         }
+                        break;
+                    //更新
+                    case 401:
+                            result = {
+                                code: 10,
+                                msg: '保存成功',
+                                result:{version:'1.0.0',url:'http://o2o.doorto.cn/upload/app/o2o/onlineshop.apk'}
+                            }
+
                         break;
                 }
 

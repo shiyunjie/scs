@@ -53,7 +53,7 @@ public class DownUpdateApk extends Service {
         @Override
         public boolean handleMessage(Message message) {
             int progress = Integer.parseInt(message.obj.toString());
-            RemoteViews rv;
+
             if(dialog==null) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
                 final LayoutInflater inflater = LayoutInflater.from(getApplicationContext());

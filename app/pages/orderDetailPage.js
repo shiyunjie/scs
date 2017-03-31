@@ -194,6 +194,8 @@ class OrderDetail extends Component {
                                     onPress={()=>{
                             //修改订单
                              if(this.state.order_status_name){
+                             this.firstFetch=true//回退需要刷新数据
+
                              this.props.navigator.push({
                                                 title: '修改委托',
                                                 component: AddOrderPage,
@@ -448,7 +450,7 @@ class OrderDetail extends Component {
                 return
             }
             result = JSON.parse(result)
-            //console.log('gunZip:', result)
+            console.log('gunZip:', result)
             if (!result) {
                 this._toast.show({
                     position: Toast.constants.gravity.center,

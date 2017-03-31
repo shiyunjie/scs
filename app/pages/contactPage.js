@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
     },
     TabText: {
         marginRight: 10,
-        fontSize: 14,
+        fontSize: 12,
         color:constants.LabelColor,
     },
 
