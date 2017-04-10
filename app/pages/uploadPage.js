@@ -945,6 +945,7 @@ class UploadPage extends Component {
         }
         xhr.setRequestHeader('Content-Type', 'multipart/form-data')
         xhr.onload = () => {
+            console.log(`xhr.responseText = ${xhr.responseText}`)
             if (xhr.status == 200 && xhr.readyState == 4) {
                 //console.log(`xhr.responseText = ${xhr.responseText}`)
                 //处理获取的id

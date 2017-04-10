@@ -135,7 +135,7 @@ class Register extends Component {
                     autoCorrect={false}
                     placeholder='请输入会员名'
                     clearButtonMode="while-editing"
-                    maxLength={20}
+                    maxLength={50}
                     underlineColorAndroid='transparent'
                     editable = {this.state.editable}
                     value={this.state.userName}
@@ -162,7 +162,7 @@ class Register extends Component {
                     autoCorrect={false}
                     placeholder='请输入邮箱'
                     clearButtonMode="while-editing"
-                    maxLength={20}
+                    maxLength={50}
                     underlineColorAndroid='transparent'
                     editable = {this.state.editable}
                     value={this.state.email}

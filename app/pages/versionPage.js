@@ -61,7 +61,7 @@ class Version extends Component {
     async _getVersion() {
 
         let version = await getVersion()
-        version = version.replace('Version:', '')
+        version = version.replace('Version: ', '')
         this.setState({version: version})
     }
 
@@ -86,17 +86,19 @@ class Version extends Component {
                         style={{color:constants.UIActiveColor,marginTop:10,}}
                         //backgroundColor:'transparent'
                     >{`版本号:${this.state.version}`}</Text>
-                    <TouchableOpacity style={{marginTop:10,}}
-                                      onPress={()=>{
+                    {Platform.OS == 'android'?
+                        <TouchableOpacity style={{marginTop:10,}}
+                                          onPress={()=>{
                                       if(this._modalLoadingSpinnerOverLay){
                                             this._modalLoadingSpinnerOverLay.show()
                                         }
                                       this._checkUpdate()}}>
-                        <Text
-                            style={{color:constants.LabelColor,}}
-                            //backgroundColor:'transparent'
-                        >检查更新</Text>
-                    </TouchableOpacity>
+                            <Text
+                                style={{color:constants.LabelColor,}}
+                                //backgroundColor:'transparent'
+                            >检查更新</Text>
+                        </TouchableOpacity>:null
+                    }
                 </View>
                 <View style={{flex:1}}/>
                 <Toast

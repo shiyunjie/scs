@@ -112,7 +112,7 @@ class Index extends Component {
                     }
 
                     //检查版本更新
-                    this._checkUpdate()
+                    //this._checkUpdate()
                     //NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
                     //NativeAppEventEmitter.emit('setRootPageNavigationBar.index')
                 } else {
@@ -144,8 +144,8 @@ class Index extends Component {
                     ref={ (component) => this._pullToRefreshListView = component }
                     viewType={PullToRefreshListView.constants.viewType.listView}
                     contentContainerStyle={{backgroundColor: 'transparent', }}
-                    initialListSize={3}
-                    pageSize={3}
+                    initialListSize={4}
+                    pageSize={4}
                     dataSource={this.state.dataSource}
                     renderHeader={this._renderHeader}
                     renderFooter={this._renderFooter}
@@ -278,7 +278,7 @@ class Index extends Component {
         let token = '999'
         let deviceID = '999'
         let version= await getVersion()
-        version=version.replace('Version:','')
+        version=version.replace('Version: ','')
         let options = {
             method: 'post',
             url: constants.api.service,
@@ -302,6 +302,7 @@ class Index extends Component {
                 return
             }
             console.log('gunZip:', result)
+            console.log('version:', version)
             result = JSON.parse(result)
 
             if (!result) {
@@ -427,15 +428,19 @@ class Index extends Component {
                             if(index == 0){
                                 return (
                                     <View key={`item-${index}`}
-                                          style={{overflow: 'hidden',borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: '#ccc',}}>
-                                        <Image source={item} style={{width:deviceWidth,height:deviceWidth/12*13.3}}/>
+                                          style={{overflow: 'hidden',}}>
+                                        <Image source={item}
+                                               style={{width:deviceWidth,height:deviceWidth/12*14}}
+                                               resizeMode={Image.resizeMode.stretch}/>
                                     </View>
                                 )
                             }else{
                                 return (
                                     <View key={`item-${index}`}
-                                          style={{overflow: 'hidden',borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: '#ccc',marginBottom:10,}}>
-                                        <Image source={item} style={{width:deviceWidth,height:deviceWidth/12*25}}/>
+                                          style={{overflow: 'hidden',}}>
+                                        <Image source={item}
+                                               style={{width:deviceWidth,height:deviceWidth/12*24}}
+                                               resizeMode={Image.resizeMode.stretch}/>
                                     </View>
                                 )
                             }
