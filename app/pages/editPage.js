@@ -72,6 +72,7 @@ class Edit extends Component {
                       fontSize:15,
                       backgroundColor:'white',
                       textAlignVertical:'top',
+                      marginTop:10,
                       marginLeft:constants.MarginLeftRight,
                       marginRight:constants.MarginLeftRight,
                       borderWidth: StyleSheet.hairlineWidth,

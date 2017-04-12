@@ -67,7 +67,7 @@ class ValidatePage extends Component {
             <View style={{flex:1}}>
                 <View style={styles.container}>
                     <View style={[{flexDirection:'row',alignItems:'center'},
-                    this.state.multiline?{height:200,justifyContent:'flex-start',}:{height:40}]}>
+                    this.state.multiline?{height:150,justifyContent:'flex-start',}:{height:40}]}>
                         {/*this.state.multiline?null:
                             <View style={{backgroundColor:'white',height:40,justifyContent:'center',
                             alignItems:'center',paddingLeft:constants.MarginLeftRight}}>
@@ -81,11 +81,10 @@ class ValidatePage extends Component {
                         this.state.multiline?{height:150,justifyContent:'flex-start',}:{}]}
                         clearButtonMode="while-editing"
                         placeholder={this.state.label}
-                        maxLength={this.state.multiline?300:20}
+                        maxLength={this.state.multiline?300:50}
                         multiline={this.state.multiline?true:false}
                         underlineColorAndroid='transparent'
                         editable={true}
-
                         value={this.state.context}
                         onChangeText={(text) => this.setState({context:text})}
                         reg={this._Reg}/>
@@ -95,7 +94,7 @@ class ValidatePage extends Component {
                         touchableType={Button.constants.touchableTypes.fadeContent}
                         style={[styles.button,{ marginLeft: constants.MarginLeftRight,
                         marginRight: constants.MarginLeftRight,
-                        marginTop: 20,}]}
+                        marginTop: constants.MarginLeftRight,}]}
                         textStyle={{fontSize: 17, color: 'white'}}
                         loadingComponent={
                             <View style={{flexDirection: 'row', alignItems: 'center'}}>

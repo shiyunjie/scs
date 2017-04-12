@@ -433,7 +433,7 @@ const navigationBarRouteMapper = {
                 style={navigatorStyle.navBarLeftButton}>
                 <View style={navigatorStyle.navBarLeftButtonAndroid}>
                     <Icon
-                        style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText,{fontSize: 20,}]}
+                        style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText,{fontSize: 30,}]}
                         name={'ios-arrow-back'}
                         size={constants.IconSize}
                         color={'white'}/>

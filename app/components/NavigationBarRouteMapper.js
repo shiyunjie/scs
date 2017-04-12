@@ -31,7 +31,7 @@ export let navigationBar = {
                 style={navigatorStyle.navBarLeftButton}>
                 <View style={navigatorStyle.navBarLeftButtonAndroid}>
                     <Icon
-                        style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText,{fontSize: 25,}]}
+                        style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText,{fontSize: 30,}]}
                         name={'ios-arrow-back'}
                         size={constants.IconSize}
                         color={'white'}/>

@@ -549,6 +549,7 @@ class AddOrder extends Component {
                         </TouchableOpacity>
                         {this.state.logistics==1?
                             <TouchableOpacity
+                                style={{height:50,}}
                                 onPress={()=>{
                                  let select
                                  if (this.state.land==1) {
@@ -569,10 +570,10 @@ class AddOrder extends Component {
                             </TouchableOpacity>:null
                         }
                         {this.state.logistics==1?
-                            <View style={[{flexDirection:'row',alignItems:'stretch',
-                            paddingLeft:constants.MarginLeftRight,backgroundColor:'white',}]}>
+                            <View style={[{height:50,flexDirection:'row',alignItems:'stretch',
+                                paddingLeft:constants.MarginLeftRight,backgroundColor:'white',}]}>
                                 <View style={{flexDirection:'row',backgroundColor:'white',alignItems:'center',
-                            borderColor: constants.UIInActiveColor,borderBottomWidth:StyleSheet.hairlineWidth,}}>
+                                borderColor: constants.UIInActiveColor,borderBottomWidth:StyleSheet.hairlineWidth,}}>
                                     <Text
                                         style={[styles.labelText,{textAlignVertical:'center',color:constants.PointColor}]}>订舱服务</Text>
                                 </View>
@@ -1251,7 +1252,7 @@ const navigationBarRouteMapper = {
                 style={navigatorStyle.navBarLeftButton}>
                 <View style={navigatorStyle.navBarLeftButtonAndroid}>
                     <Icon
-                        style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText,{fontSize: 20,}]}
+                        style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText,{fontSize: 30,}]}
                         name={'ios-arrow-back'}
                         size={constants.IconSize}
                         color={'white'}/>

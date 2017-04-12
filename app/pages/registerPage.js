@@ -43,29 +43,29 @@ import LoadingSpinnerOverlay from 'react-native-smart-loading-spinner-overlay'
 class Register extends Component {
 
     // 构造
-      constructor(props) {
+    constructor(props) {
         super(props);
         // 初始状态
         this.state = {
             showProgress: false,//显示加载
             showReload: false,//显示加载更多
-            showDialog:false,//显示确认框
-            phone:this.props.phone,
+            showDialog: false,//显示确认框
+            phone: this.props.phone,
             modalVisible: false,
-            userName:'',
-            realName:'',
-            email:'',
-            newPass:'',
-            confPass:'',
-            editable:true,
+            userName: '',
+            realName: '',
+            email: '',
+            newPass: '',
+            confPass: '',
+            editable: true,
         };
-          this._userName=/^[A-Za-z0-9]{2,20}$|^[\u4E00-\u9FA50-9]{2,10}$/
-          this._realName=/^[A-Za-z]{2,20}$|^[\u4E00-\u9FA5]{2,8}$/
-          this._email=/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
-          this._newPassword=/^[a-zA-Z0-9]{6,}$/
-          this._conformPassword=/^[a-zA-Z0-9]{6,}$/
+        this._userName = /^[A-Za-z0-9]{2,20}$|^[\u4E00-\u9FA50-9]{2,10}$/
+        this._realName = /^[A-Za-z]{2,20}$|^[\u4E00-\u9FA5]{2,8}$/
+        this._email = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
+        this._newPassword = /^[a-zA-Z0-9]{6,}$/
+        this._conformPassword = /^[a-zA-Z0-9]{6,}$/
 
-      }
+    }
 
     componentWillMount() {
         NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
@@ -75,7 +75,7 @@ class Register extends Component {
                 //console.log(`orderPage willfocus...`)
                 //console.log(`currentRoute`, currentRoute)
                 //console.log(`event.data.route`, event.data.route)
-                if (event&&currentRoute === event.data.route) {
+                if (event && currentRoute === event.data.route) {
                     //console.log("orderPage willAppear")
                     NativeAppEventEmitter.emit('setNavigationBar.index', navigationBarRouteMapper)
                 } else {
@@ -92,9 +92,12 @@ class Register extends Component {
     onBackAndroid = () => {
         const routers = this.props.navigator.getCurrentRoutes();
         if (routers.length > 1) {
-            Alert.alert('温馨提醒','确定退出吗?',[
-                {text:'确定',onPress:()=>this.props.navigator.popToRoute(routers[1])},
-                {text:'取消',onPress:()=>{}},
+            Alert.alert('温馨提醒', '确定退出吗?', [
+                {text: '确定', onPress: ()=>this.props.navigator.popToRoute(routers[1])},
+                {
+                    text: '取消', onPress: ()=> {
+                }
+                },
 
             ])
 
@@ -107,105 +110,122 @@ class Register extends Component {
         return (
             <View style={{flex:1}}>
 
-            <View style={[styles.container,{ marginTop: Platform.OS == 'ios' ? 64+10 : 56+10,}]}>
-                <Modal
-                    animationType={"fade"}
-                    transparent={true}
-                    visible={this.state.modalVisible}
-                    onRequestClose={() => {this.setState({modalVisible:false});}}>
-                  <ScrollView
-                      style={[{flex:1,backgroundColor:'white',paddingLeft:10,paddingRight:10,
-                      marginTop: Platform.OS == 'ios' ? 64 : 56,}]}
-                      showsVerticalScrollIndicator={false}>
-                        <View>
-                          <Text style={{fontSize:14,color:constants.LabelColor}}>{agreement}</Text>
+                <View style={[styles.container,{ marginTop: Platform.OS == 'ios' ? 64+10 : 56+10,}]}>
+                    <Modal
+                        animationType={"slide"}
+                        transparent={true}
+                        visible={this.state.modalVisible}
+                        onRequestClose={() => {this.setState({modalVisible:false});}}>
+                        <ScrollView
+                            style={[{flex:1,backgroundColor:'white',}]}
+                            showsVerticalScrollIndicator={false}>
+                            <View style={{flex:1,alignItems:'stretch'}}>
+                                <View
+                                    style={{height:Platform.OS == 'ios' ? 64 : 56,backgroundColor:constants.UIActiveColor,
+                                    flexDirection:'row',justifyContent:'center',alignItems: 'center',paddingTop:20}}>
+                                    <TouchableOpacity
+                                        style={{flex:1,paddingLeft:15}}
+                                        onPress={()=>this.setState({modalVisible:false})}>
+                                        <Icon
+                                            style={{fontSize:30}}
+                                            name={'ios-arrow-back'}
+                                            size={constants.IconSize}
+                                            color='white'
+                                        />
+                                    </TouchableOpacity>
+                                    <Text style={{flex:5,fontSize:16,color:'white',textAlign:'center',marginRight:15}}>注册协议</Text>
+                                    <View style={{flex:1}}/>
 
-                          <TouchableHighlight underlayColor={'#ccc'}
-                                              style={{flex:1,backgroundColor: '#fff',justifyContent:'center',flexDirection:'column',alignItems:'center'}}
-                                              onPress={()=>{this.setState({modalVisible:false});}}>
-                              <Text style={{flex:1,fontSize: 16,margin:10,color:constants.PointColor}}>关闭</Text>
-                          </TouchableHighlight>
-                        </View>
-                  </ScrollView>
-                </Modal>
+                                </View>
+                                <Text style={{fontSize:14,color:constants.LabelColor,paddingLeft:10,paddingRight:10,}}>{agreement}</Text>
 
-                <ValidateTextInput
-                    ref={ component => this._input_username = component }
-                    style={styles.textInput}
-                    autoCorrect={false}
-                    placeholder='请输入会员名'
-                    clearButtonMode="while-editing"
-                    maxLength={50}
-                    underlineColorAndroid='transparent'
-                    editable = {this.state.editable}
-                    value={this.state.userName}
-                    onChangeText={(text) => this.setState({userName:text})}
-                    reg={this._userName}/>
+                                <TouchableOpacity
+                                                    style={{flex:1,backgroundColor: '#fff',justifyContent:'center',flexDirection:'column',alignItems:'center'}}
+                                                    onPress={()=>{this.setState({modalVisible:false});}}>
+                                    <Text
+                                        style={{flex:1,fontSize: 16,margin:10,color:constants.UIActiveColor}}>关闭</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </ScrollView>
+                    </Modal>
 
-                <ValidateTextInput
-                    ref={ component => this._input_realname = component }
-                    style={styles.textInput}
-                    autoCorrect={false}
-                    placeholder='请输入联系人姓名'
-                    clearButtonMode="while-editing"
-                    maxLength={20}
-                    underlineColorAndroid='transparent'
-                    editable = {this.state.editable}
-                    value={this.state.realName}
-                    onChangeText={(text) => this.setState({realName:text})}
-                    reg={this._realName}/>
+                    <ValidateTextInput
+                        ref={ component => this._input_username = component }
+                        style={styles.textInput}
+                        autoCorrect={false}
+                        placeholder='请输入会员名'
+                        clearButtonMode="while-editing"
+                        maxLength={50}
+                        underlineColorAndroid='transparent'
+                        editable={this.state.editable}
+                        value={this.state.userName}
+                        onChangeText={(text) => this.setState({userName:text})}
+                        reg={this._userName}/>
 
-
-                <ValidateTextInput
-                    ref={ component => this._input_email = component }
-                    style={styles.textInput}
-                    autoCorrect={false}
-                    placeholder='请输入邮箱'
-                    clearButtonMode="while-editing"
-                    maxLength={50}
-                    underlineColorAndroid='transparent'
-                    editable = {this.state.editable}
-                    value={this.state.email}
-                    onChangeText={(text) => this.setState({email:text})}
-                    reg={this._email}/>
-
-                <ValidateTextInput
-                    ref={ component => this._input_password = component }
-                    style={[styles.textInput,{marginTop:10}]}
-                    autoCorrect={false}
-                    placeholder='请输入密码'
-                    clearButtonMode="while-editing"
-                    maxLength={20}
-                    underlineColorAndroid='transparent'
-                    editable = {this.state.editable}
-                    secureTextEntry={true}
-                    value={this.state.newPass}
-                    onChangeText={(text) => this.setState({newPass:text})}
-                    reg={this._newPassword}/>
-
-                <ValidateTextInput
-                    ref={ component => this._input_conform_password = component }
-                    style={styles.textInput}
-                    autoCorrect={false}
-                    placeholder='确认密码'
-                    clearButtonMode="while-editing"
-                    maxLength={20}
-                    underlineColorAndroid='transparent'
-                    editable = {this.state.editable}
-                    secureTextEntry={true}
-                    value={this.state.confPass}
-                    onChangeText={(text) => this.setState({confPass:text})}
-                    reg={this._conformPassword}/>
+                    <ValidateTextInput
+                        ref={ component => this._input_realname = component }
+                        style={styles.textInput}
+                        autoCorrect={false}
+                        placeholder='请输入联系人姓名'
+                        clearButtonMode="while-editing"
+                        maxLength={20}
+                        underlineColorAndroid='transparent'
+                        editable={this.state.editable}
+                        value={this.state.realName}
+                        onChangeText={(text) => this.setState({realName:text})}
+                        reg={this._realName}/>
 
 
-                <Button
-                    ref={ component => this._button_2 = component }
-                    touchableType={Button.constants.touchableTypes.fadeContent}
-                    style={[styles.button,{ marginLeft: constants.MarginLeftRight,
+                    <ValidateTextInput
+                        ref={ component => this._input_email = component }
+                        style={styles.textInput}
+                        autoCorrect={false}
+                        placeholder='请输入邮箱'
+                        clearButtonMode="while-editing"
+                        maxLength={50}
+                        underlineColorAndroid='transparent'
+                        editable={this.state.editable}
+                        value={this.state.email}
+                        onChangeText={(text) => this.setState({email:text})}
+                        reg={this._email}/>
+
+                    <ValidateTextInput
+                        ref={ component => this._input_password = component }
+                        style={[styles.textInput,{marginTop:10}]}
+                        autoCorrect={false}
+                        placeholder='请输入密码'
+                        clearButtonMode="while-editing"
+                        maxLength={20}
+                        underlineColorAndroid='transparent'
+                        editable={this.state.editable}
+                        secureTextEntry={true}
+                        value={this.state.newPass}
+                        onChangeText={(text) => this.setState({newPass:text})}
+                        reg={this._newPassword}/>
+
+                    <ValidateTextInput
+                        ref={ component => this._input_conform_password = component }
+                        style={styles.textInput}
+                        autoCorrect={false}
+                        placeholder='确认密码'
+                        clearButtonMode="while-editing"
+                        maxLength={20}
+                        underlineColorAndroid='transparent'
+                        editable={this.state.editable}
+                        secureTextEntry={true}
+                        value={this.state.confPass}
+                        onChangeText={(text) => this.setState({confPass:text})}
+                        reg={this._conformPassword}/>
+
+
+                    <Button
+                        ref={ component => this._button_2 = component }
+                        touchableType={Button.constants.touchableTypes.fadeContent}
+                        style={[styles.button,{ marginLeft: constants.MarginLeftRight,
                     marginRight: constants.MarginLeftRight,
                     marginTop: 20,}]}
-                    textStyle={{fontSize: 17, color: 'white'}}
-                    loadingComponent={
+                        textStyle={{fontSize: 17, color: 'white'}}
+                        loadingComponent={
                             <View style={{flexDirection: 'row', alignItems: 'center'}}>
                                 {
                                 //this._renderActivityIndicator()
@@ -215,7 +235,7 @@ class Register extends Component {
                                 注册中...</Text>
                             </View>
                     }
-                    onPress={ () => {
+                        onPress={ () => {
                         if(!this._input_username.validate){
                                     this._input_username.setState({
                                     backgroundColor:constants.UIInputErrorColor,
@@ -289,30 +309,32 @@ class Register extends Component {
 
                         }, 3000)*/
                             } }>
-                    注册
-                </Button>
+                        注册
+                    </Button>
 
-                <View style={styles.foot} >
-                    <Text>点击"注册"即接受</Text>
-                    <TouchableOpacity
-                        onPress={this._showAgreement}>
-                        <Text style={{color:'blue'}}>用户协议</Text>
-                    </TouchableOpacity>
+                    <View style={styles.foot}>
+                        <Text>点击"注册"即接受</Text>
+                        <TouchableOpacity
+                            onPress={this._showAgreement}>
+                            <Text style={{color:'blue'}}>用户协议</Text>
+                        </TouchableOpacity>
+                    </View>
+                    <Toast
+                        ref={ component => this._toast = component }
+                        marginTop={64}>
+
+                    </Toast>
+
+                    <LoadingSpinnerOverlay
+                        ref={ component => this._modalLoadingSpinnerOverLay = component }/>
                 </View>
-                <Toast
-                    ref={ component => this._toast = component }
-                    marginTop={64}>
-
-                </Toast>
-
-                <LoadingSpinnerOverlay
-                    ref={ component => this._modalLoadingSpinnerOverLay = component }/>
-            </View>
             </View>
         );
     }
 
-    _showAgreement=()=>{this.setState({modalVisible: true})}
+    _showAgreement = ()=> {
+        this.setState({modalVisible: true})
+    }
 
 
     _renderActivityIndicator() {
@@ -340,37 +362,37 @@ class Register extends Component {
 
     }
 
-    async _fetch_register(){
-        if(this._modalLoadingSpinnerOverLay) {
+    async _fetch_register() {
+        if (this._modalLoadingSpinnerOverLay) {
             this._modalLoadingSpinnerOverLay.show()
         }
         try {
-        let token= await getToken()
-        let deviceID= await getDeviceID()
-            this.setState({editable:false})
-        let options = {
-            method:'post',
-            url: constants.api.service,
-            data: {
-                iType: constants.iType.register_secondStep,
-                pwd:hex_md5(this.state.newPass),
-                account:this.state.userName,
-                real_name:this.state.realName,
-                phone:this.state.phone,
-                email:this.state.email,
-                sure_pwd:hex_md5(this.state.confPass),
-                deviceId:deviceID,
-                token:token,
+            let token = await getToken()
+            let deviceID = await getDeviceID()
+            this.setState({editable: false})
+            let options = {
+                method: 'post',
+                url: constants.api.service,
+                data: {
+                    iType: constants.iType.register_secondStep,
+                    pwd: hex_md5(this.state.newPass),
+                    account: this.state.userName,
+                    real_name: this.state.realName,
+                    phone: this.state.phone,
+                    email: this.state.email,
+                    sure_pwd: hex_md5(this.state.confPass),
+                    deviceId: deviceID,
+                    token: token,
+                }
             }
-        }
 
-            options.data=await this.gZip(options)
+            options.data = await this.gZip(options)
 
             //console.log(`_fetch_sendCode options:` ,options)
 
             let resultData = await this.fetch(options)
 
-            let result=await this.gunZip(resultData)
+            let result = await this.gunZip(resultData)
             if (!result) {
                 this._toast.show({
                     position: Toast.constants.gravity.center,
@@ -379,13 +401,13 @@ class Register extends Component {
                 })
                 return
             }
-            result=JSON.parse(result)
+            result = JSON.parse(result)
             //console.log('gunZip:',result)
             /*if(this._modalLoadingSpinnerOverLay) {
-                this._modalLoadingSpinnerOverLay.hide({duration: 0,})
-            }*/
-            if(!result){
-                if(this._modalLoadingSpinnerOverLay) {
+             this._modalLoadingSpinnerOverLay.hide({duration: 0,})
+             }*/
+            if (!result) {
+                if (this._modalLoadingSpinnerOverLay) {
                     this._modalLoadingSpinnerOverLay.hide({duration: 0,})
                 }
                 this._toast.show({
@@ -395,35 +417,37 @@ class Register extends Component {
                 })
                 return
             }
-            if(result.code&&result.code==10){
-               /* Alert.alert('提示', '注册成功', () => {
-                    this.props.navigator.popToTop()
-                })*/
+            if (result.code && result.code == 10) {
+                /* Alert.alert('提示', '注册成功', () => {
+                 this.props.navigator.popToTop()
+                 })*/
                 //console.log('token',result.result)
-                AsyncStorage.setItem('token',result.result)
-                AsyncStorage.setItem('phone',this.state.phone)
-                AsyncStorage.setItem('realName',this.state.realName)
+                AsyncStorage.setItem('token', result.result)
+                AsyncStorage.setItem('phone', this.state.phone)
+                AsyncStorage.setItem('realName', this.state.realName)
 
                 /*this._toast.show({
-                    position: Toast.constants.gravity.center,
-                    duration: 255,
-                    children: '注册成功'
-                })*/
+                 position: Toast.constants.gravity.center,
+                 duration: 255,
+                 children: '注册成功'
+                 })*/
 
-                Alert.alert('温馨提醒','提交成功',
-                    [{text:'确定',onPress:()=>{
-                        if(this._modalLoadingSpinnerOverLay) {
-                            this._modalLoadingSpinnerOverLay.hide({duration: 0,})
+                Alert.alert('温馨提醒', '提交成功',
+                    [{
+                        text: '确定', onPress: ()=> {
+                            if (this._modalLoadingSpinnerOverLay) {
+                                this._modalLoadingSpinnerOverLay.hide({duration: 0,})
+                            }
+                            const routers = this.props.navigator.getCurrentRoutes();
+                            this.props.navigator.popToRoute(routers[1])
                         }
-                        const routers = this.props.navigator.getCurrentRoutes();
-                        this.props.navigator.popToRoute(routers[1])}
                     }]
                 )
                 //setTimeout(()=>this.props.navigator.popToRoute(routes[1]),1000)
 
 
-            }else{
-                if(this._modalLoadingSpinnerOverLay) {
+            } else {
+                if (this._modalLoadingSpinnerOverLay) {
                     this._modalLoadingSpinnerOverLay.hide({duration: 0,})
                 }
                 this._toast.show({
@@ -435,11 +459,11 @@ class Register extends Component {
 
         }
         catch (error) {
-            if(this._modalLoadingSpinnerOverLay) {
+            if (this._modalLoadingSpinnerOverLay) {
                 this._modalLoadingSpinnerOverLay.hide({duration: 0,})
             }
             //console.log(error)
-            if(this._toast) {
+            if (this._toast) {
                 this._toast.show({
                     position: Toast.constants.gravity.center,
                     duration: 255,
@@ -453,7 +477,7 @@ class Register extends Component {
                 loading: false,
                 //disabled: false
             })
-            this.setState({editable:true})
+            this.setState({editable: true})
             //if(this._modalLoadingSpinnerOverLay) {
             //    this._modalLoadingSpinnerOverLay.hide({duration: 0,})
             //}
@@ -474,7 +498,7 @@ const styles = StyleSheet.create({
         height: 40,
         borderWidth: StyleSheet.hairlineWidth,
         borderColor: constants.UIBackgroundColor,
-        paddingLeft:10,paddingRight:10,
+        paddingLeft: 10, paddingRight: 10,
     },
     button: {
         height: 40,
@@ -484,11 +508,11 @@ const styles = StyleSheet.create({
         justifyContent: 'center', borderRadius: 30,
 
     },
-    foot:{
+    foot: {
         height: 40,
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent:'center',
+        justifyContent: 'center',
     }
 });
 
@@ -501,7 +525,7 @@ const navigationBarRouteMapper = {
             return null;
         }
 
-        var previousRoute = navState.routeStack[ index - 1 ];
+        var previousRoute = navState.routeStack[index - 1];
         const routers = navigator.getCurrentRoutes();
         return (
             <TouchableOpacity
@@ -512,7 +536,7 @@ const navigationBarRouteMapper = {
                 style={navigatorStyle.navBarLeftButton}>
                 <View style={navigatorStyle.navBarLeftButtonAndroid}>
                     <Icon
-                        style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText,{fontSize: 20,}]}
+                        style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText,{fontSize: 30,}]}
                         name={'ios-arrow-back'}
                         size={constants.IconSize}
                         color={'white'}/>

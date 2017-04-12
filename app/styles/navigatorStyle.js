@@ -34,10 +34,11 @@ const navigatorStyles = StyleSheet.create({
     navBarLeftButton: {
         //paddingLeft: 10,
         marginTop: Platform.OS == 'ios' ? 0 : 4,
-        height:50,
+        height:60,
         width:60,
-        flexDirection: 'column',
-        justifyContent: 'center',
+        paddingLeft:15,
+        flexDirection: 'row',
+        justifyContent: 'flex-start',
         alignItems: 'flex-start',
 
     },

@@ -51,7 +51,7 @@ export default class ImageZoomModal extends Component {
     render() {
         return (
             <Modal
-                animationType={'fade'}
+                animationType={'slide'}
                 transparent={true}
                 visible={this.state.modalVisible}
                 onRequestClose={() => {this.setState({modalVisible:false})}}>
@@ -63,20 +63,21 @@ export default class ImageZoomModal extends Component {
                     justifyContent:'center',alignItems: 'center',paddingTop:18}}
                 >
                     <TouchableOpacity
-                        style={{flex:1,paddingLeft:25}}
+                        style={{flex:1,paddingLeft:15}}
                         onPress={()=>this.setState({modalVisible:false})}>
                         <Icon
+                            style={{fontSize:30}}
                             name={'ios-arrow-back'}
                             size={constants.IconSize}
                             color='white'
                         />
                     </TouchableOpacity>
                         <View
-                            style={{flex:4}}
+                            style={{flex:5}}
                         />
                     {this.props.showDeleteButton ?
                         <TouchableOpacity
-                            style={{flex:1,alignItems:'flex-end',paddingRight:20,}}
+                            style={{flex:1,alignItems:'flex-end',paddingRight:15,}}
                             onPress={()=>{
                             this.props.DeletePhoto(this.state.showUrl)
 
