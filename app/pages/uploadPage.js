@@ -151,8 +151,8 @@ class UploadPage extends Component {
          )*/
         this.addAppEventListener(
             NativeAppEventEmitter.addListener('photoUploadPage.need.navigator.pop', () => {
-                //console.log(`_uploadingXhrCacheList.pop:`, this._uploadingXhrCacheList.length)
-                //console.log(`_waitForUploadQuene.pop:`, this._waitForUploadQuene.length)
+                // console.log(`_uploadingXhrCacheList.pop:`, this._uploadingXhrCacheList.length)
+                // console.log(`_waitForUploadQuene.pop:`, this._waitForUploadQuene.length)
 
 
                 if (this._uploadingXhrCacheList.length > 0 || this._waitForUploadQuene.length > 0) {
@@ -474,7 +474,6 @@ class UploadPage extends Component {
                 }
                 //this.props.waitForAddToUploadQuene(this.state.selected)
                 this._waitForAddToUploadQuene(selected)
-                NativeAppEventEmitter.emit('needstart.uploadphoto.setstate')
                 /* if (this._waitForAddPhotos && this._waitForAddPhotos.length > 0) {
                  //setTimeout(() => {
 
@@ -544,7 +543,6 @@ class UploadPage extends Component {
             selected.push(image)
 
             this._waitForAddToUploadQuene(selected)
-            NativeAppEventEmitter.emit('needstart.uploadphoto.setstate')
             /*if (this._waitForAddPhotos && this._waitForAddPhotos.length > 0) {
 
              this._addToUploadQuene(this._waitForAddPhotos)
@@ -730,6 +728,8 @@ class UploadPage extends Component {
 
     _waitForAddToUploadQuene = (photos) => {
         this._waitForAddPhotos = photos;
+        NativeAppEventEmitter.emit('needstart.uploadphoto.setstate')
+        // console.log('this._waitForAddPhotos:',this._waitForAddPhotos)
     }
 
     _addToUploadQuene = (photos) => {
@@ -755,7 +755,7 @@ class UploadPage extends Component {
             this._waitForUploadQuene.push(uploadTask)   //将上传任务加入待上传队列
         }
         //很明显, 这里UI要更新
-
+        // console.log(`this._waitForUploadQuene`, this._waitForUploadQuene.length)
         photoList = photoList.concat(photos)
         this.setState({
             photoList,
@@ -780,10 +780,14 @@ class UploadPage extends Component {
                 text: '确定', onPress: ()=> {
 
                 //先看待waitForUploadQuene上传队列中是否存在, 存在直接移除队列中的这个对象, 阻止后续的上传
-                let uploadTaskIndex = this._waitForUploadQuene.find(uploadTask => {
+                let uploadTaskIndex = this._waitForUploadQuene.findIndex(uploadTask => {
                     return uri == uploadTask.uri
                 })
-                this._waitForUploadQuene.splice(uploadTaskIndex, 1)
+                // console.log(`this._waitForUploadQuene:`+this._waitForUploadQuene.length)
+                if(uploadTaskIndex!=-1) {
+                    this._waitForUploadQuene.splice(uploadTaskIndex, 1)
+                }
+                // console.log(`this._waitForUploadQuene.splice:`+this._waitForUploadQuene.length)
 
                 //再看uploadingXhrCacheList中是否存在(会包含上传失败的xhr), 存在就移除, 这个list的长度会影响当前的上传可用线程数
                 let xhrCache = this._uploadingXhrCacheList.find((xhrCache) => {
@@ -792,7 +796,11 @@ class UploadPage extends Component {
                 let xhr = xhrCache && xhrCache.xhr
                 if (xhr && (xhr.status != 200 || xhr.readyState != 4)) {
                     xhr.abort()
+                    this._uploadingXhrCacheList.splice(this._uploadingXhrCacheList.indexOf(xhrCache),1)
                 }
+
+
+
                 //遍历ids如果包含,删除id
                 for (let data of this._ids) {
                     if (data.uri == uri) {
@@ -809,17 +817,21 @@ class UploadPage extends Component {
                     return photo.uri == uri
                 })
                 photoList.splice(photoIndex, 1)
+
                 for (let data of this.props.showList) {
                     if (data.file_url == uri) {
                         this.props.showList.splice(this.props.showList.indexOf(data), 1)
                         break;
                     }
                 }
+                // this._startUploadQuene() // 启动一次上传队列
                 this.setState({
                     photoList,
                     dataSource: this._dataSource.cloneWithRows(photoList),
                     //modalVisible:false
-                });
+                }, () => {
+                    this._startUploadQuene()    //启动一次上传队列
+                })
                 this._ImageZoomModal.setState({modalVisible: false})
                 this.showDelete=false
             }
@@ -832,11 +844,14 @@ class UploadPage extends Component {
     _startUploadQuene() {
         //启动上传队列, 会计算可用线程数, 并根据线程数执行对应的上传任务, 并将各个上传任务的xhr对象缓存
         let restUploadNum = maxiumXhrNums - this._uploadingXhrCacheList.length
+
         if (restUploadNum <= 0) {
             return
         }
-        //console.log(`_startUploadQuene photoList ->`, this.state.photoList)
+        // console.log(`_startUploadQuene photoList ->`, this.state.photoList)
+        // console.log(`this._waitForUploadQuene.length：`, this._waitForUploadQuene.length)
         let shiftNum = restUploadNum <= this._waitForUploadQuene.length ? restUploadNum : this._waitForUploadQuene.length
+        console.log(`shiftNum：`, shiftNum)
         for (let i = 0; i < shiftNum; i++) {
             //console.log(`i = ${i}, shiftNum = ${shiftNum}`)
             let uploadTask = this._waitForUploadQuene.shift()   //将待上传队列当前第一项任务对象从队列中取出
@@ -1338,7 +1353,7 @@ const navigationBarRouteMapper = {
                 style={navigatorStyle.navBarLeftButton}>
                 <View style={navigatorStyle.navBarLeftButtonAndroid}>
                     <Icon
-                        style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText,{fontSize: 25,}]}
+                        style={[navigatorStyle.navBarText, navigatorStyle.navBarTitleText,{fontSize: 30,}]}
                         name={'ios-arrow-back'}
                         size={constants.IconSize}
                         color={'white'}/>

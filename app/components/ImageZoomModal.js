@@ -60,8 +60,7 @@ export default class ImageZoomModal extends Component {
                 <View
                     style={{width:deviceWidth,height:Platform.OS == 'ios' ? 64 : 56
                     ,backgroundColor:'black',flexDirection:'row',position:'absolute',top:0,
-                    justifyContent:'center',alignItems: 'center',paddingTop:18}}
-                >
+                    justifyContent:'center',alignItems: 'center',paddingTop:18}}>
                     <TouchableOpacity
                         style={{flex:1,paddingLeft:15}}
                         onPress={()=>this.setState({modalVisible:false})}>

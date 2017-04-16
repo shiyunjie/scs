@@ -22,7 +22,7 @@ export const constant = {
     CompEmail:'supplychain@sh-defan.net',
     CompAddress:'上海市长寿路652号10号楼107室',
 
-    maxiumUploadImagesCount:30, //最多上传图片总数
+    maxiumUploadImagesCount:25, //最多上传图片总数
     maxiumXhrNums:4, //最多同时上传数量
 
     development:false,//开发模式mock
